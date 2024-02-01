@@ -1,33 +1,43 @@
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
+import { useEffect } from "react";
 import "./App.css";
-import { useStore } from "./store";
+import React from "react";
 
 function App() {
-  const { counter, setCounter } = useStore();
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+  const iframeRef = React.useRef<HTMLIFrameElement>(null);
+  useEffect(() => {
+    console.log("Setting up event listener");
+    function onMsg(msg: any) {
+      console.log(`Message from an iframe`, msg);
+    }
+
+    window.addEventListener("message", onMsg, false);
+    window.postMessage("testStart");
+  }, []);
+
+  function updateVideostrate() {
+    const iframeWindow = iframeRef.current?.contentWindow;
+    iframeWindow?.postMessage(
+      {
+        type: "videostrate",
+        payload: {
+          text: textareaRef.current?.value,
+        },
+      },
+      "*"
+    );
+  }
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCounter(counter + 1)}>
-          count is {counter}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <textarea id="text" ref={textareaRef} />
+      <button onClick={updateVideostrate}>Update webstrate content</button>
+      <iframe
+        ref={iframeRef}
+        // src="https://demo.webstrates.net/tidy-catfish-28/"
+        src="https://demo.webstrates.net/chatty-tiger-57/"
+        title="W3Schools Free Online Web Tutorials"
+      ></iframe>
     </>
   );
 }
