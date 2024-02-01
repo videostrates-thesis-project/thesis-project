@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -10,10 +11,10 @@ export const useStore = create(
   persist<AppState>(
     (set) => ({
       counter: 0,
-      setCounter: (counter) => set({ counter }),
+      setCounter: (counter) => set({ counter })
     }),
     {
-      name: "thesis-project-storage",
+      name: "thesis-project-storage"
     }
   )
 );
