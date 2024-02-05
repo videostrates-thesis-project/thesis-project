@@ -1,9 +1,9 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { create } from "zustand"
+import { persist } from "zustand/middleware"
 
 export interface AppState {
-  counter: number;
-  setCounter: (counter: number) => void;
+  counter: number
+  setCounter: (counter: number) => void
 }
 
 export const useStore = create(
@@ -16,4 +16,4 @@ export const useStore = create(
       name: "thesis-project-storage",
     }
   )
-);
+)
