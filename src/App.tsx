@@ -1,19 +1,9 @@
-import { useEffect } from "react";
 import "./App.css";
 import React from "react";
 
 function App() {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null);
   const iframeRef = React.useRef<HTMLIFrameElement>(null);
-  useEffect(() => {
-    console.log("Setting up event listener");
-    function onMsg(msg: any) {
-      console.log(`Message from an iframe`, msg);
-    }
-
-    window.addEventListener("message", onMsg, false);
-    window.postMessage("testStart");
-  }, []);
 
   function updateVideostrate() {
     const iframeWindow = iframeRef.current?.contentWindow;
