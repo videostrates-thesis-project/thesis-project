@@ -1,1179 +1,1262 @@
 <html>
-
-<head>
+  <head>
     <title>Advanced Videostrate Demo</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="//libraries.projects.cavi.au.dk/javascript/CaviTouch/CaviTouch.js"></script>
     <script src="//libraries.projects.cavi.au.dk/javascript/cQuery/1.1/caviQuery.min.js"></script>
     <script src="//libraries.projects.cavi.au.dk/javascript/cQuery/1.1/caviQueryPlugins.min.js"></script>
     <script id="VideostrateView-script" type="text/javascript">
-        /* global Promise, StreamLauncher, cQuery, Realm */
+      /* global Promise, StreamLauncher, cQuery, Realm */
+
+      /**
+       * Videostrates javascript API for viewing collaboratively edited video via Webstrates
+       *
+       * (c) 2018 Rolf Bagge, Janus B. Kristensen - CAVI, Aarhus University
+       */
+      window.VideostrateView = class VideostrateView {
+        constructor(element, targetVideostrateURI, config = {}) {
+          let self = this
+          this.element = element
+          element.videostrate = this
+
+          if (config.useCustomUI == null) config.useCustomUI = true
+          if (config.useSwapping == null) config.useSwapping = false
+          if (config.useWebRender == null) config.useWebRender = false
+          if (config.width == null) config.width = 640
+          if (config.height == null) config.height = 480
+          if (config.framerate == null) config.framerate = 60
+          if (config.initOverlay == null) config.initOverlay = true
+
+          if (config.playerProviders == null)
+            config.playerProviders = [
+              "https://demo.webstrates.net/timetasticplayer/",
+            ]
+          if (config.cacheProviders == null) {
+            config.cacheProviders = ["https://stream.cavi.au.dk/cache/"]
+          }
+          if (!config.timetasticInjects)
+            config.timetasticInjects = [
+              "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/css/composited_base.css",
+              "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/css/composited_effects.css",
+              "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/css/composited_overlays.css",
+              "//libraries.projects.cavi.au.dk/javascript/cQuery/1.1/caviQuery.min.js",
+              "//libraries.projects.cavi.au.dk/javascript/cQuery/1.1/caviQueryPlugins.min.js",
+              "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/CompositorController.js",
+              "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/VideoController.js",
+              "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/CustomController.js",
+              "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/SVGController.js",
+              "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/Timetastic.js",
+            ]
+
+          console.log("View config:", config)
+
+          this.config = config
+          this.uri = targetVideostrateURI
+
+          this.positionListeners = new Set()
+          this.durationListeners = new Set()
+          this.viewListeners = new Set()
+          this.renderListeners = new Set()
+
+          this.recording = false
+          this.rendering = false
+          this.broadcasting = false
+
+          this.renderTimeStart = 0
+        }
+
+        addPositionListener(listener) {
+          this.positionListeners.add(listener)
+        }
+        removePositionListener(listener) {
+          this.positionListeners.delete(listener)
+        }
+
+        addDurationListener(listener) {
+          this.durationListeners.add(listener)
+        }
+        removeDurationListener(listener) {
+          this.durationListeners.delete(listener)
+        }
+
+        addViewListener(listener) {
+          this.viewListeners.add(listener)
+        }
+        removeViewListener(listener) {
+          this.viewListeners.delete(listener)
+        }
+
+        addRenderListener(listener) {
+          this.renderListeners.add(listener)
+        }
+        removeRenderListener(listener) {
+          this.renderListeners.delete(listener)
+        }
+
+        startLocalView() {
+          let self = this
+
+          return new Promise((resolve, reject) => {
+            if (!self.isLocal()) {
+              StreamLauncher.stop(self.element)
+              self.element.streamlauncher = false
+              if (self.iframe) self.iframe.remove()
+            }
+
+            // Init player + injects
+            self.iframe = document.createElement("iframe")
+            self.iframe.webstrate.on("transcluded", function () {
+              let theHTML = cQuery(self.iframe.contentDocument).find("html")[0]
+
+              console.log("Injecting scripts...")
+
+              if (self.config.serverLog != null) {
+                self.iframe.contentWindow.serverLog = self.config.serverLog
+              }
+
+              theHTML.setAttribute("transient-videostrate-status", "injecting")
+              let head = cQuery(self.iframe.contentDocument).find("head")
+              head.prepend("<transient id='videostrateinjects' />")
+              let headInject = head.find("#videostrateinjects")
+              if (self.config.initOverlay) {
+                headInject.prepend(
+                  "<style>html[transient-videostrate-status]::before {content:' '; color:black;border-bottom: 0.25em solid rgba(255,155,0,0.75);position:absolute;background:#ffffffe6;text-align:center;padding:1em;z-index: 2000;left: 0;right: 0;top:-4em;font-family: sans-serif; transition: top 0.6s ease-in, border-color 0.25s ease-in-out; box-sizing: border-box;}" +
+                    'html[transient-videostrate-status="injecting"] * {opacity:0.01;}html[transient-videostrate-status="injecting"]::before{top:0; content: "Injecting...";border-color: rgba(255,0,0,0.75);}' +
+                    "html[transient-videostrate-status=\"loaded\"]::before{content: 'Ready'; border-color: rgba(0,255,0,0.75);}" +
+                    'html[transient-videostrate-status="initializing"] * {opacity:0.01;}html[transient-videostrate-status="initializing"]::before{top:0; content: "Initializing document...";border-color: rgba(255,155,0,0.75);}</style>'
+                )
+              }
+              let theBody = cQuery(self.iframe.contentDocument).find("body")
+              theBody.append("<transient id='videostratebodyinjects' />")
+              let bodyInject = theBody.find("#videostratebodyinjects")
+              let injectPromises = []
+
+              // Combine timetastic and metamax injects and inject them
+              let injects = self.config.timetasticInjects.slice(0)
+
+              if (
+                self.config.cacheProviders != null &&
+                self.config.cacheProviders.length > 0
+              ) {
+                injects.push(
+                  self.config.cacheProviders[0] + "js/MetaMaxCache.js"
+                )
+              } else {
+                console.log("Skipping metamax, as no cacheprovider is set!")
+                if (self.config.serverLog != null) {
+                  self.config.serverLog(
+                    "Skipping metamax, as no cacheprovider is set!"
+                  )
+                }
+              }
+
+              injects.forEach(function (inject) {
+                injectPromises.push(
+                  new Promise(function (resolve, reject) {
+                    if (inject.endsWith(".js")) {
+                      let script =
+                        self.iframe.contentDocument.createElement("script")
+                      script.async = false
+                      script.onload = function () {
+                        resolve()
+                      }
+                      script.src = inject
+                      bodyInject.append(script)
+                    } else {
+                      headInject.append(
+                        "<link href='" +
+                          inject +
+                          "' rel='stylesheet' type='text/css'/>"
+                      )
+                      resolve()
+                    }
+                  })
+                )
+              })
+
+              let lastFrame = -1
+
+              Promise.all(injectPromises).then(function () {
+                theHTML.setAttribute(
+                  "transient-videostrate-status",
+                  "initializing"
+                )
+
+                //Do metamax before starting timetastic
+                let realmPromise = null
+
+                if (
+                  self.config.cacheProviders != null &&
+                  self.config.cacheProviders.length > 0
+                ) {
+                  if (self.config.serverLog != null) {
+                    self.config.serverLog(
+                      "Finding old realm, or creating new..."
+                    )
+                  }
+
+                  realmPromise = new Promise(async (resolve) => {
+                    // Find/Create MetaMaxRealm
+                    let realmId = theHTML.getAttribute("data-metamax-realm")
+
+                    // Set Metamax Server
+                    self.iframe.contentWindow.MetaMaxCache.url =
+                      self.config.cacheProviders[0] + "api"
+
+                    if (realmId == null) {
+                      //No old realm, create new
+                      console.log("Creating new realm...")
+                      self.iframe.contentWindow.Realm.create().then((realm) => {
+                        theHTML.setAttribute("data-metamax-realm", realm.id)
+                        resolve(realm)
+                      })
+                    } else {
+                      try {
+                        console.log("Reusing old realm")
+                        let realm = new self.iframe.contentWindow.Realm(realmId)
+                        await realm.info()
+                        resolve(realm)
+                      } catch (e) {
+                        console.log("Error reusing realm, creating new!")
+                        self.iframe.contentWindow.Realm.create().then(
+                          (realm) => {
+                            theHTML.setAttribute("data-metamax-realm", realm.id)
+                            resolve(realm)
+                          }
+                        )
+                      }
+                    }
+                  })
+                } else {
+                  if (self.config.serverLog != null) {
+                    self.config.serverLog("Skipping realm...")
+                  }
+
+                  realmPromise = Promise.resolve(null)
+                }
+
+                realmPromise.then((realm) => {
+                  if (self.config.serverLog != null && realm != null) {
+                    self.config.serverLog(
+                      "Starting metamax caching for realm: " +
+                        realm.id +
+                        " on " +
+                        self.iframe.contentWindow.MetaMaxCacheUrl
+                    )
+                  }
+
+                  let enableSeekPromise = null
+
+                  if (realm != null) {
+                    enableSeekPromise = realm.enableSeekableOnAllVideos(
+                      self.iframe.contentDocument
+                    )
+                  } else {
+                    enableSeekPromise = Promise.resolve()
+                  }
+
+                  enableSeekPromise.then(() => {
+                    if (realm != null) {
+                      if (self.config.serverLog != null) {
+                        self.config.serverLog("Metamax done!")
+                      }
+                      console.log("Metamax done!")
+                    }
+
+                    console.log("Starting timetastic...")
+
+                    headInject.append(
+                      "<script>window.timetastic = new Timetastic(" +
+                        self.config.framerate +
+                        ");<" +
+                        "/script>"
+                    )
+                    self.controller = self.iframe.contentWindow.timetastic
+                    self.controller.addPositionListener(function (frame, time) {
+                      if (lastFrame !== frame) {
+                        self.onPositionChanged(frame, time)
+                        lastFrame = frame
+                      }
+                    }) // Intentional wrap of callback for iframe permissions
+                    self.controller.addDurationListener(function (duration) {
+                      self.onDurationChanged(duration)
+                    })
+                    self.controller.init().then(function () {
+                      theHTML.setAttribute(
+                        "transient-videostrate-status",
+                        "loaded"
+                      )
+                      console.log(
+                        "Videostrate View for " +
+                          self.uri +
+                          " ready and kicking"
+                      )
+
+                      if (self.config.serverLog != null) {
+                        self.config.serverLog(
+                          "Videostrate View for " +
+                            self.uri +
+                            " ready and kicking"
+                        )
+                      }
+
+                      resolve()
+                    })
+                  })
+                })
+              })
+            })
+            self.iframe.src = this.uri
+            self.element.innerHTML = ""
+            self.iframe.style.width = "100%"
+            self.iframe.style.height = "100%"
+            self.iframe.style.border = "0"
+            self.element.appendChild(this.iframe)
+            console.log("Videostrate View for " + this.uri + " loading")
+          })
+        }
+
+        async startStreamView(streamConfig = {}) {
+          let self = this
+          return new Promise((resolve, reject) => {
+            console.log("Starting stream view for " + self.uri)
+            if (!streamConfig.streamProviders)
+              streamConfig.streamProviders = ["wss://stream.cavi.au.dk/player"]
+            if (!streamConfig.framerate)
+              streamConfig.framerate = this.config.framerate
+
+            let streamProvider = streamConfig.streamProviders[0] // STUB
+            let playerProvider = self.config.playerProviders[0] // STUB
+
+            // Start control iframe
+            self.iframe = document.createElement("iframe")
+            self.iframe.webstrate.on("transcluded", function () {
+              console.log("Got player transclude for passive signalling")
+              // Listen for our player to connect
+              let playerID = Math.random().toString(36).substr(2, 12)
+              self.iframe.contentWindow.webstrate.on(
+                "signal",
+                function (message, senderId, node) {
+                  if (!node) {
+                    if (message.player === playerID) {
+                      switch (message.cmd) {
+                        case "log":
+                          console.log("Log from server: ", message.msg)
+                          break
+                        case "renderDone":
+                          console.log("renderDone called.")
+                          self.stopRendering()
+                          break
+                        case "playerReady":
+                          // Register the player signal controller
+                          console.log(
+                            "Got greeting from player at " + senderId + ": ",
+                            message
+                          )
+                          self.controller = {
+                            client: senderId,
+                            signal: function (cmd, args) {
+                              self.iframe.contentWindow.webstrate.signal(
+                                { cmd: cmd, arguments: args },
+                                this.client
+                              )
+                            },
+                            grabMode: function (mode) {
+                              return new Promise((resolve, reject) => {
+                                function onSignal(message, senderId, node) {
+                                  if (message.cmd === "grabber") {
+                                    self.iframe.contentWindow.webstrate.off(
+                                      "signal",
+                                      onSignal
+                                    )
+                                    resolve()
+                                  }
+                                }
+
+                                self.iframe.contentWindow.webstrate.on(
+                                  "signal",
+                                  onSignal
+                                )
+
+                                this.signal("grabber", { mode: mode })
+                              })
+                            },
+                            prepareRender: function (options = {}) {
+                              return new Promise((resolve, reject) => {
+                                function onSignal(message, senderId, node) {
+                                  if (message.cmd === "renderPrepared") {
+                                    self.iframe.contentWindow.webstrate.off(
+                                      "signal",
+                                      onSignal
+                                    )
+                                    resolve()
+                                  }
+                                }
+
+                                self.iframe.contentWindow.webstrate.on(
+                                  "signal",
+                                  onSignal
+                                )
+
+                                this.signal("prepareRender")
+                              })
+                            },
+                            render: function (options = {}) {
+                              this.signal("render", options)
+                            },
+                            play: function (options = {}) {
+                              this.signal("play", options)
+                              return Promise.resolve()
+                            },
+                            seek: function (seekTime) {
+                              let self2 = this
+                              return new Promise((resolve) => {
+                                self.addPositionListener((frame, time) => {
+                                  if (seekTime === time) {
+                                    resolve({ frame: frame, time: time })
+                                  }
+                                })
+                                self2.signal("seek", seekTime)
+                              })
+                            },
+                            stop: function () {
+                              this.signal("stop", false)
+                            },
+                          }
+                          break
+                        case "positionChanged":
+                          self.onPositionChanged(message.frame, message.time)
+                          break
+                        case "durationChanged":
+                          self.onDurationChanged(message.duration)
+                          break
+                        case "playerViewReady":
+                          /* First valid frame */
+                          console.log(
+                            "Got view ready from player at " + senderId + ": ",
+                            message
+                          )
+                          resolve()
+                          self.onViewChanged(message.cmd)
+                          break
+
+                        case "grabber":
+                        case "renderPrepared":
+                          //Used for signalling answers to other cmd's so dont treat them here
+                          break
+                        default:
+                          console.error("unkown message from player: ", message)
+                      }
+                    }
+                  }
+                }
+              )
+
+              // Actually start the remote view
+              let remotePlayerURI =
+                playerProvider +
+                "?masters=" +
+                encodeURIComponent(
+                  self.iframe.contentWindow.webstrate.clientId
+                ) +
+                "&videostrate=" +
+                encodeURIComponent(self.uri) +
+                "&config=" +
+                encodeURIComponent(JSON.stringify(self.config)) +
+                "&player=" +
+                playerID
+              let additionalConfig = {
+                width: self.config.width,
+                height: self.config.height,
+                framerate: streamConfig.framerate,
+              }
+              if (streamConfig.iceServers) {
+                additionalConfig.iceServers = streamConfig.iceServers
+                console.log(
+                  "Warning: Page is requesting override for default streamlauncher.js TURN servers: " +
+                    streamConfig.iceServers
+                )
+              }
+              if (streamConfig.iceTransportPolicy) {
+                additionalConfig.iceTransportPolicy =
+                  streamConfig.iceTransportPolicy
+                console.log(
+                  "Warning: Page has requested override for default streamlauncher.js ICE policy: " +
+                    streamConfig.iceServers
+                )
+              }
+              StreamLauncher.stream(
+                self.element,
+                streamProvider,
+                {
+                  uri: remotePlayerURI,
+                  useCustomUI: self.config.useCustomUI,
+                  useSwapping: self.config.useSwapping,
+                  useWebRender: self.config.useWebRender,
+                },
+                additionalConfig
+              ).then(() => {})
+            })
+
+            let transient = document.getElementById("videostratecontrollers")
+            if (!transient) {
+              transient = document.createElement("transient")
+              transient.style.display = "none"
+              transient.id = "videostratecontrollers"
+              document.body.appendChild(transient)
+            }
+            self.iframe.src = playerProvider
+            transient.appendChild(self.iframe)
+          })
+        }
+
+        stopStreamView() {
+          if (!this.isLocal()) {
+            StreamLauncher.stop(this.element)
+            this.element.streamlauncher = false
+            if (this.iframe) this.iframe.remove()
+          }
+        }
+
+        onPositionChanged(frame, time) {
+          this.positionListeners.forEach(function (callback) {
+            callback(frame, time)
+          })
+        }
+
+        onDurationChanged(duration) {
+          this.durationListeners.forEach(function (callback) {
+            callback(duration)
+          })
+        }
 
         /**
-        * Videostrates javascript API for viewing collaboratively edited video via Webstrates
-        * 
-        * (c) 2018 Rolf Bagge, Janus B. Kristensen - CAVI, Aarhus University
-        */
-        window.VideostrateView = class VideostrateView {
-            constructor(element, targetVideostrateURI, config = {}) {
-                let self = this;
-                this.element = element;
-                element.videostrate = this;
+         * On first valid frame or when view changes size
+         */
+        onViewChanged(message) {
+          this.viewListeners.forEach(function (callback) {
+            callback(message)
+          })
+        }
 
-                if (config.useCustomUI == null)
-                    config.useCustomUI = true;
-                if (config.useSwapping == null)
-                    config.useSwapping = false;
-                if (config.useWebRender == null)
-                    config.useWebRender = false;
-                if (config.width == null)
-                    config.width = 640;
-                if (config.height == null)
-                    config.height = 480;
-                if (config.framerate == null)
-                    config.framerate = 60;
-                if (config.initOverlay == null)
-                    config.initOverlay = true;
+        isLocal() {
+          return !this.element.streamlauncher
+        }
 
-                if (config.playerProviders == null)
-                    config.playerProviders = ["https://demo.webstrates.net/timetasticplayer/"];
-                if (config.cacheProviders == null) {
-                    config.cacheProviders = ["https://stream.cavi.au.dk/cache/"];
+        broadcast(rtmpTarget) {
+          if (this.broadcasting) {
+            console.log("Tried to start broadcasting when already broadcasting")
+            return Promise.reject()
+          }
+
+          if (this.isLocal()) {
+            console.log("Unable to broadcast from a local view")
+            return Promise.reject()
+          }
+
+          let self = this
+
+          this.broadcasting = true
+
+          return new Promise((resolve, reject) => {
+            let listener = {
+              onVideoStateChanged: (event) => {
+                console.log(event)
+                if (event.type === "BROADCAST" && event.state.isConnected) {
+                  self.element.streamlauncher.removeListener(listener)
+                  resolve()
                 }
-                if (!config.timetasticInjects)
-                    config.timetasticInjects = [
-                        "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/css/composited_base.css",
-                        "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/css/composited_effects.css",
-                        "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/css/composited_overlays.css",
-                        "//libraries.projects.cavi.au.dk/javascript/cQuery/1.1/caviQuery.min.js",
-                        "//libraries.projects.cavi.au.dk/javascript/cQuery/1.1/caviQueryPlugins.min.js",
-                        "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/CompositorController.js",
-                        "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/VideoController.js",
-                        "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/CustomController.js",
-                        "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/SVGController.js",
-                        "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/Timetastic.js"
-                    ];
-
-                console.log("View config:", config);
-
-                this.config = config;
-                this.uri = targetVideostrateURI;
-
-                this.positionListeners = new Set();
-                this.durationListeners = new Set();
-                this.viewListeners = new Set();
-                this.renderListeners = new Set();
-
-                this.recording = false;
-                this.rendering = false;
-                this.broadcasting = false;
-
-                this.renderTimeStart = 0;
+              },
             }
 
-            addPositionListener(listener) {
-                this.positionListeners.add(listener);
-            }
-            removePositionListener(listener) {
-                this.positionListeners.delete(listener);
-            }
+            self.element.streamlauncher.addListener(listener)
 
-            addDurationListener(listener) {
-                this.durationListeners.add(listener);
-            }
-            removeDurationListener(listener) {
-                this.durationListeners.delete(listener);
-            }
+            self.element.streamlauncher.startBroadcasting(rtmpTarget)
+          })
+        }
 
-            addViewListener(listener) {
-                this.viewListeners.add(listener);
-            }
-            removeViewListener(listener) {
-                this.viewListeners.delete(listener);
-            }
+        isBroadcasting() {
+          return this.broadcasting
+        }
 
-            addRenderListener(listener) {
-                this.renderListeners.add(listener);
-            }
-            removeRenderListener(listener) {
-                this.renderListeners.delete(listener);
-            }
+        stopBroadcasting() {
+          if (!this.broadcasting) {
+            console.log("Unable to stop rendering, when not rendering..")
+            return Promise.reject()
+          }
 
-            startLocalView() {
-                let self = this;
+          let self = this
 
-                return new Promise((resolve, reject) => {
-                    if (!self.isLocal()) {
-                        StreamLauncher.stop(self.element);
-                        self.element.streamlauncher = false;
-                        if (self.iframe)
-                            self.iframe.remove();
-                    }
-
-                    // Init player + injects
-                    self.iframe = document.createElement("iframe");
-                    self.iframe.webstrate.on("transcluded", function () {
-
-                        let theHTML = cQuery(self.iframe.contentDocument).find("html")[0];
-
-                        console.log("Injecting scripts...");
-
-                        if (self.config.serverLog != null) {
-                            self.iframe.contentWindow.serverLog = self.config.serverLog;
-                        }
-
-                        theHTML.setAttribute("transient-videostrate-status", "injecting");
-                        let head = cQuery(self.iframe.contentDocument).find("head");
-                        head.prepend("<transient id='videostrateinjects' />");
-                        let headInject = head.find("#videostrateinjects");
-                        if (self.config.initOverlay) {
-                            headInject.prepend("<style>html[transient-videostrate-status]::before {content:' '; color:black;border-bottom: 0.25em solid rgba(255,155,0,0.75);position:absolute;background:#ffffffe6;text-align:center;padding:1em;z-index: 2000;left: 0;right: 0;top:-4em;font-family: sans-serif; transition: top 0.6s ease-in, border-color 0.25s ease-in-out; box-sizing: border-box;}"
-                                + "html[transient-videostrate-status=\"injecting\"] * {opacity:0.01;}html[transient-videostrate-status=\"injecting\"]::before{top:0; content: \"Injecting...\";border-color: rgba(255,0,0,0.75);}"
-                                + "html[transient-videostrate-status=\"loaded\"]::before{content: 'Ready'; border-color: rgba(0,255,0,0.75);}"
-                                + "html[transient-videostrate-status=\"initializing\"] * {opacity:0.01;}html[transient-videostrate-status=\"initializing\"]::before{top:0; content: \"Initializing document...\";border-color: rgba(255,155,0,0.75);}</style>");
-                        }
-                        let theBody = cQuery(self.iframe.contentDocument).find("body");
-                        theBody.append("<transient id='videostratebodyinjects' />");
-                        let bodyInject = theBody.find("#videostratebodyinjects");
-                        let injectPromises = [];
-
-                        // Combine timetastic and metamax injects and inject them
-                        let injects = self.config.timetasticInjects.slice(0);
-
-                        if (self.config.cacheProviders != null && self.config.cacheProviders.length > 0) {
-                            injects.push(self.config.cacheProviders[0] + "js/MetaMaxCache.js");
-                        } else {
-                            console.log("Skipping metamax, as no cacheprovider is set!");
-                            if (self.config.serverLog != null) {
-                                self.config.serverLog("Skipping metamax, as no cacheprovider is set!");
-                            }
-                        }
-
-                        injects.forEach(function (inject) {
-                            injectPromises.push(new Promise(function (resolve, reject) {
-                                if (inject.endsWith(".js")) {
-                                    let script = self.iframe.contentDocument.createElement("script");
-                                    script.async = false;
-                                    script.onload = function () {
-                                        resolve();
-                                    };
-                                    script.src = inject;
-                                    bodyInject.append(script);
-                                } else {
-                                    headInject.append("<link href='" + inject + "' rel='stylesheet' type='text/css'/>");
-                                    resolve();
-                                }
-                            }));
-                        });
-
-                        let lastFrame = -1;
-
-                        Promise.all(injectPromises).then(function () {
-                            theHTML.setAttribute("transient-videostrate-status", "initializing");
-
-                            //Do metamax before starting timetastic
-                            let realmPromise = null;
-
-                            if (self.config.cacheProviders != null && self.config.cacheProviders.length > 0) {
-                                if (self.config.serverLog != null) {
-                                    self.config.serverLog("Finding old realm, or creating new...");
-                                }
-
-                                realmPromise = new Promise(async (resolve) => {
-                                    // Find/Create MetaMaxRealm
-                                    let realmId = theHTML.getAttribute("data-metamax-realm");
-
-                                    // Set Metamax Server
-                                    self.iframe.contentWindow.MetaMaxCache.url = self.config.cacheProviders[0] + "api";
-
-                                    if (realmId == null) {
-                                        //No old realm, create new
-                                        console.log("Creating new realm...");
-                                        self.iframe.contentWindow.Realm.create().then((realm) => {
-                                            theHTML.setAttribute("data-metamax-realm", realm.id);
-                                            resolve(realm);
-                                        });
-                                    } else {
-                                        try {
-                                            console.log("Reusing old realm");
-                                            let realm = new self.iframe.contentWindow.Realm(realmId);
-                                            await realm.info();
-                                            resolve(realm);
-                                        } catch (e) {
-                                            console.log("Error reusing realm, creating new!");
-                                            self.iframe.contentWindow.Realm.create().then((realm) => {
-                                                theHTML.setAttribute("data-metamax-realm", realm.id);
-                                                resolve(realm);
-                                            });
-                                        }
-                                    }
-                                });
-                            } else {
-                                if (self.config.serverLog != null) {
-                                    self.config.serverLog("Skipping realm...");
-                                }
-
-                                realmPromise = Promise.resolve(null);
-                            }
-
-                            realmPromise.then((realm) => {
-                                if (self.config.serverLog != null && realm != null) {
-                                    self.config.serverLog("Starting metamax caching for realm: " + realm.id + " on " + self.iframe.contentWindow.MetaMaxCacheUrl);
-                                }
-
-                                let enableSeekPromise = null;
-
-                                if (realm != null) {
-                                    enableSeekPromise = realm.enableSeekableOnAllVideos(self.iframe.contentDocument);
-                                } else {
-                                    enableSeekPromise = Promise.resolve();
-                                }
-
-                                enableSeekPromise.then(() => {
-                                    if (realm != null) {
-                                        if (self.config.serverLog != null) {
-                                            self.config.serverLog("Metamax done!");
-                                        }
-                                        console.log("Metamax done!");
-                                    }
-
-                                    console.log("Starting timetastic...");
-
-                                    headInject.append("<script>window.timetastic = new Timetastic(" + self.config.framerate + ");<" + "/script>");
-                                    self.controller = self.iframe.contentWindow.timetastic;
-                                    self.controller.addPositionListener(function (frame, time) {
-                                        if (lastFrame !== frame) {
-                                            self.onPositionChanged(frame, time);
-                                            lastFrame = frame;
-                                        }
-                                    }); // Intentional wrap of callback for iframe permissions
-                                    self.controller.addDurationListener(function (duration) {
-                                        self.onDurationChanged(duration);
-                                    });
-                                    self.controller.init().then(function () {
-                                        theHTML.setAttribute("transient-videostrate-status", "loaded");
-                                        console.log("Videostrate View for " + self.uri + " ready and kicking");
-
-                                        if (self.config.serverLog != null) {
-                                            self.config.serverLog("Videostrate View for " + self.uri + " ready and kicking");
-                                        }
-
-                                        resolve();
-                                    });
-                                });
-
-                            });
-                        });
-
-                    });
-                    self.iframe.src = this.uri;
-                    self.element.innerHTML = '';
-                    self.iframe.style.width = "100%";
-                    self.iframe.style.height = "100%";
-                    self.iframe.style.border = "0";
-                    self.element.appendChild(this.iframe);
-                    console.log("Videostrate View for " + this.uri + " loading");
-                });
-            }
-
-            async startStreamView(streamConfig = {}) {
-                let self = this;
-                return new Promise((resolve, reject) => {
-                    console.log("Starting stream view for " + self.uri);
-                    if (!streamConfig.streamProviders)
-                        streamConfig.streamProviders = ["wss://stream.cavi.au.dk/player"];
-                    if (!streamConfig.framerate)
-                        streamConfig.framerate = this.config.framerate;
-
-                    let streamProvider = streamConfig.streamProviders[0]; // STUB
-                    let playerProvider = self.config.playerProviders[0]; // STUB
-
-                    // Start control iframe
-                    self.iframe = document.createElement("iframe");
-                    self.iframe.webstrate.on("transcluded", function () {
-                        console.log("Got player transclude for passive signalling");
-                        // Listen for our player to connect
-                        let playerID = Math.random().toString(36).substr(2, 12);
-                        self.iframe.contentWindow.webstrate.on("signal", function (message, senderId, node) {
-
-                            if (!node) {
-                                if (message.player === playerID) {
-                                    switch (message.cmd) {
-                                        case "log":
-                                            console.log("Log from server: ", message.msg);
-                                            break;
-                                        case "renderDone":
-                                            console.log("renderDone called.");
-                                            self.stopRendering();
-                                            break;
-                                        case "playerReady":
-                                            // Register the player signal controller
-                                            console.log("Got greeting from player at " + senderId + ": ", message);
-                                            self.controller = {
-                                                client: senderId,
-                                                signal: function (cmd, args) {
-                                                    self.iframe.contentWindow.webstrate.signal({ 'cmd': cmd, 'arguments': args }, this.client);
-                                                },
-                                                grabMode: function (mode) {
-                                                    return new Promise((resolve, reject) => {
-                                                        function onSignal(message, senderId, node) {
-                                                            if (message.cmd === "grabber") {
-                                                                self.iframe.contentWindow.webstrate.off("signal", onSignal);
-                                                                resolve();
-                                                            }
-                                                        }
-
-                                                        self.iframe.contentWindow.webstrate.on("signal", onSignal);
-
-                                                        this.signal("grabber", { mode: mode });
-                                                    });
-                                                },
-                                                prepareRender: function (options = {}) {
-                                                    return new Promise((resolve, reject) => {
-                                                        function onSignal(message, senderId, node) {
-                                                            if (message.cmd === "renderPrepared") {
-                                                                self.iframe.contentWindow.webstrate.off("signal", onSignal);
-                                                                resolve();
-                                                            }
-                                                        }
-
-                                                        self.iframe.contentWindow.webstrate.on("signal", onSignal);
-
-                                                        this.signal("prepareRender");
-                                                    });
-                                                },
-                                                render: function (options = {}) {
-                                                    this.signal("render", options);
-                                                },
-                                                play: function (options = {}) {
-                                                    this.signal("play", options);
-                                                    return Promise.resolve();
-                                                },
-                                                seek: function (seekTime) {
-                                                    let self2 = this;
-                                                    return new Promise((resolve) => {
-                                                        self.addPositionListener((frame, time) => {
-                                                            if (seekTime === time) {
-                                                                resolve({ frame: frame, time: time });
-                                                            }
-                                                        });
-                                                        self2.signal("seek", seekTime);
-                                                    });
-                                                },
-                                                stop: function () {
-                                                    this.signal("stop", false);
-                                                }
-                                            };
-                                            break;
-                                        case "positionChanged":
-                                            self.onPositionChanged(message.frame, message.time);
-                                            break;
-                                        case "durationChanged":
-                                            self.onDurationChanged(message.duration);
-                                            break;
-                                        case "playerViewReady":
-                                            /* First valid frame */
-                                            console.log("Got view ready from player at " + senderId + ": ", message);
-                                            resolve();
-                                            self.onViewChanged(message.cmd);
-                                            break;
-
-                                        case "grabber":
-                                        case "renderPrepared":
-                                            //Used for signalling answers to other cmd's so dont treat them here
-                                            break;
-                                        default:
-                                            console.error("unkown message from player: ", message);
-                                    }
-                                }
-                            }
-                        });
-
-                        // Actually start the remote view
-                        let remotePlayerURI = playerProvider +
-                            "?masters=" + encodeURIComponent(self.iframe.contentWindow.webstrate.clientId) +
-                            "&videostrate=" + encodeURIComponent(self.uri) +
-                            "&config=" + encodeURIComponent(JSON.stringify(self.config)) +
-                            "&player=" + playerID;
-                        let additionalConfig = {
-                            width: self.config.width,
-                            height: self.config.height,
-                            framerate: streamConfig.framerate
-                        };
-                        if (streamConfig.iceServers) {
-                            additionalConfig.iceServers = streamConfig.iceServers;
-                            console.log("Warning: Page is requesting override for default streamlauncher.js TURN servers: " + streamConfig.iceServers);
-                        }
-                        if (streamConfig.iceTransportPolicy) {
-                            additionalConfig.iceTransportPolicy = streamConfig.iceTransportPolicy;
-                            console.log("Warning: Page has requested override for default streamlauncher.js ICE policy: " + streamConfig.iceServers);
-                        }
-                        StreamLauncher.stream(
-                            self.element,
-                            streamProvider,
-                            {
-                                uri: remotePlayerURI,
-                                useCustomUI: self.config.useCustomUI,
-                                useSwapping: self.config.useSwapping,
-                                useWebRender: self.config.useWebRender
-                            },
-                            additionalConfig
-                        ).then(() => { }
-                        );
-                    });
-
-                    let transient = document.getElementById("videostratecontrollers");
-                    if (!transient) {
-                        transient = document.createElement("transient");
-                        transient.style.display = "none";
-                        transient.id = "videostratecontrollers";
-                        document.body.appendChild(transient);
-                    }
-                    self.iframe.src = playerProvider;
-                    transient.appendChild(self.iframe);
-                });
-            }
-
-            stopStreamView() {
-                if (!this.isLocal()) {
-                    StreamLauncher.stop(this.element);
-                    this.element.streamlauncher = false;
-                    if (this.iframe)
-                        this.iframe.remove();
+          return new Promise((resolve, reject) => {
+            let listener = {
+              onVideoStateChanged: (event) => {
+                console.log(event)
+                if (event.type === "BROADCAST" && !event.state.isRunning) {
+                  self.element.streamlauncher.removeListener(listener)
+                  self.broadcasting = false
+                  resolve()
                 }
+              },
             }
 
-            onPositionChanged(frame, time) {
-                this.positionListeners.forEach(function (callback) {
-                    callback(frame, time);
-                });
-            }
+            self.element.streamlauncher.addListener(listener)
 
-            onDurationChanged(duration) {
-                this.durationListeners.forEach(function (callback) {
-                    callback(duration);
-                });
-            }
+            self.element.streamlauncher.stopBroadcasting()
+          })
+        }
 
-            /** 
-             * On first valid frame or when view changes size
-             */
-            onViewChanged(message) {
-                this.viewListeners.forEach(function (callback) {
-                    callback(message);
-                });
-            }
+        async render() {
+          if (this.rendering) {
+            console.log("Tried to start rendering when already rendering")
+            return Promise.reject()
+          }
 
-            isLocal() {
-                return !this.element.streamlauncher;
-            }
+          if (this.isLocal()) {
+            console.log("Unable to render from a local view")
+            return Promise.reject()
+          }
 
-            broadcast(rtmpTarget) {
-                if (this.broadcasting) {
-                    console.log("Tried to start broadcasting when already broadcasting");
-                    return Promise.reject();
+          this.rendering = true
+
+          //Switch to grabber mode
+          await this.controller.grabMode("GRAB")
+
+          //We are now in grab mode, disable vsync
+          this.element.streamlauncher.setVsync(false)
+          console.log("VSYNC disabled")
+
+          //Prepare, this rewinds, and queues the first frame to be downloaded
+          await this.controller.prepareRender()
+
+          this.renderTimeStart = Date.now()
+
+          //Start recording, this starts the recordig pipeline in strict frame mode
+          let url = await this.record(true)
+
+          //Start the rendering, which is playback with frameCallback for each frame
+          this.controller.render()
+
+          return url
+        }
+
+        isRendering() {
+          return this.rendering
+        }
+
+        stopRendering() {
+          let self = this
+
+          if (!this.rendering) {
+            console.log("Unable to stop rendering, when not rendering..")
+            return Promise.reject()
+          }
+
+          if (this.renderingStopping) {
+            //Already stopping rendering, we probabely came from the renderDone signal
+            return Promise.resolve()
+          }
+
+          this.renderingStopping = true
+
+          this.stop()
+
+          return this.stopRecording().then(async (url) => {
+            let diff = Date.now() - self.renderTimeStart
+
+            console.log("Render took: ", diff + "ms")
+
+            //Reenable vsync before we switch to live mode
+            this.element.streamlauncher.setVsync(true)
+            console.log("VSYNC enabled")
+
+            await self.controller.grabMode("LIVE")
+
+            self.renderListeners.forEach((listener) => {
+              listener.onRenderDone(url)
+              self.rendering = false
+              self.renderingStopping = false
+            })
+
+            return url
+          })
+        }
+
+        record(strict = false) {
+          if (this.isRecording()) {
+            console.log("Tried to start recording when already recording")
+            return Promise.reject()
+          }
+
+          if (this.isLocal()) {
+            console.log("Unable to record from a local view")
+            return Promise.reject()
+          }
+
+          this.recording = true
+
+          let self = this
+
+          return new Promise((resolve, reject) => {
+            let listener = {
+              onVideoStateChanged: (event) => {
+                console.log(event)
+                if (event.type === "RECORDING" && event.state.isConnected) {
+                  self.element.streamlauncher.removeListener(listener)
+                  resolve({
+                    url: event.state.url,
+                  })
                 }
-
-                if (this.isLocal()) {
-                    console.log("Unable to broadcast from a local view");
-                    return Promise.reject();
-                }
-
-                let self = this;
-
-                this.broadcasting = true;
-
-                return new Promise((resolve, reject) => {
-                    let listener = {
-                        onVideoStateChanged: (event) => {
-                            console.log(event);
-                            if (event.type === "BROADCAST" && event.state.isConnected) {
-                                self.element.streamlauncher.removeListener(listener);
-                                resolve();
-                            }
-                        }
-                    };
-
-                    self.element.streamlauncher.addListener(listener);
-
-                    self.element.streamlauncher.startBroadcasting(rtmpTarget);
-                });
+              },
             }
 
-            isBroadcasting() {
-                return this.broadcasting;
+            self.element.streamlauncher.addListener(listener)
+
+            self.element.streamlauncher.startRecording(strict)
+          })
+        }
+
+        isRecording() {
+          return this.recording
+        }
+
+        stopRecording() {
+          if (!this.isRecording()) {
+            console.log("Tried to stop recording while not recording...")
+            return Promise.reject()
+          }
+
+          let self = this
+
+          return new Promise((resolve, reject) => {
+            let listener = {
+              onVideoStateChanged: (event) => {
+                if (event.type === "RECORDING" && !event.state.isRunning) {
+                  self.element.streamlauncher.removeListener(listener)
+                  this.recording = false
+                  resolve({
+                    url: event.state.url,
+                  })
+                }
+              },
             }
 
-            stopBroadcasting() {
-                if (!this.broadcasting) {
-                    console.log("Unable to stop rendering, when not rendering..");
-                    return Promise.reject();
-                }
+            self.element.streamlauncher.addListener(listener)
 
-                let self = this;
+            self.element.streamlauncher.stopRecording()
+          })
+        }
 
-                return new Promise((resolve, reject) => {
-                    let listener = {
-                        onVideoStateChanged: (event) => {
-                            console.log(event);
-                            if (event.type === "BROADCAST" && !event.state.isRunning) {
-                                self.element.streamlauncher.removeListener(listener);
-                                self.broadcasting = false;
-                                resolve();
-                            }
-                        }
-                    };
+        play(playbackConfig) {
+          if (this.controller) {
+            return this.controller.play(playbackConfig)
+          }
 
-                    self.element.streamlauncher.addListener(listener);
+          return Promise.reject()
+        }
 
-                    self.element.streamlauncher.stopBroadcasting();
-                });
-            }
+        stop() {
+          if (this.controller) {
+            this.controller.stop()
+          }
+        }
 
-            async render() {
-                if (this.rendering) {
-                    console.log("Tried to start rendering when already rendering");
-                    return Promise.reject();
-                }
-
-                if (this.isLocal()) {
-                    console.log("Unable to render from a local view");
-                    return Promise.reject();
-                }
-
-                this.rendering = true;
-
-                //Switch to grabber mode
-                await this.controller.grabMode("GRAB");
-
-                //We are now in grab mode, disable vsync
-                this.element.streamlauncher.setVsync(false);
-                console.log("VSYNC disabled");
-
-                //Prepare, this rewinds, and queues the first frame to be downloaded
-                await this.controller.prepareRender();
-
-                this.renderTimeStart = Date.now();
-
-                //Start recording, this starts the recordig pipeline in strict frame mode
-                let url = await this.record(true);
-
-                //Start the rendering, which is playback with frameCallback for each frame
-                this.controller.render();
-
-                return url;
-            }
-
-            isRendering() {
-                return this.rendering;
-            }
-
-            stopRendering() {
-                let self = this;
-
-                if (!this.rendering) {
-                    console.log("Unable to stop rendering, when not rendering..");
-                    return Promise.reject();
-                }
-
-                if (this.renderingStopping) {
-                    //Already stopping rendering, we probabely came from the renderDone signal
-                    return Promise.resolve();
-                }
-
-                this.renderingStopping = true;
-
-                this.stop();
-
-                return this.stopRecording().then(async (url) => {
-                    let diff = Date.now() - self.renderTimeStart;
-
-                    console.log("Render took: ", diff + "ms");
-
-                    //Reenable vsync before we switch to live mode
-                    this.element.streamlauncher.setVsync(true);
-                    console.log("VSYNC enabled");
-
-                    await self.controller.grabMode("LIVE");
-
-                    self.renderListeners.forEach((listener) => {
-                        listener.onRenderDone(url);
-                        self.rendering = false;
-                        self.renderingStopping = false;
-                    });
-
-                    return url;
-                });
-            }
-
-            record(strict = false) {
-                if (this.isRecording()) {
-                    console.log("Tried to start recording when already recording");
-                    return Promise.reject();
-                }
-
-                if (this.isLocal()) {
-                    console.log("Unable to record from a local view");
-                    return Promise.reject();
-                }
-
-                this.recording = true;
-
-                let self = this;
-
-                return new Promise((resolve, reject) => {
-                    let listener = {
-                        onVideoStateChanged: (event) => {
-                            console.log(event);
-                            if (event.type === "RECORDING" && event.state.isConnected) {
-                                self.element.streamlauncher.removeListener(listener);
-                                resolve({
-                                    url: event.state.url
-                                });
-                            }
-                        }
-                    };
-
-                    self.element.streamlauncher.addListener(listener);
-
-                    self.element.streamlauncher.startRecording(strict);
-                });
-            }
-
-            isRecording() {
-                return this.recording;
-            }
-
-            stopRecording() {
-                if (!this.isRecording()) {
-                    console.log("Tried to stop recording while not recording...");
-                    return Promise.reject();
-                }
-
-                let self = this;
-
-                return new Promise((resolve, reject) => {
-                    let listener = {
-                        onVideoStateChanged: (event) => {
-                            if (event.type === "RECORDING" && !event.state.isRunning) {
-                                self.element.streamlauncher.removeListener(listener);
-                                this.recording = false;
-                                resolve({
-                                    url: event.state.url
-                                });
-                            }
-                        }
-                    };
-
-                    self.element.streamlauncher.addListener(listener);
-
-                    self.element.streamlauncher.stopRecording();
-                });
-            }
-
-            play(playbackConfig) {
-
-                if (this.controller) {
-                    return this.controller.play(playbackConfig);
-                }
-
-                return Promise.reject();
-            }
-
-            stop() {
-                if (this.controller) {
-                    this.controller.stop();
-                }
-            }
-
-            seek(time) {
-                if (this.controller) {
-                    return this.controller.seek(time);
-                }
-            }
-        };
-
+        seek(time) {
+          if (this.controller) {
+            return this.controller.seek(time)
+          }
+        }
+      }
     </script>
 
     <script id="GrabberAPI-script" type="text/javascript">
-        class GrabberAPI {
-            constructor(port) {
-                let self = this;
+      class GrabberAPI {
+        constructor(port) {
+          let self = this
 
-                this.port = port;
+          this.port = port
 
-                this.ws = new WebSocket("ws://localhost:" + port, "lws-minimal");
-                this.ws.onmessage = (msg) => {
-                    self.onMessage(msg);
-                }
+          this.ws = new WebSocket("ws://localhost:" + port, "lws-minimal")
+          this.ws.onmessage = (msg) => {
+            self.onMessage(msg)
+          }
 
-                this.listeners = new Set();
+          this.listeners = new Set()
 
-                this.lastGrabbedFrame = -1;
-                this.lastQueuedFrame = -1;
+          this.lastGrabbedFrame = -1
+          this.lastQueuedFrame = -1
 
-                this.mode = "LIVE";
+          this.mode = "LIVE"
 
-                this.refresher = document.createElement("transient");
-                this.refresher.setAttribute("class", "paintRefresher");
-                this.refresher.style.position = "absolute";
-                this.refresher.style.top = "0px";
-                this.refresher.style.right = "0px";
-                this.refresher.style.width = "10px";
-                this.refresher.style.height = "10px";
-                this.refresher.style.backgroundColor = "#00000001";
-                this.refresher.style.opacity = 1.0;
-                this.refresher.style.zIndex = 2000;
+          this.refresher = document.createElement("transient")
+          this.refresher.setAttribute("class", "paintRefresher")
+          this.refresher.style.position = "absolute"
+          this.refresher.style.top = "0px"
+          this.refresher.style.right = "0px"
+          this.refresher.style.width = "10px"
+          this.refresher.style.height = "10px"
+          this.refresher.style.backgroundColor = "#00000001"
+          this.refresher.style.opacity = 1.0
+          this.refresher.style.zIndex = 2000
 
-                this.other = false;
+          this.other = false
 
-                document.body.appendChild(this.refresher);
-
-            }
-
-            forceUpdate() {
-                if (!this.other) {
-                    this.refresher.style.opacity = 0;
-                } else {
-                    this.refresher.style.opacity = 1.0;
-                }
-
-                this.other = !this.other;
-            }
-
-            onMessage(msg) {
-                let json = JSON.parse(msg.data);
-
-                console.log("From grabber:", json);
-
-                this.listeners.forEach((listener) => {
-                    listener.onMessage(json);
-                });
-            }
-
-            grabFrameDirect() {
-                let self = this;
-
-                let forceUpdateInterval = null;
-
-                return new Promise((resolve) => {
-                    let handler = {
-                        onMessage: (msg) => {
-                            if (forceUpdateInterval != null) {
-                                window.clearInterval(forceUpdateInterval);
-                                forceUpdateInterval = null;
-                            }
-
-                            self.lastGrabbedFrame = msg.downloaded;
-                            self.lastQueuedFrame = msg.queued;
-
-                            self.listeners.delete(handler);
-                            resolve(msg);
-                        }
-                    }
-                    self.listeners.add(handler);
-
-                    self.forceUpdate();
-                    self.ws.send("GRAB_FRAME");
-
-                    //If nothing happens withing 1 second, try and force another update
-                    //(Maybee grab_frame was parsed in grabber after swap buffer happened?)
-                    forceUpdateInterval = window.setInterval(() => {
-                        self.forceUpdate();
-                    }, 1000);
-                });
-            }
-
-            grabFrame(animationFrameAction) {
-                let self = this;
-
-                return new Promise((resolve) => {
-                    let handler = {
-                        onMessage: (msg) => {
-                            self.lastGrabbedFrame = msg.grabbed;
-                            self.lastQueuedFrame = msg.queued;
-
-                            console.log("Queued - Grabbed", self.lastGrabbedFrame, self.lastQueuedFrame);
-
-                            self.listeners.delete(handler);
-                            resolve(msg);
-                        }
-                    }
-
-                    self.listeners.add(handler);
-
-                    requestAnimationFrame(async () => {
-                        await animationFrameAction();
-                        self.forceUpdate();
-                        self.ws.send("GRAB_FRAME");
-                    });
-                });
-            }
-
-            grabMode() {
-                let self = this;
-
-                return new Promise((resolve) => {
-                    let handler = {
-                        onMessage: (msg) => {
-                            self.mode = "GRAB";
-
-                            console.log("GRAB_MODE switch complete!");
-
-                            self.listeners.delete(handler);
-                            resolve(msg);
-                        }
-                    }
-
-                    self.listeners.add(handler);
-
-                    self.ws.send("GRAB_MODE");
-                });
-            }
-
-            liveMode() {
-                let self = this;
-
-                return new Promise((resolve) => {
-                    let handler = {
-                        onMessage: (msg) => {
-                            self.mode = "LIVE";
-
-                            console.log("LIVE_MODE switch complete!");
-
-                            self.listeners.delete(handler);
-                            resolve(msg);
-                        }
-                    }
-
-                    self.listeners.add(handler);
-
-                    self.ws.send("LIVE_MODE");
-                });
-            }
+          document.body.appendChild(this.refresher)
         }
 
+        forceUpdate() {
+          if (!this.other) {
+            this.refresher.style.opacity = 0
+          } else {
+            this.refresher.style.opacity = 1.0
+          }
+
+          this.other = !this.other
+        }
+
+        onMessage(msg) {
+          let json = JSON.parse(msg.data)
+
+          console.log("From grabber:", json)
+
+          this.listeners.forEach((listener) => {
+            listener.onMessage(json)
+          })
+        }
+
+        grabFrameDirect() {
+          let self = this
+
+          let forceUpdateInterval = null
+
+          return new Promise((resolve) => {
+            let handler = {
+              onMessage: (msg) => {
+                if (forceUpdateInterval != null) {
+                  window.clearInterval(forceUpdateInterval)
+                  forceUpdateInterval = null
+                }
+
+                self.lastGrabbedFrame = msg.downloaded
+                self.lastQueuedFrame = msg.queued
+
+                self.listeners.delete(handler)
+                resolve(msg)
+              },
+            }
+            self.listeners.add(handler)
+
+            self.forceUpdate()
+            self.ws.send("GRAB_FRAME")
+
+            //If nothing happens withing 1 second, try and force another update
+            //(Maybee grab_frame was parsed in grabber after swap buffer happened?)
+            forceUpdateInterval = window.setInterval(() => {
+              self.forceUpdate()
+            }, 1000)
+          })
+        }
+
+        grabFrame(animationFrameAction) {
+          let self = this
+
+          return new Promise((resolve) => {
+            let handler = {
+              onMessage: (msg) => {
+                self.lastGrabbedFrame = msg.grabbed
+                self.lastQueuedFrame = msg.queued
+
+                console.log(
+                  "Queued - Grabbed",
+                  self.lastGrabbedFrame,
+                  self.lastQueuedFrame
+                )
+
+                self.listeners.delete(handler)
+                resolve(msg)
+              },
+            }
+
+            self.listeners.add(handler)
+
+            requestAnimationFrame(async () => {
+              await animationFrameAction()
+              self.forceUpdate()
+              self.ws.send("GRAB_FRAME")
+            })
+          })
+        }
+
+        grabMode() {
+          let self = this
+
+          return new Promise((resolve) => {
+            let handler = {
+              onMessage: (msg) => {
+                self.mode = "GRAB"
+
+                console.log("GRAB_MODE switch complete!")
+
+                self.listeners.delete(handler)
+                resolve(msg)
+              },
+            }
+
+            self.listeners.add(handler)
+
+            self.ws.send("GRAB_MODE")
+          })
+        }
+
+        liveMode() {
+          let self = this
+
+          return new Promise((resolve) => {
+            let handler = {
+              onMessage: (msg) => {
+                self.mode = "LIVE"
+
+                console.log("LIVE_MODE switch complete!")
+
+                self.listeners.delete(handler)
+                resolve(msg)
+              },
+            }
+
+            self.listeners.add(handler)
+
+            self.ws.send("LIVE_MODE")
+          })
+        }
+      }
     </script>
 
-    <script src="//stream.cavi.au.dk/js/streamlauncher.js" type="text/javascript"></script>
-    <link href="//stream.cavi.au.dk/css/streamlauncher.css" rel="stylesheet" type="text/css">
+    <script
+      src="//stream.cavi.au.dk/js/streamlauncher.js"
+      type="text/javascript"
+    ></script>
+    <link
+      href="//stream.cavi.au.dk/css/streamlauncher.css"
+      rel="stylesheet"
+      type="text/css"
+    />
 
     <script src="//libraries.projects.cavi.au.dk/javascript/nouislider/nouislider.min.js"></script>
-    <link href="//libraries.projects.cavi.au.dk/javascript/nouislider/nouislider.min.css" rel="stylesheet"
-        type="text/css">
+    <link
+      href="//libraries.projects.cavi.au.dk/javascript/nouislider/nouislider.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
 
     <template id="playerTpl">
-        <div class="streamlauncher-player" id="player"></div>
-        <div style="background:darkslategrey; padding:0.25em; box-sizing: border-box">
-            <div id="slider" style="margin: 1em;"></div>
-            <button id="play">Play</button>
-            <button id="stop">Stop</button>
-            <button id="rewind">Rewind</button>
-            <button id="record">Record</button>
-            <button id="render">Render</button>
-            <button id="broadcast">Broadcast</button>
-            <span id="curtime">0</span> / <span id="duration">0</span>s
-        </div>
-        <br>
-        <div>URLs:<ul id="urls"></ul>
-        </div>
+      <div class="streamlauncher-player" id="player"></div>
+      <div
+        style="
+          background: darkslategrey;
+          padding: 0.25em;
+          box-sizing: border-box;
+        "
+      >
+        <div id="slider" style="margin: 1em"></div>
+        <button id="play">Play</button>
+        <button id="stop">Stop</button>
+        <button id="rewind">Rewind</button>
+        <button id="record">Record</button>
+        <button id="render">Render</button>
+        <button id="broadcast">Broadcast</button>
+        <span id="curtime">0</span> / <span id="duration">0</span>s
+      </div>
+      <br />
+      <div>
+        URLs:
+        <ul id="urls"></ul>
+      </div>
     </template>
-</head>
+  </head>
 
-<body style="">
-    <h1>Advanced Videostrate</h1>
-
-    <div id="loader">
-        Videostrate: <div id="url" style="display: inline-block; border: 1px solid grey;" contenteditable="true"><a
-                target="_blank" class="c-link"
-                data-stringify-link="https://demo.webstrates.net/YOUR_COPY/?videostrates=true&amp;videostratesFullscreenMirror=conceptcff283edcdface8e95c7"
-                delay="150" data-sk="tooltip_parent"
-                href="https://demo.webstrates.net/YOUR_COPY/?videostrates=true&amp;videostratesFullscreenMirror=conceptcff283edcdface8e95c7"
-                rel="noopener noreferrer" tabindex="-1" data-remove-tab-index="true"
-                style="box-sizing: inherit; text-decoration-line: none; font-family: Monaco, Menlo, Consolas, &quot;Courier New&quot;, monospace; font-size: 12px; font-variant-ligatures: none; white-space: pre-wrap;">https://demo.webstrates.net/black-eel-9/</a>
-        </div><br>
-        Width: <div id="width" style="display: inline-block; border: 1px solid grey;" contenteditable="true">1280</div>
-        <br>
-        Height: <div id="height" style="display: inline-block; border: 1px solid grey;" contenteditable="true">960</div>
-        <br>
-        Framerate: <div id="fps" style="display: inline-block; border: 1px solid grey;" contenteditable="true">30</div>
-        <br>
-        useWebRender: <input id="useWebRender" type="checkbox"><br>
-        useSwapping: <input id="useSwapping" type="checkbox"><br>
-        useCustomUI: <input id="useCustomUI" type="checkbox" checked=""><br>
-        <br>
-        <button id="streamView">Start StreamView</button>
-        <button id="localView">Start LocalView</button>
-    </div>
-
+  <body style="margin: 0; overflow: hidden">
     <div id="container"></div>
 
     <script>
-        let videostrate = null;
+      let videostrate = null
 
-        function createVideostrateView() {
-            if (videostrate != null) {
-                videostrate.stopStreamView();
-                cQuery("#container").empty();
-            }
+      function createVideostrateView(
+        url,
+        width = 1280,
+        height = 720,
+        fps = 30,
+        useSwapping = false,
+        useCustomUI = true,
+        useWebRender = false
+      ) {
+        if (videostrate != null) {
+          videostrate.stopStreamView()
+          cQuery("#container").empty()
+        }
+        let tpl = cQuery(
+          document.importNode(cQuery("#playerTpl")[0].content, true)
+        ).children()
 
-            let url = cQuery("#url")[0].innerText;
-            let width = cQuery("#width")[0].innerText;
-            let height = cQuery("#height")[0].innerText;
-            let fps = cQuery("#fps")[0].innerText;
+        let transient = cQuery("<transient></transient>")
+        transient.append(tpl)
 
-            let useSwapping = cQuery("#useSwapping")[0].checked;
-            let useCustomUI = cQuery("#useCustomUI")[0].checked;
-            let useWebRender = cQuery("#useWebRender")[0].checked;
+        cQuery("#container").append(transient)
 
-            let tpl = cQuery(document.importNode(cQuery("#playerTpl")[0].content, true)).children();
+        let player = cQuery("#player")[0]
+        player.style.width = width + "px"
+        player.style.height = height + "px"
 
-            let transient = cQuery("<transient></transient>");
-            transient.append(tpl);
+        videostrate = new VideostrateView(player, url, {
+          width: width,
+          height: height,
+          framerate: fps,
+          useCustomUI: useCustomUI,
+          useSwapping: useSwapping,
+          useWebRender: useWebRender,
+        })
 
-            cQuery("#container").append(transient);
+        let duration = 0
+        let currentPos = 0
+        let animFrame = null
 
-            let player = cQuery("#player")[0];
-            player.style.width = width + "px";
-            player.style.height = height + "px";
+        let draggingSlider = false
 
-            videostrate = new VideostrateView(player, url, {
-                width: width,
-                height: height,
-                framerate: fps,
-                useCustomUI: useCustomUI,
-                useSwapping: useSwapping,
-                useWebRender: useWebRender
-            });
+        let slider = cQuery("#slider")[0]
 
-            let duration = 0;
-            let currentPos = 0;
-            let animFrame = null;
+        function updateLoop() {
+          animFrame = null
+          cQuery("#duration")[0].innerText = Math.round(duration)
+          cQuery("#curtime")[0].innerText = Math.round(currentPos)
 
-            let draggingSlider = false;
+          slider.noUiSlider.updateOptions(
+            {
+              range: {
+                min: 0,
+                max: Math.max(duration, 1),
+              },
+            },
+            false
+          )
 
-            let slider = cQuery("#slider")[0];
-
-            function updateLoop() {
-                animFrame = null;
-                cQuery("#duration")[0].innerText = Math.round(duration);
-                cQuery("#curtime")[0].innerText = Math.round(currentPos);
-
-                slider.noUiSlider.updateOptions({
-                    range: {
-                        'min': 0,
-                        'max': Math.max(duration, 1)
-                    }
-                }, false);
-
-                if (!draggingSlider) {
-                    slider.noUiSlider.set([currentPos], false);
-                }
-            }
-
-            function queueUpdate() {
-                if (animFrame === null) {
-                    animFrame = requestAnimationFrame(updateLoop);
-                }
-            }
-
-            let stepSize = 1.0 / parseFloat(fps);
-
-            noUiSlider.create(slider, {
-                start: [0],
-                behaviour: "snap",
-                range: {
-                    'min': 0,
-                    'max': 100
-                },
-                step: stepSize,
-                animate: false
-            });
-
-            slider.noUiSlider.on("set", (values, handle, unencoded, tap, positions) => {
-                let sliderValue = parseFloat(unencoded[0]) + 0.001;
-
-                videostrate.seek(sliderValue);
-            });
-
-            slider.noUiSlider.on("slide", (values, handle, unencoded, tap, positions) => {
-                let sliderValue = parseFloat(unencoded[0]) + 0.001;
-
-                videostrate.seek(sliderValue);
-            });
-
-            slider.noUiSlider.on("start", () => {
-                draggingSlider = true;
-            });
-
-            slider.noUiSlider.on("end", () => {
-                draggingSlider = false;
-            });
-
-            videostrate.addDurationListener((dur) => {
-                duration = dur;
-
-                queueUpdate();
-            });
-
-            videostrate.addPositionListener((frame, time) => {
-                currentPos = time;
-                queueUpdate();
-            });
-
-            new CaviTouch(cQuery("#play"));
-            cQuery("#play").on("caviTap", () => {
-                videostrate.play();
-            });
-
-            new CaviTouch(cQuery("#stop"));
-            cQuery("#stop").on("caviTap", () => {
-                videostrate.stop();
-            });
-
-            new CaviTouch(cQuery("#rewind"));
-            cQuery("#rewind").on("caviTap", () => {
-                videostrate.seek(0);
-            });
-
-            let recordButton = cQuery("#record");
-            new CaviTouch(recordButton);
-            recordButton.on("caviTap", () => {
-                if (!videostrate.isRecording()) {
-                    videostrate.record().then((url) => {
-                        cQuery("#render")[0].setAttribute("disabled", "");
-                        cQuery("#render")[0].style.pointerEvents = "none";
-                        recordButton[0].innerText = "Stop Recording";
-                        cQuery("#urls").append(cQuery("<li>Recording: <a target=\"_blank\" href=\"" + url.url + "\">" + url.url + "</a></li>"));
-                        console.log("Recording started:", url);
-                    });
-                } else {
-                    videostrate.stopRecording().then((url) => {
-                        cQuery("#render")[0].removeAttribute("disabled");
-                        cQuery("#render")[0].style.pointerEvents = "initial";
-                        recordButton[0].innerText = "Record";
-                        console.log("Recording stopped:", url);
-                    });
-                }
-            });
-
-            let renderButton = cQuery("#render");
-            new CaviTouch(renderButton);
-            renderButton.on("caviTap", () => {
-                if (!videostrate.isRendering()) {
-                    videostrate.render().then((url) => {
-                        cQuery("#record")[0].setAttribute("disabled", "");
-                        cQuery("#record")[0].style.pointerEvents = "none";
-                        renderButton[0].innerText = "Stop Rendering";
-                        cQuery("#urls").append(cQuery("<li>Render: <a target=\"_blank\" href=\"" + url.url + "\">" + url.url + "</a></li>"));
-                        console.log("Rendering started:", url);
-                    });
-                } else {
-                    videostrate.stopRendering().then((url) => {
-                        cQuery("#record")[0].removeAttribute("disabled");
-                        cQuery("#record")[0].style.pointerEvents = "initial";
-                        renderButton[0].innerText = "Render";
-                        console.log("Rendering stopped:", url);
-                    });
-                }
-            });
-
-            let broadcastButton = cQuery("#broadcast");
-            new CaviTouch(broadcastButton);
-            broadcastButton.on("caviTap", () => {
-                if (!videostrate.isBroadcasting()) {
-
-                    let rtmpTarget = window.prompt("Rtmp url?");
-                    if (rtmpTarget != null) {
-                        videostrate.broadcast(rtmpTarget).then(() => {
-                            broadcastButton[0].innerText = "Stop Broadcasting";
-                            console.log("Broadcasting started:");
-                        });
-                    }
-                } else {
-                    videostrate.stopBroadcasting().then(() => {
-                        broadcastButton[0].innerText = "Broadcast";
-                        console.log("Broadcast stopped:");
-                    });
-                }
-            });
-
-            videostrate.addRenderListener({
-                onRenderDone: (url) => {
-                    console.log("Rendering completed: ", url);
-                    cQuery("#record")[0].removeAttribute("disabled");
-                    cQuery("#record")[0].style.pointerEvents = "initial";
-                    renderButton[0].innerText = "Render";
-                }
-            });
-
-            return videostrate;
+          if (!draggingSlider) {
+            slider.noUiSlider.set([currentPos], false)
+          }
         }
 
-        function createLocalView() {
-            videostrate = createVideostrateView();
-            videostrate.startLocalView().then(() => {
-                console.log("Local view started!");
-            });
+        function queueUpdate() {
+          if (animFrame === null) {
+            animFrame = requestAnimationFrame(updateLoop)
+          }
         }
 
-        new CaviTouch(cQuery("#localView"));
-        cQuery("#localView").on("caviTap", () => {
-            createLocalView();
-        });
+        let stepSize = 1.0 / parseFloat(fps)
 
-        new CaviTouch(cQuery("#streamView"));
-        cQuery("#streamView").on("caviTap", () => {
-            videostrate = createVideostrateView();
-            videostrate.startStreamView().then(() => {
-                console.log("Stream view started!");
-                setTimeout(() => {
-                    let video = cQuery("#player video")[0];
+        noUiSlider.create(slider, {
+          start: [0],
+          behaviour: "snap",
+          range: {
+            min: 0,
+            max: 100,
+          },
+          step: stepSize,
+          animate: false,
+        })
 
-                    if (video.paused) {
-                        let play = cQuery("<button style=\"z-index: 2000; position: absolute;\">Paused, press to play!</button>");
+        slider.noUiSlider.on(
+          "set",
+          (values, handle, unencoded, tap, positions) => {
+            let sliderValue = parseFloat(unencoded[0]) + 0.001
 
-                        cQuery("#player").append(play);
+            videostrate.seek(sliderValue)
+          }
+        )
 
-                        play.on("click", () => {
-                            play.remove();
-                            video.play().then(() => {
-                                console.log("Video now playing!");
-                            }).catch(() => {
-                                console.log("Error starting video!");
-                            });
-                        });
-                    }
-                }, 500);
-            });
-        });
+        slider.noUiSlider.on(
+          "slide",
+          (values, handle, unencoded, tap, positions) => {
+            let sliderValue = parseFloat(unencoded[0]) + 0.001
+
+            videostrate.seek(sliderValue)
+          }
+        )
+
+        slider.noUiSlider.on("start", () => {
+          draggingSlider = true
+        })
+
+        slider.noUiSlider.on("end", () => {
+          draggingSlider = false
+        })
+
+        videostrate.addDurationListener((dur) => {
+          duration = dur
+
+          queueUpdate()
+        })
+
+        videostrate.addPositionListener((frame, time) => {
+          currentPos = time
+          queueUpdate()
+        })
+
+        new CaviTouch(cQuery("#play"))
+        cQuery("#play").on("caviTap", () => {
+          videostrate.play()
+        })
+
+        new CaviTouch(cQuery("#stop"))
+        cQuery("#stop").on("caviTap", () => {
+          videostrate.stop()
+        })
+
+        new CaviTouch(cQuery("#rewind"))
+        cQuery("#rewind").on("caviTap", () => {
+          videostrate.seek(0)
+        })
+
+        let recordButton = cQuery("#record")
+        new CaviTouch(recordButton)
+        recordButton.on("caviTap", () => {
+          if (!videostrate.isRecording()) {
+            videostrate.record().then((url) => {
+              cQuery("#render")[0].setAttribute("disabled", "")
+              cQuery("#render")[0].style.pointerEvents = "none"
+              recordButton[0].innerText = "Stop Recording"
+              cQuery("#urls").append(
+                cQuery(
+                  '<li>Recording: <a target="_blank" href="' +
+                    url.url +
+                    '">' +
+                    url.url +
+                    "</a></li>"
+                )
+              )
+              console.log("Recording started:", url)
+            })
+          } else {
+            videostrate.stopRecording().then((url) => {
+              cQuery("#render")[0].removeAttribute("disabled")
+              cQuery("#render")[0].style.pointerEvents = "initial"
+              recordButton[0].innerText = "Record"
+              console.log("Recording stopped:", url)
+            })
+          }
+        })
+
+        let renderButton = cQuery("#render")
+        new CaviTouch(renderButton)
+        renderButton.on("caviTap", () => {
+          if (!videostrate.isRendering()) {
+            videostrate.render().then((url) => {
+              cQuery("#record")[0].setAttribute("disabled", "")
+              cQuery("#record")[0].style.pointerEvents = "none"
+              renderButton[0].innerText = "Stop Rendering"
+              cQuery("#urls").append(
+                cQuery(
+                  '<li>Render: <a target="_blank" href="' +
+                    url.url +
+                    '">' +
+                    url.url +
+                    "</a></li>"
+                )
+              )
+              console.log("Rendering started:", url)
+            })
+          } else {
+            videostrate.stopRendering().then((url) => {
+              cQuery("#record")[0].removeAttribute("disabled")
+              cQuery("#record")[0].style.pointerEvents = "initial"
+              renderButton[0].innerText = "Render"
+              console.log("Rendering stopped:", url)
+            })
+          }
+        })
+
+        let broadcastButton = cQuery("#broadcast")
+        new CaviTouch(broadcastButton)
+        broadcastButton.on("caviTap", () => {
+          if (!videostrate.isBroadcasting()) {
+            let rtmpTarget = window.prompt("Rtmp url?")
+            if (rtmpTarget != null) {
+              videostrate.broadcast(rtmpTarget).then(() => {
+                broadcastButton[0].innerText = "Stop Broadcasting"
+                console.log("Broadcasting started:")
+              })
+            }
+          } else {
+            videostrate.stopBroadcasting().then(() => {
+              broadcastButton[0].innerText = "Broadcast"
+              console.log("Broadcast stopped:")
+            })
+          }
+        })
+
+        videostrate.addRenderListener({
+          onRenderDone: (url) => {
+            console.log("Rendering completed: ", url)
+            cQuery("#record")[0].removeAttribute("disabled")
+            cQuery("#record")[0].style.pointerEvents = "initial"
+            renderButton[0].innerText = "Render"
+          },
+        })
+
+        return videostrate
+      }
+
+      function createLocalView() {
+        videostrate = createVideostrateView()
+        videostrate.startLocalView().then(() => {
+          console.log("Local view started!")
+        })
+      }
+
+      function loadStreamView(videoUrl, width, height) {
+        videostrate = createVideostrateView(videoUrl, width, height)
+        videostrate.startStreamView().then(() => {
+          console.log("Stream view started!")
+          let video = cQuery("#player video")[0]
+          setTimeout(() => {
+            // mute the video, so that it's possible to play it even if the user didn't interact with the page
+            video.muted = true
+            if (video.paused) {
+              video.play()
+            }
+          }, 500)
+        })
+      }
     </script>
 
     <script id="remoteController" type="text/javascript">
-        function controlPlayer(command, args) {
-            console.log("Control player: ", command, args)
-            switch (command) {
-                case "play":
-                    videostrate.play()
-                    break
-                case "pause":
-                    videostrate.stop()
-                    break
+      function controlPlayer(command, args) {
+        console.log("Control player: ", command, args)
+        switch (command) {
+          case "load":
+            loadStreamView(args.url, args.width, args.height)
+            break
+          case "play":
+            let video = cQuery("#player video")[0]
+
+            video.muted = true
+            if (video.paused) {
+              video.play()
             }
+            videostrate.play()
+            break
+          case "pause":
+            videostrate.stop()
+            break
         }
+      }
 
-        function onMsg(msg) {
-            if (msg.origin === "https://demo.webstrates.net") return
+      function onMsg(msg) {
+        if (msg.origin === "https://demo.webstrates.net") return
 
-            if (msg.data.type === "player-control") {
-                controlPlayer(msg.data.command, msg.data.args)
-            }
+        if (msg.data.type === "player-control") {
+          controlPlayer(msg.data.command, msg.data.args)
         }
+      }
 
-        window.addEventListener("message", onMsg, false)
+      window.addEventListener("message", onMsg, false)
     </script>
-
-</body>
-
+  </body>
 </html>
