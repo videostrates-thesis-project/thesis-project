@@ -1,8 +1,15 @@
-import { useRef } from "react"
+import { useEffect, useRef } from "react"
 
 function VideoPlayer(props: { videoPlayerUrl: string }) {
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const urlInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    // Listen for messages from the iframe
+    window.addEventListener("message", (event) => {
+      console.log("iframe:", event.data)
+    })
+  }, [])
 
   function controlPlayer(command: "play" | "pause" | "load", args?: object) {
     const iframeWindow = iframeRef.current?.contentWindow

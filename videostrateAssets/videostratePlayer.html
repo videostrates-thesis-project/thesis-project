@@ -1249,7 +1249,11 @@
       }
 
       function onMsg(msg) {
-        if (msg.origin === "https://demo.webstrates.net") return
+        if (msg.origin === "https://demo.webstrates.net") {
+          // Forward all messages to parent
+          top.postMessage(msg.data, "*")
+          return
+        }
 
         if (msg.data.type === "player-control") {
           controlPlayer(msg.data.command, msg.data.args)
