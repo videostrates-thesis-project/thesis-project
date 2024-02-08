@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from "react"
 import { useStore } from "../store"
+import { useTimeStamp } from "../hooks/useTimeStamp"
 
 const Timeline = () => {
   const { parsedVideostrate, playbackState, setSeek } = useStore()
@@ -14,6 +15,8 @@ const Timeline = () => {
       ),
     [parsedVideostrate.clips, parsedVideostrate.elements]
   )
+  const playbackTime = useTimeStamp(playbackState.time)
+  const fullTime = useTimeStamp(length)
 
   // Calculate the width of each clip as a percantage of total length
   const clipWidths = useMemo(() => {
@@ -86,7 +89,9 @@ const Timeline = () => {
     >
       <div className="flex flex-row text-lg">
         <div className="w-1/4 text-left ml-2">0</div>
-        <div className="w-1/2 font-bold">Timeline</div>
+        <div className="w-1/2 font-bold">
+          Timeline {playbackTime}/{fullTime}
+        </div>
         <div className="w-1/4 text-right mr-2">{length}</div>
       </div>
       <div
