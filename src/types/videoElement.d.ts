@@ -1,13 +1,9 @@
-export interface ParsedVideostrate {
-  clips: VideoClipElement[]
-  elements: VideoElement[]
-}
-
 export type VideoElementType = "video" | "subtitle" | "custom"
 
 export interface VideoElement {
   start: number
   end: number
+  nodeType: string
   type: VideoElementType
 }
 

@@ -8,3 +8,20 @@ function onMsg(msg) {
 }
 
 window.addEventListener("message", onMsg, false)
+
+webstrate.on("loaded", function loadedFn() {
+  top.postMessage(
+    {
+      type: "htmlContent",
+      html: document.getElementsByTagName("BODY")[0].innerHTML,
+    },
+    "*"
+  )
+})
+top.postMessage(
+  {
+    type: "loadingEvent",
+    loaded: true,
+  },
+  "*"
+)
