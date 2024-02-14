@@ -1,9 +1,11 @@
 import { ParsedVideostrate } from "../types/parsedVideostrate"
 import {
+  CustomElement,
   VideoClipElement,
   VideoElement,
   VideoElementType,
 } from "../types/videoElement"
+import { v4 as uuid } from "uuid"
 
 let clips: VideoClipElement[] = []
 let elements: VideoElement[] = []
@@ -48,14 +50,20 @@ const parseElement = (element: ChildNode) => {
         (htmlElement.children.item(0) as HTMLElement).getAttribute("src") ?? "",
       type: "video",
       nodeType: "video",
+      id: htmlElement.id.length > 0 ? htmlElement.id : uuid(),
+      offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
     }
     clips.push(clip)
   } else {
-    const videoElement: VideoElement = {
+    console.log(htmlElement.innerHTML)
+    const videoElement: CustomElement = {
       start: parseFloat(htmlElement.getAttribute("data-start") ?? "0"),
       end: parseFloat(htmlElement.getAttribute("data-end") ?? "0"),
       type: determineType(htmlElement),
       nodeType: htmlElement.nodeName.toLowerCase(),
+      id: htmlElement.id.length > 0 ? htmlElement.id : uuid(),
+      content: htmlElement.innerHTML,
+      offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
     }
     elements.push(videoElement)
   }

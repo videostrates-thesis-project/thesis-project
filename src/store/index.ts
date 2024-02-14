@@ -24,7 +24,7 @@ export const useStore = create(
       setVideostrateUrl: (url: string) => set({ videostrateUrl: url }),
       parsedVideostrate: new ParsedVideostrate([], []),
       setParsedVideostrate: (parsed: ParsedVideostrate) =>
-        set({ parsedVideostrate: parsed }),
+        set({ parsedVideostrate: parsed.clone() }),
       playbackState: { frame: 0, time: 0 },
       setPlaybackState: (state: PlaybackState) => set({ playbackState: state }),
       seek: 0,

@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useStore } from "../store"
 import { useTimeStamp } from "../hooks/useTimeStamp"
 
@@ -6,6 +6,10 @@ const Timeline = () => {
   const { parsedVideostrate, playbackState, setSeek } = useStore()
   const [isSeeking, setIsSeeking] = useState(false)
   const [lastSeekTime, setLastSeekTime] = useState(new Date())
+  const [viewStart, setViewStart] = useState(0)
+  const [viewEnd, setViewEnd] = useState(0)
+  const timelineDiv = useRef<HTMLDivElement>(null)
+  const [scale, setScale] = useState(1)
 
   const length = useMemo(
     () =>
@@ -18,28 +22,35 @@ const Timeline = () => {
   const playbackTime = useTimeStamp(playbackState.time)
   const fullTime = useTimeStamp(length)
 
+  useEffect(() => {
+    setViewEnd(length)
+  }, [length])
+
   // Calculate the width of each clip as a percantage of total length
   const clipWidths = useMemo(() => {
+    const viewLength = viewEnd - viewStart
     return parsedVideostrate.clips.map((clip) => {
       const start = clip.start
       const end = clip.end
-      const width = (end - start) / length
+      const width = (end - start) / viewLength
       return width
     })
-  }, [parsedVideostrate.clips, length])
+  }, [viewEnd, viewStart, parsedVideostrate.clips])
 
   const elementWidths = useMemo(() => {
+    const viewLength = viewEnd - viewStart
     return parsedVideostrate.elements.map((element) => {
       const start = element.start
       const end = element.end
-      const width = (end - start) / length
+      const width = (end - start) / viewLength
       return width
     })
-  }, [parsedVideostrate.elements, length])
+  }, [viewEnd, viewStart, parsedVideostrate.elements])
 
   const markers = useMemo(() => {
+    const viewLength = viewEnd - viewStart
     const startPcts = parsedVideostrate.all.map(
-      (element) => element.start / length
+      (element) => element.start / length - viewStart / length
     )
 
     return startPcts
@@ -48,7 +59,7 @@ const Timeline = () => {
         return startPct - startPcts[index - 1] > 0.02
       })
       .concat([1])
-  }, [length, parsedVideostrate.all])
+  }, [length, parsedVideostrate.all, viewEnd, viewStart])
 
   const playbackPosition = useMemo(
     () => (playbackState.time / length) * 100 + "%",
@@ -79,6 +90,78 @@ const Timeline = () => {
     setIsSeeking(false)
   }, [])
 
+  useEffect(() => {
+    const handleScroll = (event: WheelEvent) => {
+      event.preventDefault()
+      const pct = 0.005
+      if (!timelineDiv.current) return
+      if (event.deltaY > 0) {
+        console.log(
+          "Scroll up:",
+          event.deltaY,
+          viewStart + pct * length,
+          "-",
+          viewEnd - pct * length
+        )
+        if (viewEnd - viewStart < 2) {
+          console.log("Not scrolling")
+          return
+        }
+        setViewStart((prev) => Math.min(prev + pct * length, length))
+        setViewEnd((prev) => Math.max(prev - pct * length, 0))
+      } else if (event.deltaY < 0) {
+        console.log(
+          "Scroll down:",
+          event.deltaY,
+          viewStart - pct * length,
+          "-",
+          viewEnd + pct * length
+        )
+        if (viewEnd - viewStart > length) {
+          console.log("Not scrolling")
+          return
+        }
+        setViewStart((prev) => Math.max(prev - pct * length, 0))
+        setViewEnd((prev) => Math.min(prev + pct * length, length))
+      }
+
+      if (event.deltaX > 0) {
+        console.log(
+          "Scroll right:",
+          viewStart + pct * length,
+          "-",
+          viewEnd + pct * length
+        )
+        if (viewEnd + pct * length > length) {
+          console.log("Not scrolling")
+          return
+        }
+        setViewStart((prev) => Math.min(prev + pct * length, length))
+        setViewEnd((prev) => Math.min(prev + pct * length, length))
+      } else if (event.deltaX < 0) {
+        console.log(
+          "Scroll left:",
+          viewStart - pct * length,
+          "-",
+          viewEnd - pct * length
+        )
+        if (viewStart - pct * length < 0) {
+          console.log("Not scrolling")
+          return
+        }
+
+        setViewStart((prev) => Math.max(prev - pct * length, 0))
+        setViewEnd((prev) => Math.max(prev - pct * length, 0))
+      }
+    }
+
+    timelineDiv.current?.addEventListener("wheel", handleScroll)
+
+    return () => {
+      timelineDiv.current?.removeEventListener("wheel", handleScroll)
+    }
+  }, [length, scale, viewEnd, viewStart])
+
   return (
     <div
       className={`flex flex-col mt-4 relative ${isSeeking ? "cursor-grabbing" : "cursor-pointer"}`}
@@ -86,13 +169,14 @@ const Timeline = () => {
       onMouseDown={onStartSeeking}
       onMouseUp={onStopSeeking}
       onMouseLeave={onStopSeeking}
+      ref={timelineDiv}
     >
       <div className="flex flex-row text-lg">
-        <div className="w-1/4 text-left ml-2">0</div>
+        <div className="w-1/4 text-left ml-2">{viewStart.toFixed(1)}</div>
         <div className="w-1/2 font-bold">
           Timeline {playbackTime}/{fullTime}
         </div>
-        <div className="w-1/4 text-right mr-2">{length}</div>
+        <div className="w-1/4 text-right mr-2">{viewEnd.toFixed(1)}</div>
       </div>
       <div
         className="h-full w-1 bg-black absolute z-10"
@@ -106,7 +190,7 @@ const Timeline = () => {
               className="absolute  h-8 bg-gray-500 rounded-md mx-2 text-white flex justify-center items-center w-6 -translate-x-3"
               style={{ left: `${marker * 100}%` }}
             >
-              {Math.round(marker * length)}
+              {Math.round(marker * (viewEnd - viewStart))}
             </div>
           )
         })}
@@ -116,10 +200,10 @@ const Timeline = () => {
           return (
             <div
               key={index}
-              className={`absolute h-8 bg-green-500 rounded-md mx-2 text-white flex justify-center items-center`}
+              className={`absolute h-8 bg-green-500 rounded-md mx-2 text-white flex justify-start items-center`}
               style={{
                 width: `${elementWidths[index] * 100}%`,
-                left: `${(element.start / length) * 100}%`,
+                left: `${(element.start / (viewEnd - viewStart) - viewStart / (viewEnd - viewStart)) * 100}%`,
               }}
             >
               {element.type} {element.nodeType}
@@ -132,10 +216,11 @@ const Timeline = () => {
           return (
             <div
               key={index}
-              className={`absolute h-16 bg-blue-500 rounded-md text-white flex justify-center items-center`}
+              className={`absolute h-16 border-2 border-blue-600 bg-blue-500 rounded-md text-white flex justify-start items-center`}
               style={{
                 width: `${clipWidths[index] * 100}%`,
-                left: `${(clip.start / length) * 100}%`,
+                // Set left according to viewStart
+                left: `${(clip.start / (viewEnd - viewStart) - viewStart / (viewEnd - viewStart)) * 100}%`,
               }}
             >
               {clip.source}
