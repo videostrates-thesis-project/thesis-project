@@ -1227,11 +1227,30 @@
     </script>
 
     <script id="remoteController" type="text/javascript">
+      webstrate.on("loaded", function () {
+        top.postMessage(
+          {
+            type: "player-loaded",
+          },
+          "*"
+        )
+      })
+
       function controlPlayer(command, args) {
         console.log("Control player: ", command, args)
         switch (command) {
           case "load":
             loadStreamView(args.url, args.width, args.height)
+            videostrate.addPositionListener(function (frame, time) {
+              top.postMessage(
+                {
+                  type: "player-position",
+                  frame,
+                  time,
+                },
+                "*"
+              )
+            })
             break
           case "play":
             let video = cQuery("#player video")[0]
@@ -1244,6 +1263,9 @@
             break
           case "pause":
             videostrate.stop()
+            break
+          case "seek":
+            videostrate.seek(args.time)
             break
         }
       }
