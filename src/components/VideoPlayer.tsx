@@ -1,12 +1,32 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useStore } from "../store"
+import { parseVideostrate } from "../services/videostrateParser"
+import { serializeVideostrate } from "../services/videostrateSerializer"
 
 function VideoPlayer(props: { videoPlayerUrl: string }) {
-  const { videostrateUrl, setVideostrateUrl, setPlaybackState, seek } =
-    useStore()
+  const {
+    videostrateUrl,
+    setVideostrateUrl,
+    setParsedVideostrate,
+    setMetaMaxRealm,
+    setPlaybackState,
+    parsedVideostrate,
+    seek,
+  } = useStore()
   const [url, setUrl] = useState(videostrateUrl)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [playing, setPlaying] = useState(false)
+  const [iframeWidth, setIframeWidth] = useState(0)
+  const [iframeHeight, setIframeHeight] = useState(0)
+
+  const updateIframeSize = useCallback(
+    (e: React.SyntheticEvent<HTMLIFrameElement, Event>) => {
+      const target = e.target as HTMLIFrameElement
+      setIframeWidth(target.clientWidth)
+      setIframeHeight(target.clientHeight)
+    },
+    [setIframeWidth, setIframeHeight]
+  )
 
   useEffect(() => {
     controlPlayer("seek", { time: seek })
@@ -19,11 +39,15 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
 
   const loadVideo = useCallback(() => {
     if (!videostrateUrl) return
-    const width = iframeRef.current?.clientWidth
-    const height = iframeRef.current?.clientHeight
+    console.log("iframeWidth", iframeWidth, iframeRef.current?.clientWidth)
+    console.log("iframeHeight", iframeHeight, iframeRef.current?.clientHeight)
     setPlaybackState({ frame: 0, time: 0 })
-    controlPlayer("load", { url: videostrateUrl, width, height })
-  }, [setPlaybackState, videostrateUrl])
+    controlPlayer("load", {
+      url: videostrateUrl,
+      width: iframeWidth,
+      height: iframeHeight,
+    })
+  }, [setPlaybackState, videostrateUrl, iframeWidth, iframeHeight])
 
   useEffect(() => {
     // Listen for messages from the iframe
@@ -35,6 +59,13 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
         case "player-position":
           setPlaybackState({ frame: event.data.frame, time: event.data.time })
           break
+        case "videostrate-content":
+          setParsedVideostrate(parseVideostrate(event.data.html))
+          break
+        case "metamax-realm":
+          console.log("Metamax realm", event.data.realm)
+          setMetaMaxRealm(event.data.realm)
+          break
       }
     }
     window.addEventListener("message", listener)
@@ -42,7 +73,21 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     return () => {
       window.removeEventListener("message", listener)
     }
-  }, [loadVideo, setPlaybackState])
+  }, [loadVideo, setPlaybackState, setMetaMaxRealm, setParsedVideostrate])
+
+  useEffect(() => {
+    const html = serializeVideostrate(parsedVideostrate)
+    const iframeWindow = iframeRef.current?.contentWindow
+    iframeWindow?.postMessage(
+      {
+        type: "videostrate",
+        payload: {
+          text: html,
+        },
+      },
+      "*"
+    )
+  }, [parsedVideostrate])
 
   function controlPlayer(
     command: "play" | "pause" | "load" | "seek",
@@ -64,7 +109,12 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
 
   const onChangeUrl = useCallback(() => {
     setVideostrateUrl(url)
-  }, [setVideostrateUrl, url])
+    controlPlayer("load", {
+      url: videostrateUrl,
+      width: iframeWidth,
+      height: iframeHeight,
+    })
+  }, [setVideostrateUrl, url, videostrateUrl, iframeWidth, iframeHeight])
 
   return (
     <div className="flex flex-col gap-4 w-full">
@@ -82,6 +132,8 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
       </div>
       <iframe
         ref={iframeRef}
+        onResize={(e) => updateIframeSize(e)}
+        onLoad={(e) => updateIframeSize(e)}
         className="h-[50rem] max-w-7xl w-[80rem]"
         src={props.videoPlayerUrl}
       ></iframe>
