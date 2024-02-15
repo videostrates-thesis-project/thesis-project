@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useStore } from "../store"
 import { parseVideostrate } from "../services/videostrateParser"
-import { serializeVideostrate } from "../services/videostrateSerializer"
+import { WebstrateSerializationStrategy } from "../services/serializationStrategies/webstrateSerializationStrategy"
 
 function VideoPlayer(props: { videoPlayerUrl: string }) {
   const {
@@ -73,7 +73,9 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
   }, [loadVideo, setPlaybackState, setParsedVideostrate, setMetamaxRealm])
 
   useEffect(() => {
-    const html = serializeVideostrate(parsedVideostrate)
+    const html = new WebstrateSerializationStrategy().serialize(
+      parsedVideostrate
+    )
     controlPlayer("update-video", { content: html })
   }, [parsedVideostrate])
 

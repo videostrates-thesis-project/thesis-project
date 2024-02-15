@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware"
 import { ParsedVideostrate } from "../types/parsedVideostrate"
 import { PlaybackState } from "../types/playbackState"
 import ClipMetadata from "../types/videoClip"
+import { AvailableClip } from "../types/availableClip"
 
 export interface AppState {
   videostrateUrl: string
@@ -22,6 +23,8 @@ export interface AppState {
 
   seek: number
   setSeek: (seek: number) => void
+
+  availableClips: AvailableClip[]
 }
 
 export const useStore = create(
@@ -41,6 +44,20 @@ export const useStore = create(
       setSeek: (seek: number) => set({ seek: seek }),
       metamaxRealm: null,
       setMetamaxRealm: (realm: string) => set({ metamaxRealm: realm }),
+      availableClips: [
+        {
+          name: "Big Buck Bunny",
+          source:
+            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          length: 60,
+        },
+        {
+          name: "Elephants Dream",
+          source:
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+          length: 60,
+        },
+      ],
     }),
     {
       name: "thesis-project-storage",
