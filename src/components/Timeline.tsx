@@ -1,101 +1,43 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useStore } from "../store"
 import { useTimeStamp } from "../hooks/useTimeStamp"
-import { VideoClipElement, VideoElement } from "../types/videoElement"
 import { useScrollNavigation } from "../hooks/useScrollNavigation"
-
-interface TimelineElement extends VideoElement {
-  width: number
-  left: number
-  clipName: string | undefined
-}
+import { useSeek } from "../hooks/useSeek"
+import { useTimelineElements } from "../hooks/useTimelineElements"
 
 const Timeline = () => {
-  const { parsedVideostrate, playbackState, setSeek, availableClips } =
-    useStore()
-  const [isSeeking, setIsSeeking] = useState(false)
-  const [lastSeekTime, setLastSeekTime] = useState(new Date())
+  const { parsedVideostrate, playbackState } = useStore()
   const [viewStart, setViewStart] = useState(0)
   const [viewEnd, setViewEnd] = useState(0)
-  const length = useMemo(
-    () =>
-      Math.max(
-        parsedVideostrate.clips.at(-1)?.end ?? 0,
-        parsedVideostrate.elements.at(-1)?.end ?? 0
-      ),
-    [parsedVideostrate.clips, parsedVideostrate.elements]
-  )
   const playbackTime = useTimeStamp(playbackState.time)
-  const fullTime = useTimeStamp(length)
+  const fullTime = useTimeStamp(parsedVideostrate.length)
   const timelineDivRef = useScrollNavigation(
     viewStart,
     viewEnd,
-    length,
     setViewStart,
     setViewEnd
   )
+  const { isSeeking, onSeek, onStartSeeking, onStopSeeking } = useSeek(
+    parsedVideostrate.length
+  )
+  const elements = useTimelineElements(viewStart, viewEnd)
 
   useEffect(() => {
-    setViewEnd(length)
-  }, [length])
-
-  const elements = useMemo(() => {
-    const viewLength = viewEnd - viewStart
-    return parsedVideostrate.all.map((clip) => {
-      return {
-        ...clip,
-        width: ((clip.end - clip.start) / viewLength) * 100,
-        left: ((clip.start - viewStart) / viewLength) * 100,
-        clipName:
-          clip.type === "video" &&
-          availableClips.find(
-            (c) => c.source === (clip as VideoClipElement).source
-          )?.name,
-      } as TimelineElement
-    })
-  }, [availableClips, parsedVideostrate.all, viewEnd, viewStart])
+    setViewEnd(parsedVideostrate.length)
+  }, [parsedVideostrate.length])
 
   const markers = useMemo(() => {
-    const startPcts = parsedVideostrate.all.map(
-      (element) => element.start / length - viewStart / length
-    )
-
-    return startPcts
-      .filter((startPct, index) => {
-        if (index === 0) return true
-        return startPct - startPcts[index - 1] > 0.02
-      })
-      .concat([1])
-  }, [length, parsedVideostrate.all, viewStart])
+    const viewLength = viewEnd - viewStart
+    return parsedVideostrate.all.map((element) => ({
+      left: ((element.start - viewStart) / viewLength) * 100,
+      text: element.start,
+    }))
+  }, [parsedVideostrate.all, viewEnd, viewStart])
 
   const playbackPosition = useMemo(
-    () => (playbackState.time / length) * 100 + "%",
-    [length, playbackState.time]
+    () => (playbackState.time / parsedVideostrate.length) * 100 + "%",
+    [parsedVideostrate.length, playbackState.time]
   )
-
-  const onSeek = useCallback(
-    (e: React.MouseEvent) => {
-      if (!isSeeking) return
-      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const pct = x / rect.width
-      const newSeek = pct * length
-      const now = new Date()
-      if (now.getTime() - lastSeekTime.getTime() < 100) return
-
-      setSeek(newSeek)
-      setLastSeekTime(now)
-    },
-    [isSeeking, lastSeekTime, length, setSeek]
-  )
-
-  const onStartSeeking = useCallback(() => {
-    setIsSeeking(true)
-  }, [])
-
-  const onStopSeeking = useCallback(() => {
-    setIsSeeking(false)
-  }, [])
 
   return (
     <div
@@ -123,9 +65,9 @@ const Timeline = () => {
             <div
               key={index}
               className="absolute  h-8 bg-gray-500 rounded-md mx-2 text-white flex justify-center items-center w-6 -translate-x-3"
-              style={{ left: `${marker * 100}%` }}
+              style={{ left: `${marker.left}%` }}
             >
-              {Math.round(marker * (viewEnd - viewStart))}
+              {marker.text.toFixed(0)}
             </div>
           )
         })}

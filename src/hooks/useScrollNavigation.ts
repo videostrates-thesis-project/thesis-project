@@ -1,13 +1,15 @@
 import { useEffect, useRef } from "react"
+import { useStore } from "../store"
 
 export const useScrollNavigation = (
   viewStart: number,
   viewEnd: number,
-  length: number,
   setViewStart: (value: React.SetStateAction<number>) => void,
   setViewEnd: (value: React.SetStateAction<number>) => void
 ) => {
   const ref = useRef<HTMLDivElement>(null)
+  const { parsedVideostrate } = useStore()
+
   useEffect(() => {
     const handleScroll = (event: WheelEvent) => {
       event.preventDefault()
@@ -17,29 +19,56 @@ export const useScrollNavigation = (
         if (viewEnd - viewStart < 2) {
           return
         }
-        setViewStart((prev) => Math.min(prev + pct * length, length))
-        setViewEnd((prev) => Math.max(prev - pct * length, 0))
+        setViewStart((prev) =>
+          Math.min(
+            prev + pct * parsedVideostrate.length,
+            parsedVideostrate.length
+          )
+        )
+        setViewEnd((prev) => Math.max(prev - pct * parsedVideostrate.length, 0))
       } else if (event.deltaY < 0) {
-        if (viewEnd - viewStart > length) {
+        if (viewEnd - viewStart > parsedVideostrate.length) {
           return
         }
-        setViewStart((prev) => Math.max(prev - pct * length, 0))
-        setViewEnd((prev) => Math.min(prev + pct * length, length))
+        setViewStart((prev) =>
+          Math.max(prev - pct * parsedVideostrate.length, 0)
+        )
+        setViewEnd((prev) =>
+          Math.min(
+            prev + pct * parsedVideostrate.length,
+            parsedVideostrate.length
+          )
+        )
       }
 
       if (event.deltaX > 0) {
-        if (viewEnd + pct * length > length) {
+        if (
+          viewEnd + pct * parsedVideostrate.length >
+          parsedVideostrate.length
+        ) {
           return
         }
-        setViewStart((prev) => Math.min(prev + pct * length, length))
-        setViewEnd((prev) => Math.min(prev + pct * length, length))
+        setViewStart((prev) =>
+          Math.min(
+            prev + pct * parsedVideostrate.length,
+            parsedVideostrate.length
+          )
+        )
+        setViewEnd((prev) =>
+          Math.min(
+            prev + pct * parsedVideostrate.length,
+            parsedVideostrate.length
+          )
+        )
       } else if (event.deltaX < 0) {
-        if (viewStart - pct * length < 0) {
+        if (viewStart - pct * parsedVideostrate.length < 0) {
           return
         }
 
-        setViewStart((prev) => Math.max(prev - pct * length, 0))
-        setViewEnd((prev) => Math.max(prev - pct * length, 0))
+        setViewStart((prev) =>
+          Math.max(prev - pct * parsedVideostrate.length, 0)
+        )
+        setViewEnd((prev) => Math.max(prev - pct * parsedVideostrate.length, 0))
       }
     }
 
@@ -49,7 +78,14 @@ export const useScrollNavigation = (
     return () => {
       currentRef?.removeEventListener("wheel", handleScroll)
     }
-  }, [length, ref, setViewEnd, setViewStart, viewEnd, viewStart])
+  }, [
+    parsedVideostrate.length,
+    ref,
+    setViewEnd,
+    setViewStart,
+    viewEnd,
+    viewStart,
+  ])
 
   return ref
 }
