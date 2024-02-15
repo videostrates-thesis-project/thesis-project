@@ -49,7 +49,7 @@
               "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/Timetastic.js",
             ]
 
-          console.log("View config:", config)
+          // console.log("View config:", config)
 
           this.config = config
           this.uri = targetVideostrateURI
@@ -94,229 +94,6 @@
           this.renderListeners.delete(listener)
         }
 
-        startLocalView() {
-          let self = this
-
-          return new Promise((resolve, reject) => {
-            if (!self.isLocal()) {
-              StreamLauncher.stop(self.element)
-              self.element.streamlauncher = false
-              if (self.iframe) self.iframe.remove()
-            }
-
-            // Init player + injects
-            self.iframe = document.createElement("iframe")
-            self.iframe.webstrate.on("transcluded", function () {
-              let theHTML = cQuery(self.iframe.contentDocument).find("html")[0]
-
-              console.log("Injecting scripts...")
-
-              if (self.config.serverLog != null) {
-                self.iframe.contentWindow.serverLog = self.config.serverLog
-              }
-
-              theHTML.setAttribute("transient-videostrate-status", "injecting")
-              let head = cQuery(self.iframe.contentDocument).find("head")
-              head.prepend("<transient id='videostrateinjects' />")
-              let headInject = head.find("#videostrateinjects")
-              if (self.config.initOverlay) {
-                headInject.prepend(
-                  "<style>html[transient-videostrate-status]::before {content:' '; color:black;border-bottom: 0.25em solid rgba(255,155,0,0.75);position:absolute;background:#ffffffe6;text-align:center;padding:1em;z-index: 2000;left: 0;right: 0;top:-4em;font-family: sans-serif; transition: top 0.6s ease-in, border-color 0.25s ease-in-out; box-sizing: border-box;}" +
-                    'html[transient-videostrate-status="injecting"] * {opacity:0.01;}html[transient-videostrate-status="injecting"]::before{top:0; content: "Injecting...";border-color: rgba(255,0,0,0.75);}' +
-                    "html[transient-videostrate-status=\"loaded\"]::before{content: 'Ready'; border-color: rgba(0,255,0,0.75);}" +
-                    'html[transient-videostrate-status="initializing"] * {opacity:0.01;}html[transient-videostrate-status="initializing"]::before{top:0; content: "Initializing document...";border-color: rgba(255,155,0,0.75);}</style>'
-                )
-              }
-              let theBody = cQuery(self.iframe.contentDocument).find("body")
-              theBody.append("<transient id='videostratebodyinjects' />")
-              let bodyInject = theBody.find("#videostratebodyinjects")
-              let injectPromises = []
-
-              // Combine timetastic and metamax injects and inject them
-              let injects = self.config.timetasticInjects.slice(0)
-
-              if (
-                self.config.cacheProviders != null &&
-                self.config.cacheProviders.length > 0
-              ) {
-                injects.push(
-                  self.config.cacheProviders[0] + "js/MetaMaxCache.js"
-                )
-              } else {
-                console.log("Skipping metamax, as no cacheprovider is set!")
-                if (self.config.serverLog != null) {
-                  self.config.serverLog(
-                    "Skipping metamax, as no cacheprovider is set!"
-                  )
-                }
-              }
-
-              injects.forEach(function (inject) {
-                injectPromises.push(
-                  new Promise(function (resolve, reject) {
-                    if (inject.endsWith(".js")) {
-                      let script =
-                        self.iframe.contentDocument.createElement("script")
-                      script.async = false
-                      script.onload = function () {
-                        resolve()
-                      }
-                      script.src = inject
-                      bodyInject.append(script)
-                    } else {
-                      headInject.append(
-                        "<link href='" +
-                          inject +
-                          "' rel='stylesheet' type='text/css'/>"
-                      )
-                      resolve()
-                    }
-                  })
-                )
-              })
-
-              let lastFrame = -1
-
-              Promise.all(injectPromises).then(function () {
-                theHTML.setAttribute(
-                  "transient-videostrate-status",
-                  "initializing"
-                )
-
-                //Do metamax before starting timetastic
-                let realmPromise = null
-
-                if (
-                  self.config.cacheProviders != null &&
-                  self.config.cacheProviders.length > 0
-                ) {
-                  if (self.config.serverLog != null) {
-                    self.config.serverLog(
-                      "Finding old realm, or creating new..."
-                    )
-                  }
-
-                  realmPromise = new Promise(async (resolve) => {
-                    // Find/Create MetaMaxRealm
-                    let realmId = theHTML.getAttribute("data-metamax-realm")
-
-                    // Set Metamax Server
-                    self.iframe.contentWindow.MetaMaxCache.url =
-                      self.config.cacheProviders[0] + "api"
-
-                    if (realmId == null) {
-                      //No old realm, create new
-                      console.log("Creating new realm...")
-                      self.iframe.contentWindow.Realm.create().then((realm) => {
-                        theHTML.setAttribute("data-metamax-realm", realm.id)
-                        resolve(realm)
-                      })
-                    } else {
-                      try {
-                        console.log("Reusing old realm")
-                        let realm = new self.iframe.contentWindow.Realm(realmId)
-                        await realm.info()
-                        resolve(realm)
-                      } catch (e) {
-                        console.log("Error reusing realm, creating new!")
-                        self.iframe.contentWindow.Realm.create().then(
-                          (realm) => {
-                            theHTML.setAttribute("data-metamax-realm", realm.id)
-                            resolve(realm)
-                          }
-                        )
-                      }
-                    }
-                  })
-                } else {
-                  if (self.config.serverLog != null) {
-                    self.config.serverLog("Skipping realm...")
-                  }
-
-                  realmPromise = Promise.resolve(null)
-                }
-
-                realmPromise.then((realm) => {
-                  if (self.config.serverLog != null && realm != null) {
-                    self.config.serverLog(
-                      "Starting metamax caching for realm: " +
-                        realm.id +
-                        " on " +
-                        self.iframe.contentWindow.MetaMaxCacheUrl
-                    )
-                  }
-
-                  let enableSeekPromise = null
-
-                  if (realm != null) {
-                    enableSeekPromise = realm.enableSeekableOnAllVideos(
-                      self.iframe.contentDocument
-                    )
-                  } else {
-                    enableSeekPromise = Promise.resolve()
-                  }
-
-                  enableSeekPromise.then(() => {
-                    if (realm != null) {
-                      if (self.config.serverLog != null) {
-                        self.config.serverLog("Metamax done!")
-                      }
-                      console.log("Metamax done!")
-                    }
-
-                    console.log("Starting timetastic...")
-
-                    headInject.append(
-                      "<script>window.timetastic = new Timetastic(" +
-                        self.config.framerate +
-                        ");<" +
-                        "/script>"
-                    )
-                    self.controller = self.iframe.contentWindow.timetastic
-                    self.controller.addPositionListener(function (frame, time) {
-                      if (lastFrame !== frame) {
-                        self.onPositionChanged(frame, time)
-                        lastFrame = frame
-                      }
-                    }) // Intentional wrap of callback for iframe permissions
-                    self.controller.addDurationListener(function (duration) {
-                      self.onDurationChanged(duration)
-                    })
-                    self.controller.init().then(function () {
-                      theHTML.setAttribute(
-                        "transient-videostrate-status",
-                        "loaded"
-                      )
-                      console.log(
-                        "Videostrate View for " +
-                          self.uri +
-                          " ready and kicking"
-                      )
-
-                      if (self.config.serverLog != null) {
-                        self.config.serverLog(
-                          "Videostrate View for " +
-                            self.uri +
-                            " ready and kicking"
-                        )
-                      }
-
-                      resolve()
-                    })
-                  })
-                })
-              })
-            })
-            self.iframe.src = this.uri
-            self.element.innerHTML = ""
-            self.iframe.style.width = "100%"
-            self.iframe.style.height = "100%"
-            self.iframe.style.border = "0"
-            self.element.appendChild(this.iframe)
-            console.log("Videostrate View for " + this.uri + " loading")
-          })
-        }
-
         async startStreamView(streamConfig = {}) {
           let self = this
           return new Promise((resolve, reject) => {
@@ -332,7 +109,7 @@
             // Start control iframe
             self.iframe = document.createElement("iframe")
             self.iframe.webstrate.on("transcluded", function () {
-              console.log("Got player transclude for passive signalling")
+              // console.log("Got player transclude for passive signalling")
               // Listen for our player to connect
               let playerID = Math.random().toString(36).substr(2, 12)
               self.iframe.contentWindow.webstrate.on(
@@ -1203,13 +980,6 @@
         return videostrate
       }
 
-      function createLocalView() {
-        videostrate = createVideostrateView()
-        videostrate.startLocalView().then(() => {
-          console.log("Local view started!")
-        })
-      }
-
       function loadStreamView(videoUrl, width, height) {
         videostrate = createVideostrateView(videoUrl, width, height)
         videostrate.startStreamView().then(() => {
@@ -1224,9 +994,20 @@
           }, 500)
         })
       }
+
+      function createVideostrateIframe(videoUrl) {
+        let iframe = document.createElement("iframe")
+        iframe.src = videoUrl
+        // It's only for getting the code, so it should be hidden
+        iframe.style.display = "none"
+        document.body.appendChild(iframe)
+
+        return iframe
+      }
     </script>
 
     <script id="remoteController" type="text/javascript">
+      let videostrateIframe = null
       webstrate.on("loaded", function () {
         top.postMessage(
           {
@@ -1240,21 +1021,13 @@
         console.log("Control player: ", command, args)
         switch (command) {
           case "load":
-            loadStreamView(args.url, args.width, args.height)
-            videostrate.addPositionListener(function (frame, time) {
-              top.postMessage(
-                {
-                  type: "player-position",
-                  frame,
-                  time,
-                },
-                "*"
-              )
-            })
+            loadVideostrate(args.url, args.width, args.height)
+            break
+          case "update-video":
+            updateVideostrate(args.content)
             break
           case "play":
             let video = cQuery("#player video")[0]
-
             video.muted = true
             if (video.paused) {
               video.play()
@@ -1270,6 +1043,89 @@
         }
       }
 
+      function loadVideostrate(url, width, height) {
+        if (videostrateIframe) videostrateIframe.remove()
+        videostrateIframe = createVideostrateIframe(url)
+        console.log("Creating videostrate iframe", url)
+        videostrateIframe.webstrate.on("transcluded", function () {
+          // When the videostrate is loaded, send all the necessary information to the parent
+          postVideostrateContent()
+          postMetamaxRealm()
+          watchRealmChange()
+        })
+
+        loadStreamView(url, width, height)
+        videostrate.addPositionListener(function (frame, time) {
+          top.postMessage(
+            {
+              type: "player-position",
+              frame,
+              time,
+            },
+            "*"
+          )
+        })
+      }
+
+      function postMetamaxRealm() {
+        const realm =
+          videostrateIframe.contentWindow.document.documentElement.getAttribute(
+            "data-metamax-realm"
+          )
+        if (realm) {
+          top.postMessage(
+            {
+              type: "metamax-realm",
+              realm,
+            },
+            "*"
+          )
+        }
+      }
+
+      function watchRealmChange() {
+        videostrateIframe.contentWindow.document.documentElement.webstrate.on(
+          "attributeChanged",
+          function (attributeName, oldValue, newValue) {
+            console.log("attributeChanged", attributeName, oldValue, newValue)
+            if (attributeName === "data-metamax-realm") {
+              top.postMessage(
+                {
+                  type: "metamax-realm",
+                  realm: newValue,
+                },
+                "*"
+              )
+            }
+          }
+        )
+      }
+
+      function postVideostrateContent() {
+        const stringHtml = new XMLSerializer().serializeToString(
+          videostrateIframe.contentWindow.document
+        )
+        console.log(
+          "Posting videostrate content",
+          stringHtml.slice(0, 100) + "..."
+        )
+        top.postMessage(
+          {
+            type: "videostrate-content",
+            html: stringHtml,
+          },
+          "*"
+        )
+      }
+
+      function updateVideostrate(content) {
+        console.log("Updating videostrate content", content)
+        var body =
+          videostrateIframe.contentWindow.document.getElementsByTagName(
+            "BODY"
+          )[0]
+        body.innerHTML = content
+      }
       function onMsg(msg) {
         if (msg.origin === "https://demo.webstrates.net") {
           // Forward all messages to parent

@@ -3,7 +3,7 @@ import { useStore } from "../store"
 import { processCommand } from "../services/commandProcessor"
 
 const Commander = () => {
-  const { parsedVideostrate } = useStore()
+  const { parsedVideostrate, clipsMetadata } = useStore()
   const [currentCommand, setCurrentCommand] = useState("")
 
   const uniqueUrls = useMemo(() => {
@@ -20,27 +20,37 @@ const Commander = () => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-row gap-8">
-        <div className="flex flex-col p-2 w-96 bg-blue-200 rounded">
-          <h2 className="card-title">Available clips to import:</h2>
-          <ul>
-            {uniqueUrls.map((url, index) => {
-              return <li key={index}>{url}</li>
-            })}
-          </ul>
+        <div className="flex flex-col flex-grow p-2 w-96 bg-neutral rounded">
+          <div className="card-body text-left">
+            <h2 className="card-title">Available clips to import:</h2>
+            <ul className="list-disc">
+              {uniqueUrls.map((url, index) => {
+                const metadata =
+                  clipsMetadata.clips.get && clipsMetadata.clips.get(url)
+                let formattedTitle = url
+                if (metadata) {
+                  formattedTitle = `${metadata.title || url} - ${metadata.duration?.toFixed(0)} seconds`
+                }
+                return <li key={index}>{formattedTitle}</li>
+              })}
+            </ul>
+          </div>
         </div>
 
-        <div className="flex flex-col p-2 w-96 bg-blue-200 rounded">
-          <h2 className="card-title">Available clips to move/delete/crop:</h2>
-          <ul>
-            {parsedVideostrate.clips.map((clip, index) => {
-              return (
-                <li key={index}>
-                  {clip.id}: {clip.start} - {clip.end}{" "}
-                  <p className="text-xs">{clip.source}</p>
-                </li>
-              )
-            })}
-          </ul>
+        <div className="flex flex-col flex-grow p-2 w-96 bg-neutral rounded">
+          <div className="card-body text-left">
+            <h2 className="card-title">Available clips to move/delete/crop:</h2>
+            <ul className="list-disc">
+              {parsedVideostrate.clips.map((clip, index) => {
+                return (
+                  <li key={index}>
+                    {clip.id}: {clip.start} - {clip.end}{" "}
+                    <p className="text-xs">{clip.source}</p>
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         </div>
       </div>
       <textarea

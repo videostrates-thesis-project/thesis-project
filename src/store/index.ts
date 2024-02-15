@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { ParsedVideostrate } from "../types/parsedVideostrate"
 import { PlaybackState } from "../types/playbackState"
+import ClipMetadata from "../types/videoClip"
 import { AvailableClip } from "../types/availableClip"
 
 export interface AppState {
@@ -9,7 +10,13 @@ export interface AppState {
   setVideostrateUrl: (url: string) => void
 
   parsedVideostrate: ParsedVideostrate
-  setParsedVideostrate: (parsed: ParsedVideostrate) => void
+  setParsedVideostrate: (parsed: ParsedVideostrate) => Promise<void>
+
+  clipsMetadata: { clips: Map<string, ClipMetadata> }
+  setClipsMetadata: (clips: Map<string, ClipMetadata>) => void
+
+  metamaxRealm: string | null
+  setMetamaxRealm: (realm: string) => void
 
   playbackState: PlaybackState
   setPlaybackState: (state: PlaybackState) => void
@@ -26,12 +33,17 @@ export const useStore = create(
       videostrateUrl: "https://demo.webstrates.net/black-eel-9/",
       setVideostrateUrl: (url: string) => set({ videostrateUrl: url }),
       parsedVideostrate: new ParsedVideostrate([], []),
-      setParsedVideostrate: (parsed: ParsedVideostrate) =>
+      setParsedVideostrate: async (parsed: ParsedVideostrate) =>
         set({ parsedVideostrate: parsed.clone() }),
+      clipsMetadata: { clips: new Map() },
+      setClipsMetadata: (clips: Map<string, ClipMetadata>) =>
+        set({ clipsMetadata: { clips: clips } }),
       playbackState: { frame: 0, time: 0 },
       setPlaybackState: (state: PlaybackState) => set({ playbackState: state }),
       seek: 0,
       setSeek: (seek: number) => set({ seek: seek }),
+      metamaxRealm: null,
+      setMetamaxRealm: (realm: string) => set({ metamaxRealm: realm }),
       availableClips: [
         {
           name: "Big Buck Bunny",
