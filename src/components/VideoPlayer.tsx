@@ -2,6 +2,9 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useStore } from "../store"
 import { parseVideostrate } from "../services/videostrateParser"
 import { serializeVideostrate } from "../services/videostrateSerializer"
+import { prepareMetaMaxRealm } from "../services/prepareMetmaxRealm"
+import { ParsedVideostrate } from "../types/parsedVideostrate"
+import { getClipsMetadata } from "../services/metadataLoader"
 
 function VideoPlayer(props: { videoPlayerUrl: string }) {
   const {
@@ -9,6 +12,7 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     setVideostrateUrl,
     setParsedVideostrate,
     setMetaMaxRealm,
+    setClipsMetadata,
     setPlaybackState,
     parsedVideostrate,
     seek,
@@ -49,7 +53,9 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
 
   useEffect(() => {
     // Listen for messages from the iframe
-    const listener = (event: MessageEvent) => {
+    let parsedVideostrate: ParsedVideostrate
+    let metaMaxRealm: string
+    const listener = async (event: MessageEvent) => {
       switch (event.data.type) {
         case "player-loaded":
           loadVideo()
@@ -58,11 +64,13 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
           setPlaybackState({ frame: event.data.frame, time: event.data.time })
           break
         case "videostrate-content":
-          setParsedVideostrate(parseVideostrate(event.data.html))
-          break
-        case "metamax-realm":
-          console.log("Metamax realm", event.data.realm)
-          setMetaMaxRealm(event.data.realm)
+          parsedVideostrate = parseVideostrate(event.data.html)
+          metaMaxRealm = await prepareMetaMaxRealm(event.data.html)
+          setParsedVideostrate(parsedVideostrate)
+          setMetaMaxRealm(metaMaxRealm)
+          setClipsMetadata(
+            await getClipsMetadata(parsedVideostrate.clips, metaMaxRealm)
+          )
           break
       }
     }
@@ -71,7 +79,7 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     return () => {
       window.removeEventListener("message", listener)
     }
-  }, [loadVideo, setPlaybackState, setMetaMaxRealm, setParsedVideostrate])
+  }, [loadVideo, setPlaybackState, setParsedVideostrate, setMetaMaxRealm])
 
   useEffect(() => {
     const html = serializeVideostrate(parsedVideostrate)
