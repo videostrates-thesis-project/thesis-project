@@ -43,18 +43,20 @@ const Commander = () => {
           </ul>
         </div>
       </div>
-      <input
-        type="text"
+      <textarea
         placeholder="Write your command here..."
-        className="input input-bordered w-1/2 max w-xs text-white mt-4"
+        className="textarea textarea-bordered w-1/2 max w-xs text-white mt-4"
         value={currentCommand}
         onChange={(e) => setCurrentCommand(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === "Enter") {
+          if (e.key === "Enter" && !e.shiftKey) {
             issueCommand()
           }
         }}
       />
+      <button className="btn btn-primary mt-4" onClick={issueCommand}>
+        Send
+      </button>
     </div>
   )
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react"
 import { useStore } from "../store"
 import { parseVideostrate } from "../services/videostrateParser"
 import { serializeVideostrate } from "../services/videostrateSerializer"
+import { WebstrateSerializationStrategy } from "../services/serializationStrategies/webstrateSerializationStrategy"
 
 const VideostrateLoader = () => {
   const { videostrateUrl, setParsedVideostrate, parsedVideostrate } = useStore()
@@ -22,7 +23,9 @@ const VideostrateLoader = () => {
   }, [setParsedVideostrate])
 
   useEffect(() => {
-    const html = serializeVideostrate(parsedVideostrate)
+    const html = new WebstrateSerializationStrategy().serialize(
+      parsedVideostrate
+    )
     const iframeWindow = iframeRef.current?.contentWindow
     iframeWindow?.postMessage(
       {
