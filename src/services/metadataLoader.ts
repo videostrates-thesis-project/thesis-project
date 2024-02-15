@@ -18,11 +18,21 @@ export const getClipsMetadata = async (
 }
 
 const getClipMetadata = async (clipSource: string, metamaxRealm: string) => {
+  let data = await fetchMetamaxMetadata(clipSource, metamaxRealm, "GET")
+  if (data?.status === "UNCACHED") {
+    data = await fetchMetamaxMetadata(clipSource, metamaxRealm, "PUT")
+  }
+  return new ClipMetadata(clipSource, data)
+}
+
+const fetchMetamaxMetadata = async (
+  clipSource: string,
+  metamaxRealm: string,
+  method: "GET" | "PUT"
+) => {
   const metamaxApi: string =
     import.meta.env.VITE_META_MAX_API || "https://stream.cavi.au.dk/cache/api/"
   const requestUrl = `${metamaxApi}/${metamaxRealm}/entity?url=${clipSource}`
-  const response = await fetch(requestUrl)
-  const data = await response.json()
-  console.log(data)
-  return new ClipMetadata(clipSource, data)
+  const response = await fetch(requestUrl, { method: method })
+  return await response.json()
 }
