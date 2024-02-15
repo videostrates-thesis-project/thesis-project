@@ -42,7 +42,7 @@ export const useStore = create(
         {
           name: "Elephants Dream",
           source:
-            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
           length: 60,
         },
       ],

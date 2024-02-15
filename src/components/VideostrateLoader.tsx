@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react"
 import { useStore } from "../store"
 import { parseVideostrate } from "../services/videostrateParser"
-import { serializeVideostrate } from "../services/videostrateSerializer"
 import { WebstrateSerializationStrategy } from "../services/serializationStrategies/webstrateSerializationStrategy"
 
 const VideostrateLoader = () => {
