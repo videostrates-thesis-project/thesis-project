@@ -2,17 +2,13 @@ import { useCallback, useEffect, useRef, useState } from "react"
 import { useStore } from "../store"
 import { parseVideostrate } from "../services/videostrateParser"
 import { serializeVideostrate } from "../services/videostrateSerializer"
-import { prepareMetaMaxRealm } from "../services/prepareMetmaxRealm"
-import { ParsedVideostrate } from "../types/parsedVideostrate"
-import { getClipsMetadata } from "../services/metadataLoader"
 
 function VideoPlayer(props: { videoPlayerUrl: string }) {
   const {
     videostrateUrl,
     setVideostrateUrl,
     setParsedVideostrate,
-    setMetaMaxRealm,
-    setClipsMetadata,
+    setMetamaxRealm,
     setPlaybackState,
     parsedVideostrate,
     seek,
@@ -53,24 +49,19 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
 
   useEffect(() => {
     // Listen for messages from the iframe
-    let parsedVideostrate: ParsedVideostrate
-    let metaMaxRealm: string
     const listener = async (event: MessageEvent) => {
       switch (event.data.type) {
         case "player-loaded":
           loadVideo()
           break
+        case "metamax-realm":
+          setMetamaxRealm(event.data.realm)
+          break
         case "player-position":
           setPlaybackState({ frame: event.data.frame, time: event.data.time })
           break
         case "videostrate-content":
-          parsedVideostrate = parseVideostrate(event.data.html)
-          metaMaxRealm = await prepareMetaMaxRealm(event.data.html)
-          setParsedVideostrate(parsedVideostrate)
-          setMetaMaxRealm(metaMaxRealm)
-          setClipsMetadata(
-            await getClipsMetadata(parsedVideostrate.clips, metaMaxRealm)
-          )
+          setParsedVideostrate(parseVideostrate(event.data.html))
           break
       }
     }
@@ -79,7 +70,7 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     return () => {
       window.removeEventListener("message", listener)
     }
-  }, [loadVideo, setPlaybackState, setParsedVideostrate, setMetaMaxRealm])
+  }, [loadVideo, setPlaybackState, setParsedVideostrate, setMetamaxRealm])
 
   useEffect(() => {
     const html = serializeVideostrate(parsedVideostrate)
@@ -106,12 +97,13 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
 
   const onChangeUrl = useCallback(() => {
     setVideostrateUrl(url)
+    console.log("Loading videostrate", url)
     controlPlayer("load", {
-      url: videostrateUrl,
+      url: url,
       width: iframeWidth,
       height: iframeHeight,
     })
-  }, [setVideostrateUrl, url, videostrateUrl, iframeWidth, iframeHeight])
+  }, [setVideostrateUrl, url, iframeWidth, iframeHeight])
 
   return (
     <div className="flex flex-col gap-4 w-full">

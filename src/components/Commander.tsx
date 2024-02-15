@@ -26,7 +26,7 @@ const Commander = () => {
             <ul className="list-disc">
               {uniqueUrls.map((url, index) => {
                 const metadata =
-                  clipsMetadata.clips && clipsMetadata.clips.get(url)
+                  clipsMetadata.clips.get && clipsMetadata.clips.get(url)
                 let formattedTitle = url
                 if (metadata) {
                   formattedTitle = `${metadata.title || url} - ${metadata.duration?.toFixed(0)} seconds`

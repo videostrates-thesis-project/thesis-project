@@ -14,8 +14,8 @@ export interface AppState {
   clipsMetadata: { clips: Map<string, ClipMetadata> }
   setClipsMetadata: (clips: Map<string, ClipMetadata>) => void
 
-  metaMaxRealm: string | null
-  setMetaMaxRealm: (realm: string) => void
+  metamaxRealm: string | null
+  setMetamaxRealm: (realm: string) => void
 
   playbackState: PlaybackState
   setPlaybackState: (state: PlaybackState) => void
@@ -39,8 +39,8 @@ export const useStore = create(
       setPlaybackState: (state: PlaybackState) => set({ playbackState: state }),
       seek: 0,
       setSeek: (seek: number) => set({ seek: seek }),
-      metaMaxRealm: null,
-      setMetaMaxRealm: (realm: string) => set({ metaMaxRealm: realm }),
+      metamaxRealm: null,
+      setMetamaxRealm: (realm: string) => set({ metamaxRealm: realm }),
     }),
     {
       name: "thesis-project-storage",

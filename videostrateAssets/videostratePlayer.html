@@ -49,7 +49,7 @@
               "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/Timetastic.js",
             ]
 
-          console.log("View config:", config)
+          // console.log("View config:", config)
 
           this.config = config
           this.uri = targetVideostrateURI
@@ -109,7 +109,7 @@
             // Start control iframe
             self.iframe = document.createElement("iframe")
             self.iframe.webstrate.on("transcluded", function () {
-              console.log("Got player transclude for passive signalling")
+              // console.log("Got player transclude for passive signalling")
               // Listen for our player to connect
               let playerID = Math.random().toString(36).substr(2, 12)
               self.iframe.contentWindow.webstrate.on(
@@ -1001,6 +1001,7 @@
         // It's only for getting the code, so it should be hidden
         iframe.style.display = "none"
         document.body.appendChild(iframe)
+
         return iframe
       }
     </script>
@@ -1043,18 +1044,14 @@
       }
 
       function loadVideostrate(url, width, height) {
+        if (videostrateIframe) videostrateIframe.remove()
         videostrateIframe = createVideostrateIframe(url)
+        console.log("Creating videostrate iframe", url)
         videostrateIframe.webstrate.on("transcluded", function () {
-          const stringHtml = new XMLSerializer().serializeToString(
-            videostrateIframe.contentWindow.document
-          )
-          top.postMessage(
-            {
-              type: "videostrate-content",
-              html: stringHtml,
-            },
-            "*"
-          )
+          // When the videostrate is loaded, send all the necessary information to the parent
+          postVideostrateContent()
+          postMetamaxRealm()
+          watchRealmChange()
         })
 
         loadStreamView(url, width, height)
@@ -1068,6 +1065,57 @@
             "*"
           )
         })
+      }
+
+      function postMetamaxRealm() {
+        const realm =
+          videostrateIframe.contentWindow.document.documentElement.getAttribute(
+            "data-metamax-realm"
+          )
+        if (realm) {
+          top.postMessage(
+            {
+              type: "metamax-realm",
+              realm,
+            },
+            "*"
+          )
+        }
+      }
+
+      function watchRealmChange() {
+        videostrateIframe.contentWindow.document.documentElement.webstrate.on(
+          "attributeChanged",
+          function (attributeName, oldValue, newValue) {
+            console.log("attributeChanged", attributeName, oldValue, newValue)
+            if (attributeName === "data-metamax-realm") {
+              top.postMessage(
+                {
+                  type: "metamax-realm",
+                  realm: newValue,
+                },
+                "*"
+              )
+            }
+          }
+        )
+      }
+
+      function postVideostrateContent() {
+        const stringHtml = new XMLSerializer().serializeToString(
+          videostrateIframe.contentWindow.document
+        )
+        console.log(
+          "Posting videostrate content",
+          stringHtml.slice(0, 100) + "..."
+        )
+        top.postMessage(
+          {
+            type: "videostrate-content",
+            html: stringHtml,
+          },
+          "*"
+        )
       }
 
       function updateVideostrate(content) {
