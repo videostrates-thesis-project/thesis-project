@@ -39,8 +39,6 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
 
   const loadVideo = useCallback(() => {
     if (!videostrateUrl) return
-    console.log("iframeWidth", iframeWidth, iframeRef.current?.clientWidth)
-    console.log("iframeHeight", iframeHeight, iframeRef.current?.clientHeight)
     setPlaybackState({ frame: 0, time: 0 })
     controlPlayer("load", {
       url: videostrateUrl,
@@ -77,20 +75,11 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
 
   useEffect(() => {
     const html = serializeVideostrate(parsedVideostrate)
-    const iframeWindow = iframeRef.current?.contentWindow
-    iframeWindow?.postMessage(
-      {
-        type: "videostrate",
-        payload: {
-          text: html,
-        },
-      },
-      "*"
-    )
+    controlPlayer("update-video", { content: html })
   }, [parsedVideostrate])
 
   function controlPlayer(
-    command: "play" | "pause" | "load" | "seek",
+    command: "play" | "pause" | "load" | "seek" | "update-video",
     args?: object
   ) {
     if (command === "play") setPlaying(true)
