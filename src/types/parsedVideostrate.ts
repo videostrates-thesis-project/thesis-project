@@ -5,6 +5,7 @@ export class ParsedVideostrate {
   clips: VideoClipElement[] = []
   elements: VideoElement[] = []
   all: VideoElement[] = []
+  length = 0
 
   constructor(clips: VideoClipElement[], elements: VideoElement[]) {
     this.clips = clips
@@ -42,8 +43,9 @@ export class ParsedVideostrate {
   }
 
   public addClip(source: string, start: number, end: number) {
+    const newId = uuid()
     this.clips.push({
-      id: uuid(),
+      id: newId,
       start,
       end,
       nodeType: "video",
@@ -53,6 +55,8 @@ export class ParsedVideostrate {
     })
     this.clips = [...this.clips]
     this.calculateAll()
+
+    return newId
   }
 
   public deleteElementById(elementId: string) {
@@ -68,13 +72,18 @@ export class ParsedVideostrate {
     if (!element) {
       throw new Error(`Element with id ${elementId} not found`)
     }
+    const oldLength = element.end - element.start
     element.offset = from
     element.end = to - from + element.start
     this.calculateAll()
+
+    const newLength = element.end - element.start
+    return newLength - oldLength
   }
 
   private calculateAll() {
     this.all = this.elements.concat(this.clips)
     this.all.sort((a, b) => a.start - b.start)
+    this.length = Math.max(...this.all.map((e) => e.end))
   }
 }

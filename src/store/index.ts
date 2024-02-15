@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { ParsedVideostrate } from "../types/parsedVideostrate"
 import { PlaybackState } from "../types/playbackState"
+import { AvailableClip } from "../types/availableClip"
 
 export interface AppState {
   videostrateUrl: string
@@ -15,6 +16,8 @@ export interface AppState {
 
   seek: number
   setSeek: (seek: number) => void
+
+  availableClips: AvailableClip[]
 }
 
 export const useStore = create(
@@ -29,6 +32,20 @@ export const useStore = create(
       setPlaybackState: (state: PlaybackState) => set({ playbackState: state }),
       seek: 0,
       setSeek: (seek: number) => set({ seek: seek }),
+      availableClips: [
+        {
+          name: "Big Buck Bunny",
+          source:
+            "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+          length: 60,
+        },
+        {
+          name: "Elephants Dream",
+          source:
+            "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+          length: 60,
+        },
+      ],
     }),
     {
       name: "thesis-project-storage",
