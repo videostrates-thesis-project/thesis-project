@@ -4,6 +4,7 @@ import { useTimeStamp } from "../hooks/useTimeStamp"
 import { useScrollNavigation } from "../hooks/useScrollNavigation"
 import { useSeek } from "../hooks/useSeek"
 import { useTimelineElements } from "../hooks/useTimelineElements"
+import { useTimelineMarkers } from "../hooks/useTimelineMarkers"
 
 const Timeline = () => {
   const { parsedVideostrate, playbackState } = useStore()
@@ -21,18 +22,11 @@ const Timeline = () => {
     parsedVideostrate.length
   )
   const elements = useTimelineElements(viewStart, viewEnd)
+  const markers = useTimelineMarkers(viewStart, viewEnd)
 
   useEffect(() => {
     setViewEnd(parsedVideostrate.length)
   }, [parsedVideostrate.length])
-
-  const markers = useMemo(() => {
-    const viewLength = viewEnd - viewStart
-    return parsedVideostrate.all.map((element) => ({
-      left: ((element.start - viewStart) / viewLength) * 100,
-      text: element.start,
-    }))
-  }, [parsedVideostrate.all, viewEnd, viewStart])
 
   const playbackPosition = useMemo(
     () => (playbackState.time / parsedVideostrate.length) * 100 + "%",
