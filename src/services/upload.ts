@@ -1,10 +1,5 @@
 import { initializeApp } from "firebase/app"
-import {
-  getDownloadURL,
-  getStorage,
-  ref as storageRef,
-  uploadBytes,
-} from "firebase/storage"
+import { getStorage, ref as storageRef, uploadBytes } from "firebase/storage"
 import { v4 as uuid } from "uuid"
 
 const firebaseConfig = {
@@ -17,6 +12,8 @@ const firebaseConfig = {
   measurementId: "G-D128EYCT3T",
 }
 
+const BASE_URL = "https://storage.googleapis.com/videostrates.appspot.com/"
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
 
@@ -27,7 +24,7 @@ export const uploadVideo = async (file: Blob) => {
 
   try {
     const result = await uploadBytes(ref, file)
-    const url = await getDownloadURL(result.ref)
+    const url = BASE_URL + result.metadata.fullPath
     return url
   } catch (error) {
     console.error("Failed to upload to Firebase", error)
