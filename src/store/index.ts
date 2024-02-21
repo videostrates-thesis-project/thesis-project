@@ -30,7 +30,7 @@ export interface AppState {
 export const useStore = create(
   persist<AppState>(
     (set) => ({
-      videostrateUrl: "https://demo.webstrates.net/black-eel-9/",
+      videostrateUrl: "https://demo.webstrates.net/evil-jellyfish-8/",
       setVideostrateUrl: (url: string) => set({ videostrateUrl: url }),
       parsedVideostrate: new ParsedVideostrate([], []),
       setParsedVideostrate: async (parsed: ParsedVideostrate) =>

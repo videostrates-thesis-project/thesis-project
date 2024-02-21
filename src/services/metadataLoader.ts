@@ -1,13 +1,16 @@
-import ClipMetadata from "../types/videoClip"
+import VideoClip from "../types/videoClip"
 
 export const getClipsMetadata = async (
   clips: string[],
   metamaxRealm: string
 ) => {
-  const clipsMetadataPromises: Promise<ClipMetadata>[] = clips.map(
+  const clipsMetadataPromises: Promise<VideoClip>[] = clips.map(
     async (url) => await getClipMetadata(url, metamaxRealm)
   )
-  const clipsMetadata: ClipMetadata[] = await Promise.all(clipsMetadataPromises)
+  let clipsMetadata: VideoClip[] = await Promise.all(clipsMetadataPromises)
+  clipsMetadata = clipsMetadata.filter(
+    (metadata) => metadata?.status !== "UNCACHED"
+  )
   return clipsMetadata
 }
 
@@ -19,7 +22,7 @@ export const getClipMetadata = async (
   if (data?.status === "UNCACHED") {
     data = await fetchMetamaxMetadata(clipSource, metamaxRealm, "PUT")
   }
-  return new ClipMetadata(clipSource, data)
+  return new VideoClip(clipSource, data)
 }
 
 const fetchMetamaxMetadata = async (
