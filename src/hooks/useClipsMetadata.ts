@@ -3,19 +3,16 @@ import { useStore } from "../store"
 import { getClipsMetadata } from "../services/metadataLoader"
 
 export const useClipsMetadata = () => {
-  const { metamaxRealm, parsedVideostrate, setClipsMetadata } = useStore()
+  const { metamaxRealm, clipsSources, setAvailableClips } = useStore()
 
   useEffect(() => {
     const fetchMetadata = async () => {
       if (metamaxRealm) {
         console.log("fetchMetadata; realm:", metamaxRealm)
-        const metadata = await getClipsMetadata(
-          parsedVideostrate.clips,
-          metamaxRealm
-        )
-        setClipsMetadata(metadata)
+        const metadata = await getClipsMetadata(clipsSources, metamaxRealm)
+        setAvailableClips(metadata)
       }
     }
     fetchMetadata()
-  }, [metamaxRealm, parsedVideostrate.clips, setClipsMetadata])
+  }, [metamaxRealm, clipsSources, setAvailableClips])
 }

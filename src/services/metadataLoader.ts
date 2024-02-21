@@ -1,23 +1,20 @@
 import ClipMetadata from "../types/videoClip"
-import { VideoClipElement } from "../types/videoElement"
 
 export const getClipsMetadata = async (
-  clips: VideoClipElement[],
+  clips: string[],
   metamaxRealm: string
 ) => {
-  const uniqueUrls = Array.from(new Set(clips.map((clip) => clip.source)))
-  const clipsMetadataPromises: Promise<ClipMetadata>[] = uniqueUrls.map(
+  const clipsMetadataPromises: Promise<ClipMetadata>[] = clips.map(
     async (url) => await getClipMetadata(url, metamaxRealm)
   )
   const clipsMetadata: ClipMetadata[] = await Promise.all(clipsMetadataPromises)
-  const clipsMetadataMap = new Map<string, ClipMetadata>()
-  clipsMetadata.forEach((metadata) => {
-    clipsMetadataMap.set(metadata.source, metadata)
-  })
-  return clipsMetadataMap
+  return clipsMetadata
 }
 
-const getClipMetadata = async (clipSource: string, metamaxRealm: string) => {
+export const getClipMetadata = async (
+  clipSource: string,
+  metamaxRealm: string
+) => {
   let data = await fetchMetamaxMetadata(clipSource, metamaxRealm, "GET")
   if (data?.status === "UNCACHED") {
     data = await fetchMetamaxMetadata(clipSource, metamaxRealm, "PUT")

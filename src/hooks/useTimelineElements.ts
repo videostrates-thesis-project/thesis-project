@@ -22,7 +22,7 @@ export const useTimelineElements = (viewStart: number, viewEnd: number) => {
           clip.type === "video" &&
           availableClips.find(
             (c) => c.source === (clip as VideoClipElement).source
-          )?.name,
+          )?.title,
       } as TimelineElement
     })
   }, [availableClips, parsedVideostrate.all, viewEnd, viewStart])
