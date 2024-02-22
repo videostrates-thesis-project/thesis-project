@@ -3,7 +3,7 @@ import { useStore } from "../store"
 const Navbar = () => {
   const { fileName, setFileName } = useStore()
   return (
-    <nav className="navbar min-h-10 py-2 border-b border-neutral">
+    <nav className="navbar min-h-10 py-2 bg-base-300 border-b border-neutral">
       <div className="navbar-start flex items-center gap-2">
         <button className="btn btn-ghost btn-sm">
           <i className="bi bi-list text-lg leading-6"></i>

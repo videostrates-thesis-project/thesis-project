@@ -1,19 +1,18 @@
 import { useMemo } from "react"
-import { useStore } from "../store"
+
+const MAX_MARKERS = 10
 
 export const useTimelineMarkers = (viewStart: number, viewEnd: number) => {
-  const { parsedVideostrate } = useStore()
-
   return useMemo(() => {
     const viewLength = viewEnd - viewStart
-    return parsedVideostrate.all
-      .map((element) => ({
-        left: ((element.start - viewStart) / viewLength) * 100,
-        text: element.start,
-      }))
-      .concat({
-        left: ((parsedVideostrate.length - viewStart) / viewLength) * 100,
-        text: parsedVideostrate.length,
+    const markers = []
+    const step = Math.max(Math.floor(viewLength / MAX_MARKERS), 1)
+    for (let i = Math.ceil(viewStart); i < viewEnd; i += step) {
+      markers.push({
+        left: ((i - viewStart) / viewLength) * 100,
+        text: markers.length % 2 === 0 ? i : null,
       })
-  }, [parsedVideostrate.all, parsedVideostrate.length, viewEnd, viewStart])
+    }
+    return markers
+  }, [viewEnd, viewStart])
 }

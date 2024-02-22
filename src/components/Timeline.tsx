@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react"
 import { useStore } from "../store"
-import { useTimeStamp } from "../hooks/useTimeStamp"
 import { useScrollNavigation } from "../hooks/useScrollNavigation"
 import { useSeek } from "../hooks/useSeek"
 import { useTimelineElements } from "../hooks/useTimelineElements"
@@ -11,14 +10,12 @@ const Timeline = () => {
   const { parsedVideostrate, playbackState } = useStore()
   const [viewStart, setViewStart] = useState(0)
   const [viewEnd, setViewEnd] = useState(0)
-  const playbackTime = useTimeStamp(playbackState.time)
-  const fullTime = useTimeStamp(parsedVideostrate.length)
-  const timelineDivRef = useScrollNavigation(
-    viewStart,
-    viewEnd,
-    setViewStart,
-    setViewEnd
-  )
+  const {
+    ref: timelineDivRef,
+    zoomIn,
+    zoomOut,
+    resetZoom,
+  } = useScrollNavigation(viewStart, viewEnd, setViewStart, setViewEnd)
   const { isSeeking, onSeek, onStartSeeking, onStopSeeking } = useSeek(
     parsedVideostrate.length
   )
@@ -34,32 +31,43 @@ const Timeline = () => {
     [parsedVideostrate.length, playbackState.time]
   )
 
+  const formatMarker = (marker: number | null) => {
+    if (marker === null) return ""
+    const minutes = Math.floor(marker / 60)
+    const seconds = marker % 60
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`
+  }
+
   return (
-    <div
-      className={`flex flex-col mt-4 relative ${isSeeking ? "cursor-grabbing" : "cursor-pointer"}`}
-      onMouseMove={onSeek}
-      onMouseDown={onStartSeeking}
-      onMouseUp={onStopSeeking}
-      onMouseLeave={onStopSeeking}
-      ref={timelineDivRef}
-    >
-      <TimelineControls zoom={100} setZoom={() => {}} />
-      <div className="overflow-hidden">
+    <div className="flex flex-col mt-4 relative" ref={timelineDivRef}>
+      <TimelineControls {...{ resetZoom, zoomOut, zoomIn }} />
+      <div
+        className={`relative overflow-clip ${isSeeking ? "cursor-grabbing" : "cursor-pointer"}`}
+        onMouseMove={onSeek}
+        onMouseDown={onStartSeeking}
+        onMouseUp={onStopSeeking}
+        onMouseLeave={onStopSeeking}
+      >
         <div
           className="h-full w-[0.125rem] bg-white absolute z-10"
           style={{ left: playbackPosition }}
         >
           <i className="absolute bi bi-caret-down-fill text-2xl text-white l-1/2 -translate-x-1/2 -top-3"></i>
         </div>
-        <div className="flex flex-row mt-4 relative h-8">
+        <div className="flex flex-row relative h-8">
           {markers.map((marker, index) => {
             return (
               <div
                 key={index}
-                className="absolute  h-8 bg-gray-500 rounded-md mx-2 text-white flex justify-center items-center w-6 -translate-x-3"
-                style={{ left: `${marker.left}%` }}
+                className={`absolute bg-base-content w-[1px]`}
+                style={{
+                  left: `${marker.left}%`,
+                  height: `${marker.text === null ? "0.5" : "1"}rem`,
+                }}
               >
-                {marker.text.toFixed(0)}
+                <span className="relative -top-1 left-2 text-xs">
+                  {formatMarker(marker.text)}
+                </span>
               </div>
             )
           })}
