@@ -26,8 +26,19 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
 
   const updateIframeSize = useCallback(() => {
     const target = iframeRef.current?.parentNode as HTMLElement
-    const newContainerHeight = target.clientWidth * (9 / 16)
-    setIframeScale(target.clientWidth / 1280)
+    if (!target) return
+    // Calculate the maximum height of the container by subtracting the height of the controls
+    const maxContainerHeight =
+      (target.parentNode as HTMLElement).clientHeight - 48
+    const newContainerHeight = Math.min(
+      target.clientWidth * (9 / 16),
+      maxContainerHeight
+    )
+    const newIframeScale = Math.min(
+      target.clientWidth / 1280,
+      newContainerHeight / 720
+    )
+    setIframeScale(newIframeScale)
     setIframeLeft((target.clientWidth - 1280) / 2)
     setIframeTop((newContainerHeight - 720) / 2)
     setIframeContainerHeight(newContainerHeight)
@@ -127,7 +138,7 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
   }, [setVideostrateUrl, url])
 
   return (
-    <div className="flex flex-col gap-1 w-full h-full p-4 min-h-0 min-w-0">
+    <div className="flex flex-col gap-2 w-full h-full p-2 min-h-0 min-w-0">
       <div className="flex flex-row gap-4 w-full">
         <input
           type="text"
@@ -140,23 +151,25 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
           Change URL
         </button>
       </div>
-      <div
-        className="w-full h-full overflow-hidden min-h-0 min-w-0"
-        style={{ height: `${iframeContainerHeight}px` }}
-        onLoad={() => updateIframeSize()}
-      >
-        <iframe
-          ref={iframeRef}
-          className="w-[1280px] h-[720px] relative"
-          style={{
-            scale: `${iframeScale}`,
-            left: `${iframeLeft}px`,
-            top: `${iframeTop}px`,
-          }}
-          src={props.videoPlayerUrl}
-        ></iframe>
+      <div className="flex flex-col justify-center items-center w-full h-full min-h-0 min-w-0">
+        <div
+          className="w-full h-full overflow-hidden min-h-0 min-w-0"
+          style={{ height: `${iframeContainerHeight}px` }}
+          onLoad={() => updateIframeSize()}
+        >
+          <iframe
+            ref={iframeRef}
+            className="w-[1280px] h-[720px] relative"
+            style={{
+              scale: `${iframeScale}`,
+              left: `${iframeLeft}px`,
+              top: `${iframeTop}px`,
+            }}
+            src={props.videoPlayerUrl}
+          ></iframe>
+        </div>
+        <PlayerControls />
       </div>
-      <PlayerControls />
     </div>
   )
 }

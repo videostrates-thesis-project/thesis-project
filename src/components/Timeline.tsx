@@ -5,6 +5,7 @@ import { useScrollNavigation } from "../hooks/useScrollNavigation"
 import { useSeek } from "../hooks/useSeek"
 import { useTimelineElements } from "../hooks/useTimelineElements"
 import { useTimelineMarkers } from "../hooks/useTimelineMarkers"
+import TimelineControls from "./TimelineControls"
 
 const Timeline = () => {
   const { parsedVideostrate, playbackState } = useStore()
@@ -42,65 +43,63 @@ const Timeline = () => {
       onMouseLeave={onStopSeeking}
       ref={timelineDivRef}
     >
-      <div className="flex flex-row text-lg">
-        <div className="w-1/4 text-left ml-2">{viewStart.toFixed(1)}</div>
-        <div className="w-1/2 font-bold">
-          Timeline {playbackTime}/{fullTime}
+      <TimelineControls zoom={100} setZoom={() => {}} />
+      <div className="overflow-hidden">
+        <div
+          className="h-full w-[0.125rem] bg-white absolute z-10"
+          style={{ left: playbackPosition }}
+        >
+          <i className="absolute bi bi-caret-down-fill text-2xl text-white l-1/2 -translate-x-1/2 -top-3"></i>
         </div>
-        <div className="w-1/4 text-right mr-2">{viewEnd.toFixed(1)}</div>
-      </div>
-      <div
-        className="h-full w-1 bg-black absolute z-10"
-        style={{ left: playbackPosition }}
-      ></div>
-      <div className="flex flex-row mt-4 relative h-8">
-        {markers.map((marker, index) => {
-          return (
-            <div
-              key={index}
-              className="absolute  h-8 bg-gray-500 rounded-md mx-2 text-white flex justify-center items-center w-6 -translate-x-3"
-              style={{ left: `${marker.left}%` }}
-            >
-              {marker.text.toFixed(0)}
-            </div>
-          )
-        })}
-      </div>
-      <div className="flex flex-row mt-4 relative h-12">
-        {elements
-          .filter((e) => e.type !== "video")
-          .map((element, index) => {
+        <div className="flex flex-row mt-4 relative h-8">
+          {markers.map((marker, index) => {
             return (
               <div
                 key={index}
-                className={`absolute h-8 bg-green-500 rounded-md mx-2 text-white flex justify-start items-center`}
-                style={{
-                  width: `${element.width}%`,
-                  left: `${element.left}%`,
-                }}
+                className="absolute  h-8 bg-gray-500 rounded-md mx-2 text-white flex justify-center items-center w-6 -translate-x-3"
+                style={{ left: `${marker.left}%` }}
               >
-                {element.type} {element.nodeType}
+                {marker.text.toFixed(0)}
               </div>
             )
           })}
-      </div>
-      <div className="flex flex-row mt-4 relative h-20">
-        {elements
-          .filter((e) => e.type === "video")
-          .map((element, index) => {
-            return (
-              <div
-                key={index}
-                className={`absolute h-16 border-2 border-blue-600 bg-blue-500 rounded-md text-white flex justify-center items-center`}
-                style={{
-                  width: `${element.width}%`,
-                  left: `${element.left}%`,
-                }}
-              >
-                {element.clipName}
-              </div>
-            )
-          })}
+        </div>
+        <div className="flex flex-row mt-4 relative h-12">
+          {elements
+            .filter((e) => e.type !== "video")
+            .map((element, index) => {
+              return (
+                <div
+                  key={index}
+                  className={`absolute h-8 bg-green-500 rounded-md mx-2 text-white flex justify-start items-center`}
+                  style={{
+                    width: `${element.width}%`,
+                    left: `${element.left}%`,
+                  }}
+                >
+                  {element.type} {element.nodeType}
+                </div>
+              )
+            })}
+        </div>
+        <div className="flex flex-row mt-4 relative h-20">
+          {elements
+            .filter((e) => e.type === "video")
+            .map((element, index) => {
+              return (
+                <div
+                  key={index}
+                  className={`absolute h-16 border-2 border-blue-600 bg-blue-500 rounded-md text-white flex justify-center items-center`}
+                  style={{
+                    width: `${element.width}%`,
+                    left: `${element.left}%`,
+                  }}
+                >
+                  {element.clipName}
+                </div>
+              )
+            })}
+        </div>
       </div>
     </div>
   )
