@@ -1,7 +1,7 @@
-import { AvailableClip } from "../../types/availableClip"
+import VideoClip from "../../types/videoClip"
 
 export const buildAssistantMessage = (
-  clips: AvailableClip[],
+  clips: VideoClip[],
   html: string,
   clip_id: string,
   prompt: string
@@ -10,7 +10,7 @@ export const buildAssistantMessage = (
     ${clips
       .map(
         (clip, index) =>
-          `${index + 1}. "${clip.name}", ${clip.length}, "${clip.source}"`
+          `${index + 1}. "${clip.title}", ${clip.length}, "${clip.source}"`
       )
       .join("\n    ")}
     
