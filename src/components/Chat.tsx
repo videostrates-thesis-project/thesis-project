@@ -13,7 +13,6 @@ const Chat = () => {
     const html = new ChatGptSerializationStrategy().serialize(parsedVideostrate)
     const clip_id = "bf5e68d1-165e-4ffe-8f3d-d88f3e965008"
     const prompt = buildAssistantMessage(availableClips, html, clip_id, message)
-    //openAIService.sendAssistantMessage(prompt)
     openAIService.sendChatMessage(prompt)
     setMessage("")
   }, [availableClips, message, parsedVideostrate])

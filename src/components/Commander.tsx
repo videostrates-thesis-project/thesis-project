@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react"
 import { useStore } from "../store"
-import { processCommand, processScript } from "../services/commandProcessor"
 import { executeScript } from "../services/command/executeScript"
 
 const Commander = () => {
@@ -8,10 +7,6 @@ const Commander = () => {
   const [currentCommand, setCurrentCommand] = useState("")
 
   const issueCommand = useCallback(() => {
-    //processCommand(currentCommand)
-    /* processScript(
-      '``` \nadd_custom_element("<table border=\\"1\\" style=\\"font-family: Arial; font-size: 14px; text-align: center; border-collapse: separate; border-spacing: 10px;\\"><tr style=\\"background-color: lightblue; border-radius: 10px;\\"><td><b>Name</b></td><td><b>Breed</b></td><td><b>Color</b></td></tr><tr style=\\"background-color: lightgreen; border-radius: 10px;\\"><td>Luna</td><td>Siberian</td><td>Gray</td></tr><tr style=\\"background-color: lightpink; border-radius: 10px;\\"><td>Milo</td><td>Siamese</td><td>White and brown</td></tr><tr style=\\"background-color: lightyellow; border-radius: 10px;\\"><td>Simba</td><td>Tabby</td><td>Orange</td></tr></table>", 10, 20);\n```'
-    )*/
     executeScript(currentCommand)
     setCurrentCommand("")
   }, [currentCommand])

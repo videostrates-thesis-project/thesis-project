@@ -15,7 +15,7 @@ export const processAddClipCommand = (
   }
   const availableClips = useStore.getState().availableClips
   const availableClip = availableClips.find(
-    (clip) => clip.name === clipName.value
+    (clip) => clip.title === clipName.value
   )
   if (!availableClip) {
     throw new Error(
