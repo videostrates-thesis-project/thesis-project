@@ -15,6 +15,29 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
         .availableClips.find((c) => c.source === clip.source)
       return `<video id="${clip.id}" class="composited" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}" clip-name="${availableClip?.name}"><source src="${clip.source}" /></video>`
     } else {
+      if (element.outerHtml) {
+        const parser = new DOMParser()
+        const document = parser.parseFromString(element.outerHtml, "text/html")
+        const htmlElement = document.body.firstChild as HTMLElement
+        if (htmlElement) {
+          if (!htmlElement.classList.contains("composited")) {
+            htmlElement.classList.add("composited")
+          }
+          htmlElement.setAttribute("id", element.id)
+          htmlElement.setAttribute("absolute-start", element.start.toString())
+          htmlElement.setAttribute("absolute-end", element.end.toString())
+          htmlElement.setAttribute(
+            "relative-start",
+            (element.offset ?? 0).toString()
+          )
+          htmlElement.setAttribute(
+            "clip-end",
+            (element.end - element.start + element.offset).toString()
+          )
+          return htmlElement.outerHTML
+        }
+      }
+
       const custom = element as CustomElement
       return `<${element.nodeType} id="${element.id}" class="composited" absolute-start="${element.start}" absolute-end="${element.end}" relative-start="${element.offset ?? 0}" clip-end="${element.end - element.start + element.offset}">${custom.content}</${element.nodeType}>`
     }

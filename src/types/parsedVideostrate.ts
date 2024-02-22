@@ -81,6 +81,23 @@ export class ParsedVideostrate {
     return newLength - oldLength
   }
 
+  public addCustomElement(outerHtml: string, start: number, end: number) {
+    const newId = uuid()
+    this.elements.push({
+      id: newId,
+      start,
+      end,
+      nodeType: "div",
+      type: "custom",
+      offset: 0,
+      outerHtml,
+    })
+    this.elements = [...this.elements]
+    this.calculateAll()
+
+    return newId
+  }
+
   private calculateAll() {
     this.all = this.elements.concat(this.clips)
     this.all.sort((a, b) => a.start - b.start)

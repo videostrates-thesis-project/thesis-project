@@ -4,6 +4,7 @@ import { ParsedVideostrate } from "../types/parsedVideostrate"
 import { PlaybackState } from "../types/playbackState"
 import ClipMetadata from "../types/videoClip"
 import { AvailableClip } from "../types/availableClip"
+import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 
 export interface AppState {
   videostrateUrl: string
@@ -25,11 +26,16 @@ export interface AppState {
   setSeek: (seek: number) => void
 
   availableClips: AvailableClip[]
+
+  currentMessages: ChatCompletionMessageParam[]
+  addMessage: (
+    message: ChatCompletionMessageParam
+  ) => ChatCompletionMessageParam[]
 }
 
 export const useStore = create(
   persist<AppState>(
-    (set) => ({
+    (set, get) => ({
       videostrateUrl: "https://demo.webstrates.net/black-eel-9/",
       setVideostrateUrl: (url: string) => set({ videostrateUrl: url }),
       parsedVideostrate: new ParsedVideostrate([], []),
@@ -58,6 +64,13 @@ export const useStore = create(
           length: 60,
         },
       ],
+      currentMessages: [],
+      addMessage: (message: ChatCompletionMessageParam) => {
+        set((state) => {
+          return { currentMessages: [...state.currentMessages, message] }
+        })
+        return get().currentMessages
+      },
     }),
     {
       name: "thesis-project-storage",

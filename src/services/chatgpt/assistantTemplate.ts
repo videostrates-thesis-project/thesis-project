@@ -1,4 +1,4 @@
-import { AvailableClip } from "../types/availableClip"
+import { AvailableClip } from "../../types/availableClip"
 
 export const buildAssistantMessage = (
   clips: AvailableClip[],

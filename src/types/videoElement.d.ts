@@ -7,6 +7,7 @@ export interface VideoElement {
   nodeType: string
   offset: number
   type: VideoElementType
+  outerHtml?: string
 }
 
 export interface CustomElement extends VideoElement {
