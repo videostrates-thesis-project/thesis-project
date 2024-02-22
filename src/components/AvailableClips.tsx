@@ -9,7 +9,7 @@ const AvailableClips = () => {
         return (
           <div className="flex flex-row gap-2" key={clip.source}>
             <img
-              className="w-1/2 flex-grow-0 flex-shrink-0 h-28 object-cover rounded border-2 border-primary"
+              className="w-1/2 flex-grow-0 flex-shrink-0 h-28 object-cover rounded"
               src={clip.thumbnailUrl || "https://via.placeholder.com/150"}
             />
             <div className="py-2 flex flex-col w-1/2 h-full flex-grow-0 flex-shrink-0 text-left">
@@ -19,7 +19,7 @@ const AvailableClips = () => {
               <div>{clip.length ?? "?"} seconds</div>
               <div className="flex-grow w-full flex justify-end items-end">
                 <button className="btn btn-sm btn-ghost">
-                  <i className="bi bi-images text-xl"></i>
+                  <i className="bi bi-images text-lg"></i>
                 </button>
               </div>
             </div>

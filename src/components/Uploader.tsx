@@ -17,7 +17,7 @@ const Uploader = () => {
   return (
     <>
       <label htmlFor="clips-upload" className="btn btn-sm btn-accent w-full">
-        <i className="bi bi-file-earmark-plus text-xl"></i> Import clips{" "}
+        <i className="bi bi-file-earmark-plus text-lg"></i> Import clips{" "}
       </label>
       <input
         type="file"

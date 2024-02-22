@@ -39,7 +39,7 @@ const Chat = () => {
   }, [availableClips, message, parsedVideostrate])
 
   return (
-    <div className="flex flex-col h-full w-96 max-h-full bg-base-300 border-l border-neutral rounded">
+    <div className="flex flex-col h-full w-96 min-w-96 max-h-full bg-base-300 border-l border-neutral rounded">
       <div className="max-h-full overflow-y-auto overflow-x-hidden break-words break-all">
         {openAIService.messages.map((msg, index) => (
           <div

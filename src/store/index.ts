@@ -20,6 +20,9 @@ export interface AppState {
   playbackState: PlaybackState
   setPlaybackState: (state: PlaybackState) => void
 
+  playing: boolean
+  setPlaying: (playing: boolean) => void
+
   seek: number
   setSeek: (seek: number) => void
 
@@ -34,17 +37,24 @@ export const useStore = create(
   persist<AppState>(
     (set) => ({
       videostrateUrl: "https://demo.webstrates.net/evil-jellyfish-8/",
-      setVideostrateUrl: (url: string) => set({ videostrateUrl: url }),
+      setVideostrateUrl: (url: string) =>
+        set({ videostrateUrl: url, availableClips: [], clipsSources: [] }),
       fileName: "Untitled Videostrate",
       setFileName: (name: string) => set({ fileName: name }),
       parsedVideostrate: new ParsedVideostrate([], []),
-      setParsedVideostrate: async (parsed: ParsedVideostrate) =>
+      setParsedVideostrate: async (parsed: ParsedVideostrate) => {
+        const uniqueClipSources = [
+          ...new Set(parsed.clips.map((c) => c.source)),
+        ]
         set({
           parsedVideostrate: parsed.clone(),
-          clipsSources: parsed.clips.map((c) => c.source),
-        }),
+          clipsSources: uniqueClipSources,
+        })
+      },
       playbackState: { frame: 0, time: 0 },
       setPlaybackState: (state: PlaybackState) => set({ playbackState: state }),
+      playing: false,
+      setPlaying: (playing: boolean) => set({ playing: playing }),
       seek: 0,
       setSeek: (seek: number) => set({ seek: seek }),
       metamaxRealm: null,

@@ -84,6 +84,10 @@ export class ParsedVideostrate {
   private calculateAll() {
     this.all = this.elements.concat(this.clips)
     this.all.sort((a, b) => a.start - b.start)
-    this.length = Math.max(...this.all.map((e) => e.end))
+    if (this.all.length === 0) {
+      this.length = 0
+    } else {
+      this.length = Math.max(...this.all.map((e) => e.end))
+    }
   }
 }
