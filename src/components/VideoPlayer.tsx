@@ -125,7 +125,7 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
         ref={iframeRef}
         onResize={(e) => updateIframeSize(e)}
         onLoad={(e) => updateIframeSize(e)}
-        className="h-[50rem] max-w-7xl w-[80rem]"
+        className="h-[30rem] max-w-7xl w-[40rem]"
         src={props.videoPlayerUrl}
       ></iframe>
       <div className="flex flex-row gap-4 w-full">

@@ -11,6 +11,9 @@ export interface AppState {
   parsedVideostrate: ParsedVideostrate
   setParsedVideostrate: (parsed: ParsedVideostrate) => Promise<void>
 
+  fileName: string
+  setFileName: (name: string) => void
+
   metamaxRealm: string | null
   setMetamaxRealm: (realm: string) => void
 
@@ -32,6 +35,8 @@ export const useStore = create(
     (set) => ({
       videostrateUrl: "https://demo.webstrates.net/evil-jellyfish-8/",
       setVideostrateUrl: (url: string) => set({ videostrateUrl: url }),
+      fileName: "Untitled Videostrate",
+      setFileName: (name: string) => set({ fileName: name }),
       parsedVideostrate: new ParsedVideostrate([], []),
       setParsedVideostrate: async (parsed: ParsedVideostrate) =>
         set({

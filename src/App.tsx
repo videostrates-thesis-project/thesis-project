@@ -1,9 +1,7 @@
 import "./App.css"
 import Chat from "./components/Chat"
-import Commander from "./components/Commander"
-import Timeline from "./components/Timeline"
-import Uploader from "./components/Uploader"
-import VideoPlayer from "./components/VideoPlayer"
+import Navbar from "./components/Navbar"
+import DefaultView from "./components/Views/DefaultView"
 import { useClipsMetadata } from "./hooks/useClipsMetadata"
 import openAIService from "./services/openai"
 
@@ -12,13 +10,13 @@ openAIService.init()
 function App() {
   useClipsMetadata()
   return (
-    <>
-      <VideoPlayer videoPlayerUrl="https://demo.webstrates.net/polite-falcon-61/" />
-      <Timeline />
-      <Commander />
-      <Chat />
-      <Uploader />
-    </>
+    <div className="flex flex-col h-full max-h-full">
+      <Navbar />
+      <div className="flex flex-row flex-grow w-full min-h-0">
+        <DefaultView />
+        <Chat />
+      </div>
+    </div>
   )
 }
 
