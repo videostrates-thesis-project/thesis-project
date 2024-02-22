@@ -13,7 +13,7 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
       const availableClip = useStore
         .getState()
         .availableClips.find((c) => c.source === clip.source)
-      return `<video id="${clip.id}" class="composited" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}" clip-name="${availableClip?.name}"><source src="${clip.source}" /></video>`
+      return `<video id="${clip.id}" class="composited" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}" clip-name="${availableClip?.title}"><source src="${clip.source}" /></video>`
     } else {
       if (element.outerHtml) {
         const parser = new DOMParser()

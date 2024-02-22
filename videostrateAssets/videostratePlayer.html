@@ -996,11 +996,14 @@
       }
 
       function createVideostrateIframe(videoUrl) {
+        console.log("Creating videostrate iframe", videoUrl)
+        const transient = document.createElement("transient")
         let iframe = document.createElement("iframe")
         iframe.src = videoUrl
         // It's only for getting the code, so it should be hidden
         iframe.style.display = "none"
-        document.body.appendChild(iframe)
+        transient.appendChild(iframe)
+        document.body.appendChild(transient)
 
         return iframe
       }

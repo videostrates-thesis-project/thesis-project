@@ -1,17 +1,11 @@
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useState } from "react"
 import { useStore } from "../store"
 import { processCommand, processScript } from "../services/commandProcessor"
 import { executeScript } from "../services/command/executeScript"
 
 const Commander = () => {
-  const { parsedVideostrate, clipsMetadata } = useStore()
+  const { parsedVideostrate, availableClips } = useStore()
   const [currentCommand, setCurrentCommand] = useState("")
-
-  const uniqueUrls = useMemo(() => {
-    return Array.from(
-      new Set(parsedVideostrate.clips.map((clip) => clip.source))
-    )
-  }, [parsedVideostrate.clips])
 
   const issueCommand = useCallback(() => {
     //processCommand(currentCommand)
@@ -29,13 +23,8 @@ const Commander = () => {
           <div className="card-body text-left">
             <h2 className="card-title">Available clips to import:</h2>
             <ul className="list-disc">
-              {uniqueUrls.map((url, index) => {
-                const metadata =
-                  clipsMetadata.clips.get && clipsMetadata.clips.get(url)
-                let formattedTitle = url
-                if (metadata) {
-                  formattedTitle = `${metadata.title || url} - ${metadata.duration?.toFixed(0)} seconds`
-                }
+              {availableClips.map((clip, index) => {
+                const formattedTitle = `${clip.title || clip.source} - ${clip.length?.toFixed(0)} seconds`
                 return <li key={index}>{formattedTitle}</li>
               })}
             </ul>
