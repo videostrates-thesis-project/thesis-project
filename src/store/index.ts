@@ -42,7 +42,7 @@ export interface AppState {
 export const useStore = create(
   persist<AppState>(
     (set, get) => ({
-      videostrateUrl: "https://demo.webstrates.net/black-eel-9/",
+      videostrateUrl: "https://demo.webstrates.net/evil-jellyfish-8/",
       setVideostrateUrl: (url: string) =>
         set({ videostrateUrl: url, availableClips: [], clipsSources: [] }),
       fileName: "Untitled Videostrate",
