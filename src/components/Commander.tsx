@@ -1,13 +1,13 @@
 import { useCallback, useState } from "react"
 import { useStore } from "../store"
-import { processCommand } from "../services/commandProcessor"
+import { executeScript } from "../services/command/executeScript"
 
 const Commander = () => {
   const { parsedVideostrate, availableClips } = useStore()
   const [currentCommand, setCurrentCommand] = useState("")
 
   const issueCommand = useCallback(() => {
-    processCommand(currentCommand)
+    executeScript(currentCommand)
     setCurrentCommand("")
   }, [currentCommand])
 

@@ -2,6 +2,7 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import { ParsedVideostrate } from "../types/parsedVideostrate"
 import { PlaybackState } from "../types/playbackState"
+import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 import VideoClip from "../types/videoClip"
 
 export interface AppState {
@@ -25,12 +26,17 @@ export interface AppState {
 
   availableClips: VideoClip[]
   setAvailableClips: (clips: VideoClip[]) => void
+
+  currentMessages: ChatCompletionMessageParam[]
+  addMessage: (
+    message: ChatCompletionMessageParam
+  ) => ChatCompletionMessageParam[]
 }
 
 export const useStore = create(
   persist<AppState>(
-    (set) => ({
-      videostrateUrl: "https://demo.webstrates.net/evil-jellyfish-8/",
+    (set, get) => ({
+      videostrateUrl: "https://demo.webstrates.net/black-eel-9/",
       setVideostrateUrl: (url: string) => set({ videostrateUrl: url }),
       parsedVideostrate: new ParsedVideostrate([], []),
       setParsedVideostrate: async (parsed: ParsedVideostrate) =>
@@ -48,6 +54,15 @@ export const useStore = create(
       setClipsSources: (sources: string[]) => set({ clipsSources: sources }),
       availableClips: [],
       setAvailableClips: (clips: VideoClip[]) => set({ availableClips: clips }),
+      currentMessages: [],
+      addMessage: (message: ChatCompletionMessageParam) => {
+        set((state) => {
+          return {
+            currentMessages: [...state.currentMessages, message],
+          }
+        })
+        return get().currentMessages
+      },
     }),
     {
       name: "thesis-project-storage",

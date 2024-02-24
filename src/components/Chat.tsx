@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react"
-import openAIService from "../services/openai"
+import openAIService from "../services/chatgpt/openai"
 import { useStore } from "../store"
-import { buildAssistantMessage } from "../services/assistantTemplate"
+import { buildAssistantMessage } from "../services/chatgpt/assistantTemplate"
 import { ChatGptSerializationStrategy } from "../services/serializationStrategies/chatGptSerializationStrategy"
 import { MessageContentText } from "openai/resources/beta/threads/index.mjs"
 
@@ -13,7 +13,7 @@ const Chat = () => {
     const html = new ChatGptSerializationStrategy().serialize(parsedVideostrate)
     const clip_id = "bf5e68d1-165e-4ffe-8f3d-d88f3e965008"
     const prompt = buildAssistantMessage(availableClips, html, clip_id, message)
-    openAIService.sendMessage(prompt)
+    openAIService.sendChatMessage(prompt)
     setMessage("")
   }, [availableClips, message, parsedVideostrate])
 

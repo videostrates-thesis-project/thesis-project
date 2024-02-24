@@ -5,7 +5,7 @@ import Timeline from "./components/Timeline"
 import Uploader from "./components/Uploader"
 import VideoPlayer from "./components/VideoPlayer"
 import { useClipsMetadata } from "./hooks/useClipsMetadata"
-import openAIService from "./services/openai"
+import openAIService from "./services/chatgpt/openai"
 
 openAIService.init()
 
