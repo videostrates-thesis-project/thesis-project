@@ -1,4 +1,4 @@
-import VideoClip from "../types/videoClip"
+import VideoClip from "../../types/videoClip"
 
 export const buildAssistantMessage = (
   clips: VideoClip[],
