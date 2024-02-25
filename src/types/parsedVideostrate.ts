@@ -1,22 +1,35 @@
 import { VideoClipElement, VideoElement } from "./videoElement"
 import { v4 as uuid } from "uuid"
 
+export interface VideostrateStyle {
+  selector: string
+  style: string
+}
+
 export class ParsedVideostrate {
   clips: VideoClipElement[] = []
   elements: VideoElement[] = []
   all: VideoElement[] = []
   length = 0
+  style: VideostrateStyle[] = []
 
-  constructor(clips: VideoClipElement[], elements: VideoElement[]) {
+  constructor(
+    clips: VideoClipElement[],
+    elements: VideoElement[],
+    style: VideostrateStyle[] = []
+  ) {
     this.clips = clips
     this.elements = elements
+    this.style = style
+
     this.calculateAll()
   }
 
   public clone() {
     return new ParsedVideostrate(
       this.clips.map((c) => ({ ...c })),
-      this.elements.map((e) => ({ ...e }))
+      this.elements.map((e) => ({ ...e })),
+      this.style
     )
   }
 
@@ -96,6 +109,19 @@ export class ParsedVideostrate {
     this.calculateAll()
 
     return newId
+  }
+
+  public addStyle(selector: string, style: string) {
+    const existing = this.style.find((s) => s.selector === selector)
+    if (existing) {
+      existing.style += style
+    } else {
+      this.style.push({ selector, style })
+    }
+  }
+
+  public removeStyle(selector: string) {
+    this.style = this.style.filter((s) => s.selector !== selector)
   }
 
   private calculateAll() {

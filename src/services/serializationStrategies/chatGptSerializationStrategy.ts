@@ -10,10 +10,20 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
   protected serializeElement(element: VideoElement): string {
     if (element.nodeType === "video") {
       const clip = element as VideoClipElement
+      const parser = new DOMParser()
+      const document = parser.parseFromString(
+        element.outerHtml ?? "",
+        "text/html"
+      )
+      const htmlElement = document.body.firstChild as HTMLElement
+      if (!htmlElement.classList.contains("composited")) {
+        htmlElement.classList.add("composited")
+      }
+
       const availableClip = useStore
         .getState()
         .availableClips.find((c) => c.source === clip.source)
-      return `<video id="${clip.id}" class="composited" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}" clip-name="${availableClip?.title}"><source src="${clip.source}" /></video>`
+      return `<video id="${clip.id}" class="${htmlElement.classList.toString()}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}" clip-name="${availableClip?.title}"><source src="${clip.source}" /></video>`
     } else {
       if (element.outerHtml) {
         const parser = new DOMParser()

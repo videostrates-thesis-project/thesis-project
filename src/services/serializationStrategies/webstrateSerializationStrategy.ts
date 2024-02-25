@@ -9,7 +9,17 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
   protected serializeElement(element: VideoElement): string {
     if (element.nodeType === "video") {
       const clip = element as VideoClipElement
-      return `<video id="${clip.id}" class="composited" data-start="${clip.start}" data-end="${clip.end}" data-offset="${clip.offset ?? 0}" clip-start="${clip.offset ?? 0}" clip-end="${clip.end - clip.start + clip.offset}"><source src="${clip.source}" /></video>`
+      const parser = new DOMParser()
+      const document = parser.parseFromString(
+        element.outerHtml ?? "",
+        "text/html"
+      )
+      const htmlElement = document.body.firstChild as HTMLElement
+      if (!htmlElement.classList.contains("composited")) {
+        htmlElement.classList.add("composited")
+      }
+
+      return `<video id="${clip.id}" class="${htmlElement.classList.toString()}" data-start="${clip.start}" data-end="${clip.end}" data-offset="${clip.offset ?? 0}" clip-start="${clip.offset ?? 0}" clip-end="${clip.end - clip.start + clip.offset}"><source src="${clip.source}" /></video>`
     } else {
       if (element.outerHtml) {
         const parser = new DOMParser()

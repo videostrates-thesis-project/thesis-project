@@ -1,7 +1,9 @@
 import { processAddClipCommand } from "./commandProcessors/processAddClipCommand"
 import { processAddCustomElementCommand } from "./commandProcessors/processAddCustomElementCommand"
+import { processCreateStyleCommand } from "./commandProcessors/processCreateStyleCommand"
 import { processCropElementCommand } from "./commandProcessors/processCropElementCommand"
 import { processDeleteElementCommand } from "./commandProcessors/processDeleteElementCommand"
+import { processDeleteStyleCommand } from "./commandProcessors/processDeleteStyleCommand"
 import { processMoveCommand } from "./commandProcessors/processMoveCommand"
 import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCommand"
 import { ExecutionContext } from "./executionContext"
@@ -26,6 +28,12 @@ const recognizedCommands: RecognizedCommands = {
   },
   add_custom_element: {
     processFn: processAddCustomElementCommand,
+  },
+  create_style: {
+    processFn: processCreateStyleCommand,
+  },
+  delete_style: {
+    processFn: processDeleteStyleCommand,
   },
 }
 

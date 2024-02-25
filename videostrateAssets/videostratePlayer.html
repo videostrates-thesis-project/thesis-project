@@ -1027,7 +1027,7 @@
             loadVideostrate(args.url, args.width, args.height)
             break
           case "update-video":
-            updateVideostrate(args.content)
+            updateVideostrate(args.html, args.style)
             break
           case "play":
             let video = cQuery("#player video")[0]
@@ -1121,14 +1121,31 @@
         )
       }
 
-      function updateVideostrate(content) {
-        console.log("Updating videostrate content", content)
+      function updateVideostrate(html, style) {
+        console.log("Updating videostrate content", html)
         var body =
           videostrateIframe.contentWindow.document.getElementsByTagName(
             "BODY"
           )[0]
-        body.innerHTML = content
+        body.innerHTML = html
+
+        var styleElement =
+          videostrateIframe.contentWindow.document.getElementById(
+            "videostrate-style"
+          )
+        if (styleElement) {
+          styleElement.innerHTML = style
+        } else {
+          styleElement =
+            videostrateIframe.contentWindow.document.createElement("style")
+          styleElement.id = "videostrate-style"
+          styleElement.innerHTML = style
+          videostrateIframe.contentWindow.document.head.appendChild(
+            styleElement
+          )
+        }
       }
+
       function onMsg(msg) {
         if (msg.origin === "https://demo.webstrates.net") {
           // Forward all messages to parent

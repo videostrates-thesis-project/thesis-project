@@ -22,7 +22,7 @@ const VideostrateLoader = () => {
   }, [setParsedVideostrate])
 
   useEffect(() => {
-    const html = new WebstrateSerializationStrategy().serialize(
+    const html = new WebstrateSerializationStrategy().serializeHtml(
       parsedVideostrate
     )
     const iframeWindow = iframeRef.current?.contentWindow

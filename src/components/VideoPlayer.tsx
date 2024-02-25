@@ -73,10 +73,10 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
   }, [loadVideo, setPlaybackState, setParsedVideostrate, setMetamaxRealm])
 
   useEffect(() => {
-    const html = new WebstrateSerializationStrategy().serialize(
-      parsedVideostrate
-    )
-    controlPlayer("update-video", { content: html })
+    const strategy = new WebstrateSerializationStrategy()
+    const html = strategy.serializeHtml(parsedVideostrate)
+    const style = strategy.serializeStyle(parsedVideostrate)
+    controlPlayer("update-video", { html, style: style })
   }, [parsedVideostrate])
 
   function controlPlayer(
