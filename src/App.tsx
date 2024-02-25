@@ -13,7 +13,7 @@ function App() {
   useClipsMetadata()
   return (
     <>
-      <VideoPlayer videoPlayerUrl="https://demo.webstrates.net/polite-falcon-61/" />
+      <VideoPlayer videoPlayerUrl="https://demo.webstrates.net/bad-goat-7/" />
       <Timeline />
       <Commander />
       <Chat />
