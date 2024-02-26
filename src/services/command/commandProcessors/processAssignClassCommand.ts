@@ -1,5 +1,5 @@
 import { ExecutionContext } from "../executionContext"
-import { determineReturnValue } from "../determineReturnValue"
+import { determineReturnValueTyped } from "../determineReturnValue"
 import { useStore } from "../../../store"
 import { ReturnValue } from "../returnValue"
 
@@ -10,15 +10,17 @@ export const processAssignClassCommand = (
   if (args.length !== 2) {
     throw new Error("Invalid number of arguments")
   }
-  const elementIds = determineReturnValue(args[0], context)
-  if (elementIds.type !== "array") {
-    throw new Error("First argument must be an array")
-  }
+  const elementIds = determineReturnValueTyped<ReturnValue<string>[]>(
+    "array",
+    args[0],
+    context
+  )
 
-  const className = determineReturnValue(args[1], context)
-  if (className.type !== "string") {
-    throw new Error("Second argument must be a string")
-  }
+  const className = determineReturnValueTyped<string>(
+    "string",
+    args[1],
+    context
+  )
 
   const parsedVideostrate = useStore.getState().parsedVideostrate
   const elements = (elementIds.value as ReturnValue[]).map((value) => {
