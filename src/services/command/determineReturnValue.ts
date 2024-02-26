@@ -5,6 +5,15 @@ export const determineReturnValue = (
   value: string,
   context: ExecutionContext
 ): ReturnValue => {
+  // if value starts and ends with square brackets, it's an array
+  if (value.startsWith("[") && value.endsWith("]")) {
+    const array = value.slice(1, -1).split(",")
+    return {
+      type: "array" as const,
+      value: array.map((item) => determineReturnValue(item.trim(), context)),
+    }
+  }
+
   // if value starts and ends with apostrophes, it's a constant string
   if (value.startsWith('"') && value.endsWith('"')) {
     return {

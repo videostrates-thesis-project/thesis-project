@@ -124,6 +124,37 @@ export class ParsedVideostrate {
     this.style = this.style.filter((s) => s.selector !== selector)
   }
 
+  public assignClass(elementIds: string[], className: string) {
+    console.log("assignClass", elementIds, className)
+    this.elements = this.assignClassToElements(
+      this.elements,
+      elementIds,
+      className
+    )
+    this.clips = this.assignClassToElements(this.clips, elementIds, className)
+
+    this.calculateAll()
+  }
+
+  private assignClassToElements<T extends VideoElement>(
+    elements: T[],
+    elementIds: string[],
+    className: string
+  ) {
+    return elements.map((e) => {
+      if (elementIds.includes(e.id)) {
+        const parser = new DOMParser()
+        const document = parser.parseFromString(e.outerHtml ?? "", "text/html")
+        const htmlElement = document.body.firstChild as HTMLElement
+        if (htmlElement) {
+          htmlElement.classList.add(className)
+          e.outerHtml = htmlElement.outerHTML
+        }
+      }
+      return e
+    })
+  }
+
   private calculateAll() {
     this.all = this.elements.concat(this.clips)
     this.all.sort((a, b) => a.start - b.start)

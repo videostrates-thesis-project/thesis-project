@@ -61,3 +61,21 @@ test("can parse strings with quotes inside", () => {
     value: 'hello \\"world\\"',
   })
 })
+
+test("can parse arrays", () => {
+  const value = determineReturnValue('["hello", "world"]', {})
+
+  expect(value).toEqual({
+    type: "array",
+    value: [
+      {
+        type: "string",
+        value: "hello",
+      },
+      {
+        type: "string",
+        value: "world",
+      },
+    ],
+  })
+})

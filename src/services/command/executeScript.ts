@@ -1,5 +1,6 @@
 import { processAddClipCommand } from "./commandProcessors/processAddClipCommand"
 import { processAddCustomElementCommand } from "./commandProcessors/processAddCustomElementCommand"
+import { processAssignClassCommand } from "./commandProcessors/processAssignClassCommand"
 import { processCreateStyleCommand } from "./commandProcessors/processCreateStyleCommand"
 import { processCropElementCommand } from "./commandProcessors/processCropElementCommand"
 import { processDeleteElementCommand } from "./commandProcessors/processDeleteElementCommand"
@@ -34,6 +35,9 @@ const recognizedCommands: RecognizedCommands = {
   },
   delete_style: {
     processFn: processDeleteStyleCommand,
+  },
+  assign_class: {
+    processFn: processAssignClassCommand,
   },
 }
 
