@@ -44,7 +44,7 @@ const Chat = () => {
 
   return (
     <div className="flex flex-col h-full w-96 min-w-96 max-h-full bg-base-300 border-l border-neutral rounded">
-      <div className="max-h-full overflow-y-auto overflow-x-hidden break-words break-all">
+      <div className="pt-4 max-h-full overflow-y-auto overflow-x-hidden break-words break-all">
         {chatMessages.map((msg, index) => (
           <div
             key={index}

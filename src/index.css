@@ -28,6 +28,10 @@ html, body, #root {
   min-height: 100%;
 }
 
+* {
+  @apply scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-600;
+}
+
 h1 {
   @apply text-xl font-semibold text-primary
 }

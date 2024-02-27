@@ -21,7 +21,7 @@ const DefaultSidePanel = () => {
           </a>
         </li>
       </ul>
-      <div className="flex flex-col gap-4 p-4 w-full">
+      <div className="flex flex-col gap-4 p-4 w-full min-h-0 overflow-y-auto">
         <Uploader />
         <AvailableClips />
       </div>
