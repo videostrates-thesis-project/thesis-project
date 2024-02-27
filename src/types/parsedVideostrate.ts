@@ -12,15 +12,18 @@ export class ParsedVideostrate {
   all: VideoElement[] = []
   length = 0
   style: VideostrateStyle[] = []
+  animations: VideostrateStyle[] = []
 
   constructor(
     clips: VideoClipElement[],
     elements: VideoElement[],
-    style: VideostrateStyle[] = []
+    style: VideostrateStyle[] = [],
+    animations: VideostrateStyle[] = []
   ) {
     this.clips = clips
     this.elements = elements
     this.style = style
+    this.animations = animations
 
     this.calculateAll()
   }
@@ -29,7 +32,8 @@ export class ParsedVideostrate {
     return new ParsedVideostrate(
       this.clips.map((c) => ({ ...c })),
       this.elements.map((e) => ({ ...e })),
-      this.style
+      this.style,
+      this.animations
     )
   }
 
@@ -134,6 +138,19 @@ export class ParsedVideostrate {
     this.clips = this.assignClassToElements(this.clips, elementIds, className)
 
     this.calculateAll()
+  }
+
+  public addAnimation(name: string, body: string) {
+    const existing = this.animations.find((s) => s.selector === name)
+    if (existing) {
+      existing.style = body
+    } else {
+      this.animations.push({ selector: name, style: body })
+    }
+  }
+
+  public removeAnimation(name: string) {
+    this.animations = this.animations.filter((s) => s.selector !== name)
   }
 
   private assignClassToElements<T extends VideoElement>(

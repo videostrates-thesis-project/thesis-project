@@ -15,6 +15,11 @@ export abstract class SerializationStrategyBase {
       .map((style) => {
         return `${style.selector} { ${style.style} }`
       })
+      .concat(
+        parsedVideostrate.animations.map((style) => {
+          return `@keyframes ${style.selector} { ${style.style} }`
+        })
+      )
       .join("\n")
   }
 

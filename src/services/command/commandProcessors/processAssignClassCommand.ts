@@ -31,16 +31,11 @@ export const processAssignClassCommand = (
   })
 
   try {
-    const elementId = parsedVideostrate.assignClass(elements, className.value)
+    parsedVideostrate.assignClass(elements, className.value)
     useStore.getState().setParsedVideostrate(parsedVideostrate)
-
-    return {
-      type: "string" as const,
-      value: elementId,
-    }
   } catch (error) {
     console.error(
-      "[CommandProcessor] Error processing add_custom_element command: ",
+      "[CommandProcessor] Error processing assign_class command: ",
       error
     )
   }

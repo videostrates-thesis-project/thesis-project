@@ -1,4 +1,4 @@
-import { ParsedVideostrate, VideostrateStyle } from "../types/parsedVideostrate"
+import { ParsedVideostrate } from "../types/parsedVideostrate"
 import {
   CustomElement,
   VideoClipElement,
@@ -6,6 +6,7 @@ import {
   VideoElementType,
 } from "../types/videoElement"
 import { v4 as uuid } from "uuid"
+import { parseStyle } from "./parser/parseStyle"
 
 let clips: VideoClipElement[] = []
 let elements: VideoElement[] = []
@@ -24,12 +25,13 @@ export const parseVideostrate = (text: string) => {
   })
 
   const styleString = html.getElementById("videostrate-style")?.innerHTML ?? ""
-  const style = parseStyle(styleString)
+  const { style, animations } = parseStyle(styleString)
 
   const parsed: ParsedVideostrate = new ParsedVideostrate(
     clips.sort((a, b) => a.start - b.start),
     elements.sort((a, b) => a.start - b.start),
-    style
+    style,
+    animations
   )
 
   return parsed
@@ -79,23 +81,4 @@ const determineType = (element: HTMLElement): VideoElementType => {
   if (element.classList.contains("subtitle")) return "subtitle"
 
   return "custom"
-}
-
-function parseStyle(cssString: string): VideostrateStyle[] {
-  // Remove comments and unnecessary whitespace
-  cssString = cssString.replace(/\/\*[\s\S]*?\*\//g, "").trim()
-
-  // Split the CSS string by the closing brace to get each block of code
-  const blocks = cssString
-    .split("}")
-    .map((block) => block.trim())
-    .filter((block) => block.length)
-
-  // Map each block to an object containing the selector and content
-  const parsedCSS = blocks.map((block) => {
-    const [selector, style] = block.split("{").map((part) => part.trim())
-    return { selector, style }
-  })
-
-  return parsedCSS
 }
