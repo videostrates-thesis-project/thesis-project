@@ -117,6 +117,9 @@ class OpenAIService {
       content: JSON.stringify(message),
     }
     useStore.getState().addMessage(chatMessage)
+    useStore
+      .getState()
+      .addChatMessage({ role: "assistant", content: message.explanation })
 
     //processScript(message.script)
     executeScript(message.script)

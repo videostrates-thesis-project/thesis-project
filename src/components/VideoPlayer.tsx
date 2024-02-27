@@ -142,12 +142,12 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
       <div className="flex flex-row gap-4 w-full">
         <input
           type="text"
-          className="w-full input input-sm input-primary text-white"
+          className="w-full input input-sm input-bordered text-white"
           placeholder="Enter video URL"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
         />
-        <button className="btn btn-sm btn-primary" onClick={onChangeUrl}>
+        <button className="btn btn-sm btn-accent" onClick={onChangeUrl}>
           Change URL
         </button>
       </div>

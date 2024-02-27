@@ -3,11 +3,11 @@ import openAIService from "../services/chatgpt/openai"
 import { useStore } from "../store"
 import { buildAssistantMessage } from "../services/chatgpt/assistantTemplate"
 import { ChatGptSerializationStrategy } from "../services/serializationStrategies/chatGptSerializationStrategy"
-import { MessageContentText } from "openai/resources/beta/threads/index.mjs"
 
 const Chat = () => {
   const [message, setMessage] = useState("")
-  const { parsedVideostrate, availableClips } = useStore()
+  const { parsedVideostrate, availableClips, chatMessages, addChatMessage } =
+    useStore()
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -35,22 +35,25 @@ const Chat = () => {
     const clip_id = "bf5e68d1-165e-4ffe-8f3d-d88f3e965008"
     const prompt = buildAssistantMessage(availableClips, html, clip_id, message)
     openAIService.sendChatMessage(prompt)
+    addChatMessage({
+      role: "user",
+      content: message,
+    })
     setMessage("")
-  }, [availableClips, message, parsedVideostrate])
+  }, [addChatMessage, availableClips, message, parsedVideostrate])
 
   return (
     <div className="flex flex-col h-full w-96 min-w-96 max-h-full bg-base-300 border-l border-neutral rounded">
       <div className="max-h-full overflow-y-auto overflow-x-hidden break-words break-all">
-        {openAIService.messages.map((msg, index) => (
+        {chatMessages.map((msg, index) => (
           <div
             key={index}
             className={`chat ${msg.role === "user" ? "chat-end" : "chat-start"}`}
           >
-            <div className="chat-bubble">
-              {msg.content
-                .filter((q) => q.type === "text")
-                .map((q) => (q as MessageContentText).text.value)
-                .join("\n")}
+            <div
+              className={`chat-bubble text-left break-normal text-sm ${msg.role === "user" ? "chat-bubble-primary" : ""}`}
+            >
+              {msg.content}
             </div>
           </div>
         ))}

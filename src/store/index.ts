@@ -4,6 +4,7 @@ import { ParsedVideostrate } from "../types/parsedVideostrate"
 import { PlaybackState } from "../types/playbackState"
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 import VideoClip from "../types/videoClip"
+import { ChatMessage } from "../types/chatMessage"
 
 export interface AppState {
   videostrateUrl: string
@@ -32,6 +33,9 @@ export interface AppState {
 
   availableClips: VideoClip[]
   setAvailableClips: (clips: VideoClip[]) => void
+
+  chatMessages: ChatMessage[]
+  addChatMessage: (message: ChatMessage) => ChatMessage[]
 
   currentMessages: ChatCompletionMessageParam[]
   addMessage: (
@@ -69,6 +73,15 @@ export const useStore = create(
       setClipsSources: (sources: string[]) => set({ clipsSources: sources }),
       availableClips: [],
       setAvailableClips: (clips: VideoClip[]) => set({ availableClips: clips }),
+      chatMessages: [],
+      addChatMessage: (message: ChatMessage) => {
+        set((state) => {
+          return {
+            chatMessages: [...state.chatMessages, message],
+          }
+        })
+        return get().chatMessages
+      },
       currentMessages: [],
       addMessage: (message: ChatCompletionMessageParam) => {
         set((state) => {
