@@ -5,6 +5,7 @@ import { useSeek } from "../hooks/useSeek"
 import { useTimelineElements } from "../hooks/useTimelineElements"
 import { useTimelineMarkers } from "../hooks/useTimelineMarkers"
 import TimelineControls from "./TimelineControls"
+import clsx from "clsx"
 
 const Timeline = () => {
   const { parsedVideostrate, playbackState } = useStore()
@@ -42,7 +43,10 @@ const Timeline = () => {
     <div className="flex flex-col mt-4 relative" ref={timelineDivRef}>
       <TimelineControls {...{ resetZoom, zoomOut, zoomIn }} />
       <div
-        className={`relative overflow-clip ${isSeeking ? "cursor-grabbing" : "cursor-pointer"}`}
+        className={clsx(
+          "relative overflow-clip",
+          isSeeking ? "cursor-grabbing" : "cursor-pointer"
+        )}
         onMouseMove={onSeek}
         onMouseDown={onStartSeeking}
         onMouseUp={onStopSeeking}
@@ -59,7 +63,7 @@ const Timeline = () => {
             return (
               <div
                 key={index}
-                className={`absolute bg-base-content w-[1px]`}
+                className="absolute bg-base-content w-[1px]"
                 style={{
                   left: `${marker.left}%`,
                   height: `${marker.text === null ? "0.5" : "1"}rem`,
@@ -79,7 +83,7 @@ const Timeline = () => {
               return (
                 <div
                   key={index}
-                  className={`absolute h-8 bg-green-500 rounded-md mx-2 text-white flex justify-start items-center`}
+                  className="absolute h-8 bg-green-500 rounded-md mx-2 text-white flex justify-start items-center"
                   style={{
                     width: `${element.width}%`,
                     left: `${element.left}%`,
@@ -97,7 +101,7 @@ const Timeline = () => {
               return (
                 <div
                   key={index}
-                  className={`absolute h-16 border-2 border-blue-600 bg-blue-500 rounded-md text-white flex justify-center items-center`}
+                  className="absolute h-16 border-2 border-blue-600 bg-blue-500 rounded-md text-white flex justify-center items-center"
                   style={{
                     width: `${element.width}%`,
                     left: `${element.left}%`,

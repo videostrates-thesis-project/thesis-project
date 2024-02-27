@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react"
+import clsx from "clsx"
 import openAIService from "../services/chatgpt/openai"
 import { useStore } from "../store"
 import { buildAssistantMessage } from "../services/chatgpt/assistantTemplate"
@@ -48,10 +49,16 @@ const Chat = () => {
         {chatMessages.map((msg, index) => (
           <div
             key={index}
-            className={`chat ${msg.role === "user" ? "chat-end" : "chat-start"}`}
+            className={clsx(
+              "chat",
+              msg.role === "user" ? "chat-end" : "chat-start"
+            )}
           >
             <div
-              className={`chat-bubble text-left break-normal text-sm ${msg.role === "user" ? "chat-bubble-primary" : ""}`}
+              className={clsx(
+                "chat-bubble text-left break-normal text-sm",
+                msg.role === "user" && "chat-bubble-primary"
+              )}
             >
               {msg.content}
             </div>
@@ -64,14 +71,17 @@ const Chat = () => {
           ref={textAreaRef}
           value={message}
           placeholder="Ask the AI..."
-          className="input input-sm join-item input-bordered w-full max-h-32 min-h-9 text-left min-w-0"
+          className="input input-sm join-item input-bordered w-full max-h-32 min-h-8 text-left min-w-0 leading-7"
           onKeyDown={handleKeyDown}
           onChange={(e) => {
             setMessage(e.target.value)
           }}
         />
         <button
-          className="btn btn-sm btn-accent join-item px-2 h-full min-w-0"
+          className={clsx(
+            "btn btn-sm btn-accent join-item px-2 h-full min-w-0",
+            !message && "btn-disabled"
+          )}
           onClick={onSend}
         >
           <i className="bi bi-arrow-right-short text-xl"></i>
