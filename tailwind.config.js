@@ -1,11 +1,19 @@
+import themes from "daisyui/src/theming/themes"
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   theme: {
     extend: {},
   },
-  plugins: [require("daisyui")],
+  plugins: [require("daisyui"), require("tailwind-scrollbar")],
   daisyui: {
-    themes: ["dark"],
+    themes: [
+      {
+        light: {
+          ...themes["dark"],
+          accent: "#00F0C5",
+        },
+      },
+    ],
   },
 }

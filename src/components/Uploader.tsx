@@ -15,11 +15,17 @@ const Uploader = () => {
     [clipsSources, setClipsSources]
   )
   return (
-    <input
-      type="file"
-      className="file-input w-full max-w-xs"
-      onChange={onUpload}
-    />
+    <>
+      <label htmlFor="clips-upload" className="btn btn-sm btn-accent w-full">
+        <i className="bi bi-file-earmark-plus text-lg"></i> Import clips{" "}
+      </label>
+      <input
+        type="file"
+        id="clips-upload"
+        className="hidden"
+        onChange={onUpload}
+      />
+    </>
   )
 }
 
