@@ -16,6 +16,14 @@ export const processCommand = (
 ) => {
   if (!command || command.includes("```")) return
 
+  if (command.startsWith("//")) {
+    console.error(
+      "ChatGPT responded with a comment instead of valid commands:",
+      command.slice(2)
+    )
+    return
+  }
+
   const { command: commandType, args, variable } = tokenizeCommand(command)
   if (!commandType || !recognizedCommands[commandType]) {
     throw new Error(`Command "${command}" not recognized`)
