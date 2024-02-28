@@ -21,7 +21,8 @@ export const processAddCustomElementCommand = (
 
   const parser = new DOMParser()
   const document = parser.parseFromString(content.value, "text/html")
-  const htmlElement = document.body.firstChild as HTMLElement
+  let htmlElement = document.body.firstChild as HTMLElement
+  htmlElement = cleanTree(htmlElement)
   const parent = htmlElement.parentNode
   const wrapper = document.createElement("div")
   // TODO: determine z-index based on where it's added in the timeline
@@ -49,4 +50,22 @@ export const processAddCustomElementCommand = (
       error
     )
   }
+}
+
+const cleanTree = (element: HTMLElement) => {
+  if (element?.childNodes) {
+    element.childNodes.forEach(
+      (childNode) => (childNode = cleanTree(childNode as HTMLElement))
+    )
+  }
+
+  if (
+    element.className &&
+    element.className.startsWith('\\"') &&
+    element.className.endsWith('\\"')
+  ) {
+    element.className = element.className.slice(2, -2)
+  }
+
+  return element
 }
