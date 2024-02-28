@@ -3,6 +3,7 @@ import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 import { useStore } from "../../store"
 import executeChangesFunction from "./executeChangesFunction"
 import { executeScript } from "../command/executeScript"
+import instructions from "./instructions.txt?raw"
 
 const ASSISTANT_POLL_RATE = 5000
 
@@ -76,11 +77,9 @@ class OpenAIService {
       useStore.getState().currentMessages.filter((m) => m.role === "system")
         .length === 0
     ) {
-      const systemTxt = await (await fetch("./instructions.txt")).text()
-      console.log("systemTxt", systemTxt)
       const systemMessage: ChatCompletionMessageParam = {
         role: "system",
-        content: systemTxt,
+        content: instructions,
       }
       useStore.getState().addMessage(systemMessage)
     }

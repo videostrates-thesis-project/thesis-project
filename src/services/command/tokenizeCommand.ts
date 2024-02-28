@@ -1,7 +1,7 @@
 export const tokenizeCommand = (input: string) => {
   const assignmentParts = input.split("=")
   let variable: string | null = null
-  if (assignmentParts.length === 2 && input.indexOf("=") < input.indexOf("(")) {
+  if (assignmentParts.length > 1 && input.indexOf("=") < input.indexOf("(")) {
     variable = assignmentParts[0].trim()
     input = input.slice(assignmentParts[0].length + 1)
     input = input.trimStart()

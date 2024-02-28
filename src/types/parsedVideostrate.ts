@@ -1,22 +1,39 @@
 import { VideoClipElement, VideoElement } from "./videoElement"
 import { v4 as uuid } from "uuid"
 
+export interface VideostrateStyle {
+  selector: string
+  style: string
+}
+
 export class ParsedVideostrate {
   clips: VideoClipElement[] = []
   elements: VideoElement[] = []
   all: VideoElement[] = []
   length = 0
+  style: VideostrateStyle[] = []
+  animations: VideostrateStyle[] = []
 
-  constructor(clips: VideoClipElement[], elements: VideoElement[]) {
+  constructor(
+    clips: VideoClipElement[],
+    elements: VideoElement[],
+    style: VideostrateStyle[] = [],
+    animations: VideostrateStyle[] = []
+  ) {
     this.clips = clips
     this.elements = elements
+    this.style = style
+    this.animations = animations
+
     this.calculateAll()
   }
 
   public clone() {
     return new ParsedVideostrate(
       this.clips.map((c) => ({ ...c })),
-      this.elements.map((e) => ({ ...e }))
+      this.elements.map((e) => ({ ...e })),
+      this.style,
+      this.animations
     )
   }
 
@@ -96,6 +113,63 @@ export class ParsedVideostrate {
     this.calculateAll()
 
     return newId
+  }
+
+  public addStyle(selector: string, style: string) {
+    const existing = this.style.find((s) => s.selector === selector)
+    if (existing) {
+      existing.style += style
+    } else {
+      this.style.push({ selector, style })
+    }
+  }
+
+  public removeStyle(selector: string) {
+    this.style = this.style.filter((s) => s.selector !== selector)
+  }
+
+  public assignClass(elementIds: string[], className: string) {
+    console.log("assignClass", elementIds, className)
+    this.elements = this.assignClassToElements(
+      this.elements,
+      elementIds,
+      className
+    )
+    this.clips = this.assignClassToElements(this.clips, elementIds, className)
+
+    this.calculateAll()
+  }
+
+  public addAnimation(name: string, body: string) {
+    const existing = this.animations.find((s) => s.selector === name)
+    if (existing) {
+      existing.style = body
+    } else {
+      this.animations.push({ selector: name, style: body })
+    }
+  }
+
+  public removeAnimation(name: string) {
+    this.animations = this.animations.filter((s) => s.selector !== name)
+  }
+
+  private assignClassToElements<T extends VideoElement>(
+    elements: T[],
+    elementIds: string[],
+    className: string
+  ) {
+    return elements.map((e) => {
+      if (elementIds.includes(e.id)) {
+        const parser = new DOMParser()
+        const document = parser.parseFromString(e.outerHtml ?? "", "text/html")
+        const htmlElement = document.body.firstChild as HTMLElement
+        if (htmlElement) {
+          htmlElement.classList.add(className)
+          e.outerHtml = htmlElement.outerHTML
+        }
+      }
+      return e
+    })
   }
 
   private calculateAll() {

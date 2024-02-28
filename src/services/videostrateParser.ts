@@ -6,6 +6,7 @@ import {
   VideoElementType,
 } from "../types/videoElement"
 import { v4 as uuid } from "uuid"
+import { parseStyle } from "./parser/parseStyle"
 
 let clips: VideoClipElement[] = []
 let elements: VideoElement[] = []
@@ -23,9 +24,14 @@ export const parseVideostrate = (text: string) => {
     parseElement(element)
   })
 
+  const styleString = html.getElementById("videostrate-style")?.innerHTML ?? ""
+  const { style, animations } = parseStyle(styleString)
+
   const parsed: ParsedVideostrate = new ParsedVideostrate(
     clips.sort((a, b) => a.start - b.start),
-    elements.sort((a, b) => a.start - b.start)
+    elements.sort((a, b) => a.start - b.start),
+    style,
+    animations
   )
 
   return parsed
