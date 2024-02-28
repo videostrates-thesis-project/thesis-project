@@ -8,6 +8,7 @@ export interface VideoElement {
   offset: number
   type: VideoElementType
   outerHtml?: string
+  speed: number
 }
 
 export interface CustomElement extends VideoElement {
