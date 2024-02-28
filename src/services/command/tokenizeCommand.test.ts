@@ -59,3 +59,17 @@ test("can tokenize html string", () => {
   ])
   expect(variable).toBe(null)
 })
+
+test("can tokenize complex element", () => {
+  const { command, args, variable } = tokenizeCommand(
+    `table_id = add_custom_element("<table class=\\"dinosaur-table jumping\\"><tr><th>Name</th><th>Period</th><th>Diet</th></tr><tr><td>Tyrannosaurus</td><td>Late Cretaceous</td><td>Carnivore</td></tr><tr><td>Stegosaurus</td><td>Late Jurassic</td><td>Herbivore</td></tr><tr><td>Velociraptor</td><td>Late Cretaceous</td><td>Carnivore</td></tr></table>", 20, 25);`
+  )
+
+  expect(command).toBe("add_custom_element")
+  expect(args).toEqual([
+    `"<table class=\\"dinosaur-table jumping\\"><tr><th>Name</th><th>Period</th><th>Diet</th></tr><tr><td>Tyrannosaurus</td><td>Late Cretaceous</td><td>Carnivore</td></tr><tr><td>Stegosaurus</td><td>Late Jurassic</td><td>Herbivore</td></tr><tr><td>Velociraptor</td><td>Late Cretaceous</td><td>Carnivore</td></tr></table>"`,
+    "20",
+    "25",
+  ])
+  expect(variable).toBe("table_id")
+})
