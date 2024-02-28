@@ -8,12 +8,11 @@ export const useClipsMetadata = () => {
 
   const updateAvailableClips = useCallback(async () => {
     if (metamaxRealm) {
-      console.log("fetchMetadata; realm:", metamaxRealm)
       const uncashedSources = clipsSources.filter(
         (source) => !availableClips.some((clip) => clip.source === source)
       )
-      console.log("fetchMetadata; uncashedSources:", uncashedSources)
       if (uncashedSources.length) {
+        console.log("fetchMetadata; uncashedSources:", uncashedSources)
         const metadata = await getClipsMetadata(uncashedSources, metamaxRealm)
         console.log("fetchMetadata; metadata:", metadata)
         setAvailableClips([...availableClips, ...metadata])
@@ -27,7 +26,6 @@ export const useClipsMetadata = () => {
     // Periodically fetch metadata for clips that haven't been fetched yet
     // It's because the metamax API may take a while to cache the metadata
     const interval = setInterval(() => {
-      console.log("fetchMetadata; interval")
       updateAvailableClips()
     }, 1000)
     return () => clearInterval(interval)

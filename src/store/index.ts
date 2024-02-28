@@ -4,6 +4,7 @@ import { ParsedVideostrate } from "../types/parsedVideostrate"
 import { PlaybackState } from "../types/playbackState"
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 import VideoClip from "../types/videoClip"
+import { ChatMessage } from "../types/chatMessage"
 
 export interface AppState {
   videostrateUrl: string
@@ -12,11 +13,17 @@ export interface AppState {
   parsedVideostrate: ParsedVideostrate
   setParsedVideostrate: (parsed: ParsedVideostrate) => Promise<void>
 
+  fileName: string
+  setFileName: (name: string) => void
+
   metamaxRealm: string | null
   setMetamaxRealm: (realm: string) => void
 
   playbackState: PlaybackState
   setPlaybackState: (state: PlaybackState) => void
+
+  playing: boolean
+  setPlaying: (playing: boolean) => void
 
   seek: number
   setSeek: (seek: number) => void
@@ -27,6 +34,9 @@ export interface AppState {
   availableClips: VideoClip[]
   setAvailableClips: (clips: VideoClip[]) => void
 
+  chatMessages: ChatMessage[]
+  addChatMessage: (message: ChatMessage) => ChatMessage[]
+
   currentMessages: ChatCompletionMessageParam[]
   addMessage: (
     message: ChatCompletionMessageParam
@@ -36,16 +46,25 @@ export interface AppState {
 export const useStore = create(
   persist<AppState>(
     (set, get) => ({
-      videostrateUrl: "https://demo.webstrates.net/black-eel-9/",
-      setVideostrateUrl: (url: string) => set({ videostrateUrl: url }),
+      videostrateUrl: "https://demo.webstrates.net/evil-jellyfish-8/",
+      setVideostrateUrl: (url: string) =>
+        set({ videostrateUrl: url, availableClips: [], clipsSources: [] }),
+      fileName: "Untitled Videostrate",
+      setFileName: (name: string) => set({ fileName: name }),
       parsedVideostrate: new ParsedVideostrate([], []),
-      setParsedVideostrate: async (parsed: ParsedVideostrate) =>
+      setParsedVideostrate: async (parsed: ParsedVideostrate) => {
+        const uniqueClipSources = [
+          ...new Set(parsed.clips.map((c) => c.source)),
+        ]
         set({
           parsedVideostrate: parsed.clone(),
-          clipsSources: parsed.clips.map((c) => c.source),
-        }),
+          clipsSources: uniqueClipSources,
+        })
+      },
       playbackState: { frame: 0, time: 0 },
       setPlaybackState: (state: PlaybackState) => set({ playbackState: state }),
+      playing: false,
+      setPlaying: (playing: boolean) => set({ playing: playing }),
       seek: 0,
       setSeek: (seek: number) => set({ seek: seek }),
       metamaxRealm: null,
@@ -54,6 +73,15 @@ export const useStore = create(
       setClipsSources: (sources: string[]) => set({ clipsSources: sources }),
       availableClips: [],
       setAvailableClips: (clips: VideoClip[]) => set({ availableClips: clips }),
+      chatMessages: [],
+      addChatMessage: (message: ChatMessage) => {
+        set((state) => {
+          return {
+            chatMessages: [...state.chatMessages, message],
+          }
+        })
+        return get().chatMessages
+      },
       currentMessages: [],
       addMessage: (message: ChatCompletionMessageParam) => {
         set((state) => {
