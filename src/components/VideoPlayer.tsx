@@ -110,7 +110,7 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     const strategy = new WebstrateSerializationStrategy()
     const html = strategy.serializeHtml(parsedVideostrate)
     const style = strategy.serializeStyle(parsedVideostrate)
-    controlPlayer("update-video", { html, style: style })
+    controlPlayer(PlayerCommands.UpdateVideo, { html, style: style })
   }, [parsedVideostrate])
 
   function controlPlayer(command: PlayerCommands, args?: object) {
