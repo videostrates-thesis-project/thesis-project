@@ -9,59 +9,67 @@ export interface VideostrateStyle {
 export class ParsedVideostrate {
   clips: VideoClipElement[] = []
   elements: VideoElement[] = []
-  all: VideoElement[] = []
-  length = 0
+  // Using # doesn't work with the Zustand store
+  _all: VideoElement[] = []
+  _length = 0
   style: VideostrateStyle[] = []
   animations: VideostrateStyle[] = []
 
   constructor(
-    clips: VideoClipElement[],
-    elements: VideoElement[],
+    allElements: VideoElement[],
     style: VideostrateStyle[] = [],
     animations: VideostrateStyle[] = []
   ) {
-    this.clips = clips
-    this.elements = elements
+    this.all = allElements
     this.style = style
     this.animations = animations
+  }
 
-    this.calculateAll()
+  public get length() {
+    return this._length
+  }
+
+  public get all() {
+    return this._all
+  }
+
+  private set all(elements: VideoElement[]) {
+    this._all = elements
+    this.updateLayers()
+    this.updateComputedProperties()
   }
 
   public clone() {
     return new ParsedVideostrate(
-      this.clips.map((c) => ({ ...c })),
-      this.elements.map((e) => ({ ...e })),
+      this.all.map((c) => ({ ...c })),
       this.style,
       this.animations
     )
   }
 
   public moveClipById(clipId: string, start: number) {
-    const clip = this.clips.find((c) => c.id === clipId)
+    const clip = this.all.find((c) => c.id === clipId)
     if (!clip) {
       throw new Error(`Clip with id ${clipId} not found`)
     }
     clip.end = start + (clip.end - clip.start)
     clip.start = start
-    this.clips = [...this.clips]
-    this.calculateAll()
+    this.all = [...this.all]
   }
 
   public moveClipDeltaById(clipId: string, delta: number) {
-    const clip = this.clips.find((c) => c.id === clipId)
+    const clip = this.all.find((c) => c.id === clipId)
     if (!clip) {
       throw new Error(`Clip with id ${clipId} not found`)
     }
     clip.start += delta
     clip.end += delta
-    this.clips = [...this.clips]
-    this.calculateAll()
+    this.all = [...this.all]
   }
 
   public addClip(source: string, start: number, end: number) {
     const newId = uuid()
-    this.clips.push({
+    this.all.push({
       id: newId,
       start,
       end,
@@ -70,19 +78,14 @@ export class ParsedVideostrate {
       type: "video",
       offset: 0,
       layer: 0,
-    })
-    this.clips = [...this.clips]
-    this.calculateAll()
+    } as VideoClipElement)
+    this.all = [...this.all]
 
     return newId
   }
 
   public deleteElementById(elementId: string) {
-    this.clips = this.clips.filter((c) => c.id !== elementId)
-    this.elements = this.elements.filter((e) => e.id !== elementId)
-    this.clips = [...this.clips]
-    this.elements = [...this.elements]
-    this.calculateAll()
+    this.all = this.all.filter((c) => c.id !== elementId)
   }
 
   public cropElementById(elementId: string, from: number, to: number) {
@@ -93,15 +96,15 @@ export class ParsedVideostrate {
     const oldLength = element.end - element.start
     element.offset = from
     element.end = to - from + element.start
-    this.calculateAll()
 
     const newLength = element.end - element.start
+    this.all = [...this.all]
     return newLength - oldLength
   }
 
   public addCustomElement(outerHtml: string, start: number, end: number) {
     const newId = uuid()
-    this.elements.push({
+    this.all.push({
       id: newId,
       start,
       end,
@@ -109,10 +112,9 @@ export class ParsedVideostrate {
       type: "custom",
       offset: 0,
       outerHtml,
-      layer: 1,
+      layer: 0,
     })
-    this.elements = [...this.elements]
-    this.calculateAll()
+    this.all = [...this.all]
 
     return newId
   }
@@ -132,14 +134,18 @@ export class ParsedVideostrate {
 
   public assignClass(elementIds: string[], className: string) {
     console.log("assignClass", elementIds, className)
-    this.elements = this.assignClassToElements(
-      this.elements,
-      elementIds,
-      className
-    )
-    this.clips = this.assignClassToElements(this.clips, elementIds, className)
-
-    this.calculateAll()
+    this.all = this.all.map((e) => {
+      if (elementIds.includes(e.id)) {
+        const parser = new DOMParser()
+        const document = parser.parseFromString(e.outerHtml ?? "", "text/html")
+        const htmlElement = document.body.firstChild as HTMLElement
+        if (htmlElement) {
+          htmlElement.classList.add(className)
+          e.outerHtml = htmlElement.outerHTML
+        }
+      }
+      return e
+    })
   }
 
   public addAnimation(name: string, body: string) {
@@ -155,32 +161,39 @@ export class ParsedVideostrate {
     this.animations = this.animations.filter((s) => s.selector !== name)
   }
 
-  private assignClassToElements<T extends VideoElement>(
-    elements: T[],
-    elementIds: string[],
-    className: string
-  ) {
-    return elements.map((e) => {
-      if (elementIds.includes(e.id)) {
-        const parser = new DOMParser()
-        const document = parser.parseFromString(e.outerHtml ?? "", "text/html")
-        const htmlElement = document.body.firstChild as HTMLElement
-        if (htmlElement) {
-          htmlElement.classList.add(className)
-          e.outerHtml = htmlElement.outerHTML
+  private updateLayers() {
+    this._all.sort((a, b) => a.layer - b.layer)
+    let layerShift = 0
+    this._all.forEach((element, index) => {
+      let proposedLayer = element.layer + layerShift
+      if (index > 0) {
+        const prevElement = this._all[index - 1]
+        if (
+          prevElement.layer === proposedLayer &&
+          prevElement.end > element.start
+        ) {
+          proposedLayer += 1
+          layerShift += 1
         }
       }
-      return e
+      element.layer = proposedLayer
     })
+    this._all = [...this._all]
   }
 
-  private calculateAll() {
-    this.all = this.elements.concat(this.clips)
-    this.all.sort((a, b) => a.start - b.start)
-    if (this.all.length === 0) {
-      this.length = 0
+  private updateComputedProperties() {
+    // Calculate clips, elements and length
+    this.clips = this._all.filter(
+      (e) => e.type === "video"
+    ) as VideoClipElement[]
+    this.elements = this._all.filter(
+      (e) => e.type !== "video"
+    ) as VideoElement[]
+
+    if (this._all.length === 0) {
+      this._length = 0
     } else {
-      this.length = Math.max(...this.all.map((e) => e.end))
+      this._length = Math.max(...this._all.map((e) => e.end))
     }
   }
 }

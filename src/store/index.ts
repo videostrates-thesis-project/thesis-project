@@ -1,5 +1,5 @@
 import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { createJSONStorage, persist } from "zustand/middleware"
 import { ParsedVideostrate } from "../types/parsedVideostrate"
 import { PlaybackState } from "../types/playbackState"
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
@@ -94,6 +94,20 @@ export const useStore = create(
     }),
     {
       name: "thesis-project-storage",
+      storage: createJSONStorage(() => localStorage, {
+        reviver: (key, value) => {
+          if (key === "parsedVideostrate" && value) {
+            // Manually parse the parsedVideostrate object to retrieve getters and setters
+            const castedValue = value as ParsedVideostrate
+            return new ParsedVideostrate(
+              castedValue._all,
+              castedValue.style,
+              castedValue.animations
+            )
+          }
+          return value
+        },
+      }),
     }
   )
 )

@@ -22,29 +22,11 @@ export const parseVideostrate = (text: string) => {
     parseElement(element)
   })
 
-  allElements.sort((a, b) => a.layer - b.layer)
-  let layerShift = 0
-  allElements.forEach((element, index) => {
-    let proposedLayer = element.layer + layerShift
-    if (index > 0) {
-      const prevElement = allElements[index - 1]
-      if (
-        prevElement.layer === proposedLayer &&
-        prevElement.end > element.start
-      ) {
-        proposedLayer += 1
-        layerShift += 1
-      }
-    }
-    element.layer = proposedLayer
-  })
-
   const styleString = html.getElementById("videostrate-style")?.innerHTML ?? ""
   const { style, animations } = parseStyle(styleString)
 
   const parsed: ParsedVideostrate = new ParsedVideostrate(
-    allElements.filter((e) => e.type === "video") as VideoClipElement[],
-    allElements.filter((e) => e.type !== "video") as VideoElement[],
+    allElements,
     style,
     animations
   )
