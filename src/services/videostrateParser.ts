@@ -50,6 +50,7 @@ const parseElement = (element: ChildNode) => {
 
   if (htmlElement.nodeName.toLowerCase() === "video") {
     const clip: VideoClipElement = {
+      name: htmlElement.getAttribute("custom-element-name") ?? "",
       start: parseFloat(htmlElement.getAttribute("data-start") ?? "0"),
       end: parseFloat(htmlElement.getAttribute("data-end") ?? "0"),
       source:
@@ -65,6 +66,7 @@ const parseElement = (element: ChildNode) => {
   } else {
     console.log(htmlElement.innerHTML)
     const videoElement: CustomElement = {
+      name: htmlElement.getAttribute("clip-name") ?? "",
       start: parseFloat(htmlElement.getAttribute("data-start") ?? "0"),
       end: parseFloat(htmlElement.getAttribute("data-end") ?? "0"),
       type: determineType(htmlElement),
