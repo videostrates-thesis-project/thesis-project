@@ -19,7 +19,7 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
         htmlElement.classList.add("composited")
       }
 
-      return `<video id="${clip.id}" class="${htmlElement.classList.toString()}" data-start="${clip.start}" data-end="${clip.end}" data-offset="${clip.offset ?? 0}" clip-start="${clip.offset ?? 0}" clip-end="${clip.end - clip.start + clip.offset}"><source src="${clip.source}" /></video>`
+      return `<video id="${clip.id}" clip-name="${clip.name}" class="${htmlElement.classList.toString()}" data-start="${clip.start}" data-end="${clip.end}" data-offset="${clip.offset ?? 0}" clip-start="${clip.offset ?? 0}" clip-end="${clip.end - clip.start + clip.offset}"><source src="${clip.source}" /></video>`
     } else {
       if (element.outerHtml) {
         const parser = new DOMParser()
@@ -32,6 +32,7 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
             htmlElement.classList.add("composited")
           }
           htmlElement.setAttribute("id", element.id)
+          htmlElement.setAttribute("custom-element-name", element.name)
           htmlElement.setAttribute("data-start", element.start.toString())
           htmlElement.setAttribute("data-end", element.end.toString())
           htmlElement.setAttribute(

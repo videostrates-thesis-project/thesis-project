@@ -63,6 +63,7 @@ export class ParsedVideostrate {
     const newId = uuid()
     this.clips.push({
       id: newId,
+      name: "",
       start,
       end,
       nodeType: "video",
@@ -98,10 +99,11 @@ export class ParsedVideostrate {
     return newLength - oldLength
   }
 
-  public addCustomElement(outerHtml: string, start: number, end: number) {
+  public addCustomElement(name: string, outerHtml: string, start: number, end: number) {
     const newId = uuid()
     this.elements.push({
       id: newId,
+      name,
       start,
       end,
       nodeType: "div",
@@ -118,7 +120,7 @@ export class ParsedVideostrate {
   public addStyle(selector: string, style: string) {
     const existing = this.style.find((s) => s.selector === selector)
     if (existing) {
-      existing.style += style
+      existing.style = style
     } else {
       this.style.push({ selector, style })
     }

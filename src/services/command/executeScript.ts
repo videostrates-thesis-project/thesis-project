@@ -50,6 +50,7 @@ const recognizedCommands: RecognizedCommands = {
 }
 
 export const executeScript = async (script: string) => {
+  console.log("Executing script: \n", script)
   const lines = script.split("\n")
   const context: ExecutionContext = {}
   lines.forEach((line) => processCommand(line, recognizedCommands, context))

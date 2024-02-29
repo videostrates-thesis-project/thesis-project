@@ -23,7 +23,7 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
       const availableClip = useStore
         .getState()
         .availableClips.find((c) => c.source === clip.source)
-      return `<video id="${clip.id}" class="${htmlElement.classList.toString()}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}" clip-name="${availableClip?.title}"><source src="${clip.source}" /></video>`
+      return `<video id="${clip.id}" clip-name="${clip.name}" class="${htmlElement.classList.toString()}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}" clip-name="${availableClip?.title}"><source src="${clip.source}" /></video>`
     } else {
       if (element.outerHtml) {
         const parser = new DOMParser()
@@ -34,6 +34,7 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
             htmlElement.classList.add("composited")
           }
           htmlElement.setAttribute("id", element.id)
+          htmlElement.setAttribute("custom-element-name", element.name)
           htmlElement.setAttribute("absolute-start", element.start.toString())
           htmlElement.setAttribute("absolute-end", element.end.toString())
           htmlElement.setAttribute(
