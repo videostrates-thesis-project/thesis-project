@@ -8,14 +8,12 @@ import {
 import { v4 as uuid } from "uuid"
 import { parseStyle } from "./parser/parseStyle"
 
-let clips: VideoClipElement[] = []
-let elements: VideoElement[] = []
+let allElements: VideoElement[] = []
 
 export const parseVideostrate = (text: string) => {
   if (!text) return new ParsedVideostrate([], [])
 
-  clips = []
-  elements = []
+  allElements = []
 
   const parser = new DOMParser()
   const html = parser.parseFromString(text, "text/html")
@@ -24,16 +22,32 @@ export const parseVideostrate = (text: string) => {
     parseElement(element)
   })
 
+  allElements.sort((a, b) => a.layer - b.layer)
+  let layerShift = 0
+  allElements.forEach((element, index) => {
+    let proposedLayer = element.layer + layerShift
+    if (index > 0) {
+      const prevElement = allElements[index - 1]
+      if (
+        prevElement.layer === proposedLayer &&
+        prevElement.end > element.start
+      ) {
+        proposedLayer += 1
+        layerShift += 1
+      }
+    }
+    element.layer = proposedLayer
+  })
+
   const styleString = html.getElementById("videostrate-style")?.innerHTML ?? ""
   const { style, animations } = parseStyle(styleString)
 
   const parsed: ParsedVideostrate = new ParsedVideostrate(
-    clips.sort((a, b) => a.start - b.start),
-    elements.sort((a, b) => a.start - b.start),
+    allElements.filter((e) => e.type === "video") as VideoClipElement[],
+    allElements.filter((e) => e.type !== "video") as VideoElement[],
     style,
     animations
   )
-
   return parsed
 }
 
@@ -59,9 +73,9 @@ const parseElement = (element: ChildNode) => {
       id: htmlElement.id.length > 0 ? htmlElement.id : uuid(),
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,
-      layer: parseInt(htmlElement.style.zIndex ?? "1"),
+      layer: parseInt(htmlElement.style.zIndex || "0"),
     }
-    clips.push(clip)
+    allElements.push(clip)
   } else {
     console.log(htmlElement.innerHTML)
     const videoElement: CustomElement = {
@@ -73,9 +87,9 @@ const parseElement = (element: ChildNode) => {
       content: htmlElement.innerHTML,
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,
-      layer: parseInt(htmlElement.style.zIndex ?? "0"),
+      layer: parseInt(htmlElement.style.zIndex || "0"),
     }
-    elements.push(videoElement)
+    allElements.push(videoElement)
   }
 }
 
