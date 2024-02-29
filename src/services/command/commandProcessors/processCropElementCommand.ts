@@ -1,6 +1,6 @@
-import { useStore } from "../../../store"
 import { determineReturnValue } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
+import { workingContext } from "../workingContext"
 
 export const processCropElementCommand = (
   args: string[],
@@ -16,7 +16,7 @@ export const processCropElementCommand = (
   const start = determineReturnValue(args[1], context)
   const end = determineReturnValue(args[2], context)
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate
+  const parsedVideostrate = workingContext.getVideostrate()
 
   try {
     const newLength = parsedVideostrate.cropElementById(
@@ -24,7 +24,7 @@ export const processCropElementCommand = (
       start.value,
       end.value
     )
-    useStore.getState().setParsedVideostrate(parsedVideostrate)
+    workingContext.setVideostrate(parsedVideostrate)
 
     return {
       type: "number" as const,
