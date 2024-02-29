@@ -2,7 +2,7 @@ import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { WorkingContext } from "../workingContext"
 
-export const processCreateAnimationCommand = (
+export const processSetSpeedCommand = (
   args: string[],
   context: ExecutionContext,
   workingContext: WorkingContext
@@ -10,18 +10,17 @@ export const processCreateAnimationCommand = (
   if (args.length !== 2) {
     throw new Error("Invalid number of arguments")
   }
-  const name = determineReturnValueTyped<string>("string", args[0], context)
-
-  const body = determineReturnValueTyped<string>("string", args[1], context)
+  const clipId = determineReturnValueTyped<string>("string", args[0], context)
+  const speed = determineReturnValueTyped<number>("number", args[1], context)
 
   const parsedVideostrate = workingContext.getVideostrate()
 
   try {
-    parsedVideostrate.addAnimation(name.value, body.value)
+    parsedVideostrate.setSpeed(clipId.value, speed.value)
     workingContext.setVideostrate(parsedVideostrate)
   } catch (error) {
     console.error(
-      "[CommandProcessor] Error processing create_animatino command: ",
+      "[CommandProcessor] Error processing delete_animation command: ",
       error
     )
   }

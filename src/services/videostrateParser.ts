@@ -46,6 +46,7 @@ const parseElement = (element: ChildNode) => {
 
   if (htmlElement.nodeName.toLowerCase() === "video") {
     const clip: VideoClipElement = {
+      name: htmlElement.getAttribute("custom-element-name") ?? "",
       start: parseFloat(htmlElement.getAttribute("data-start") ?? "0"),
       end: parseFloat(htmlElement.getAttribute("data-end") ?? "0"),
       source:
@@ -56,11 +57,13 @@ const parseElement = (element: ChildNode) => {
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,
       layer: parseInt(htmlElement.style.zIndex || "0"),
+      speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
     }
     allElements.push(clip)
   } else {
     console.log(htmlElement.innerHTML)
     const videoElement: CustomElement = {
+      name: htmlElement.getAttribute("clip-name") ?? "",
       start: parseFloat(htmlElement.getAttribute("data-start") ?? "0"),
       end: parseFloat(htmlElement.getAttribute("data-end") ?? "0"),
       type: determineType(htmlElement),
@@ -70,6 +73,7 @@ const parseElement = (element: ChildNode) => {
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,
       layer: parseInt(htmlElement.style.zIndex || "0"),
+      speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
     }
     allElements.push(videoElement)
   }

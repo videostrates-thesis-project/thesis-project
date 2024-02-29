@@ -2,6 +2,7 @@ export type VideoElementType = "video" | "subtitle" | "custom"
 
 export interface VideoElement {
   id: string
+  name: string
   start: number
   end: number
   nodeType: string
@@ -9,6 +10,7 @@ export interface VideoElement {
   type: VideoElementType
   outerHtml?: string
   layer: number
+  speed: number
 }
 
 export interface CustomElement extends VideoElement {

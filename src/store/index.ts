@@ -41,6 +41,9 @@ export interface AppState {
   addMessage: (
     message: ChatCompletionMessageParam
   ) => ChatCompletionMessageParam[]
+
+  workingVideostrate: ParsedVideostrate | null
+  setWorkingVideostrate: (videostrate: ParsedVideostrate | null) => void
 }
 
 export const useStore = create(
@@ -61,6 +64,9 @@ export const useStore = create(
           clipsSources: uniqueClipSources,
         })
       },
+      workingVideostrate: null,
+      setWorkingVideostrate: (videostrate: ParsedVideostrate | null) =>
+        set({ workingVideostrate: videostrate ? videostrate.clone() : null }),
       playbackState: { frame: 0, time: 0 },
       setPlaybackState: (state: PlaybackState) => set({ playbackState: state }),
       playing: false,
@@ -96,7 +102,10 @@ export const useStore = create(
       name: "thesis-project-storage",
       storage: createJSONStorage(() => localStorage, {
         reviver: (key, value) => {
-          if (key === "parsedVideostrate" && value) {
+          if (
+            ["parsedVideostrate", "workingVideostrate"].includes(key) &&
+            value
+          ) {
             // Manually parse the parsedVideostrate object to retrieve getters and setters
             const castedValue = value as ParsedVideostrate
             return new ParsedVideostrate(

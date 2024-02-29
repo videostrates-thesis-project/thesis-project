@@ -71,12 +71,14 @@ export class ParsedVideostrate {
     const newId = uuid()
     this.all.push({
       id: newId,
+      name: "",
       start,
       end,
       nodeType: "video",
       source,
       type: "video",
       offset: 0,
+      speed: 1,
       layer: 0,
     } as VideoClipElement)
     this.all = [...this.all]
@@ -102,10 +104,16 @@ export class ParsedVideostrate {
     return newLength - oldLength
   }
 
-  public addCustomElement(outerHtml: string, start: number, end: number) {
+  public addCustomElement(
+    name: string,
+    outerHtml: string,
+    start: number,
+    end: number
+  ) {
     const newId = uuid()
     this.all.push({
       id: newId,
+      name,
       start,
       end,
       nodeType: "div",
@@ -113,6 +121,7 @@ export class ParsedVideostrate {
       offset: 0,
       outerHtml,
       layer: 0,
+      speed: 1,
     })
     this.all = [...this.all]
 
@@ -122,7 +131,7 @@ export class ParsedVideostrate {
   public addStyle(selector: string, style: string) {
     const existing = this.style.find((s) => s.selector === selector)
     if (existing) {
-      existing.style += style
+      existing.style = style
     } else {
       this.style.push({ selector, style })
     }
@@ -159,6 +168,16 @@ export class ParsedVideostrate {
 
   public removeAnimation(name: string) {
     this.animations = this.animations.filter((s) => s.selector !== name)
+  }
+
+  public setSpeed(elementId: string, speed: number) {
+    const element = this.all.find((e) => e.id === elementId)
+    if (element) {
+      element.speed = speed
+    } else {
+      throw new Error(`Element with id ${elementId} not found`)
+    }
+    this.all = [...this.all]
   }
 
   private updateLayers() {

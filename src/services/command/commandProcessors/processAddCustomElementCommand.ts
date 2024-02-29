@@ -1,22 +1,28 @@
 import { ExecutionContext } from "../executionContext"
 import { determineReturnValue } from "../determineReturnValue"
-import { useStore } from "../../../store"
+import { WorkingContext } from "../workingContext"
 
 export const processAddCustomElementCommand = (
   args: string[],
-  context: ExecutionContext
+  context: ExecutionContext,
+  workingContext: WorkingContext
 ) => {
-  if (args.length !== 3) {
+  if (args.length !== 4) {
     throw new Error("Invalid number of arguments")
   }
-  const content = determineReturnValue(args[0], context)
-  if (content.type !== "string") {
+  const name = determineReturnValue(args[0], context)
+  if (name.type !== "string") {
     throw new Error("First argument must be a string")
   }
-  const start = determineReturnValue(args[1], context)
-  const end = determineReturnValue(args[2], context)
+
+  const content = determineReturnValue(args[1], context)
+  if (content.type !== "string") {
+    throw new Error("Second argument must be a string")
+  }
+  const start = determineReturnValue(args[2], context)
+  const end = determineReturnValue(args[3], context)
   if (start.type !== "number" || end.type !== "number") {
-    throw new Error("Second and third arguments must be numbers")
+    throw new Error("Third and Fourth arguments must be numbers")
   }
 
   const parser = new DOMParser()
@@ -30,15 +36,16 @@ export const processAddCustomElementCommand = (
   parent?.replaceChild(wrapper, htmlElement)
   wrapper.appendChild(htmlElement)
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate
+  const parsedVideostrate = workingContext.getVideostrate()
 
   try {
     const elementId = parsedVideostrate.addCustomElement(
+      name.value,
       wrapper.outerHTML,
       start.value,
       end.value
     )
-    useStore.getState().setParsedVideostrate(parsedVideostrate)
+    workingContext.setVideostrate(parsedVideostrate)
 
     return {
       type: "string" as const,
