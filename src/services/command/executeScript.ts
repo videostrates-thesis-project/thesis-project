@@ -12,6 +12,7 @@ import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCom
 import { ExecutionContext } from "./executionContext"
 import { processCommand } from "./processCommand"
 import { RecognizedCommands } from "./recognizedCommands"
+import { mainContext, workingContext } from "./workingContext"
 
 const recognizedCommands: RecognizedCommands = {
   move: {
@@ -49,8 +50,26 @@ const recognizedCommands: RecognizedCommands = {
   },
 }
 
-export const executeScript = async (script: string) => {
+export type WorkingContextType = "main" | "temporary"
+
+export const executeScript = async (
+  script: string,
+  contextType: WorkingContextType = "main"
+) => {
   const lines = script.split("\n")
   const context: ExecutionContext = {}
-  lines.forEach((line) => processCommand(line, recognizedCommands, context))
+  const workingContext = resolveContext(contextType)
+  lines.forEach((line) =>
+    processCommand(line, recognizedCommands, context, workingContext)
+  )
+}
+
+const resolveContext = (contextType: WorkingContextType) => {
+  if (contextType === "main") {
+    return mainContext
+  } else if (contextType === "temporary") {
+    return workingContext
+  }
+
+  throw new Error(`Unknown context type: ${contextType}`)
 }
