@@ -8,14 +8,12 @@ import {
 import { v4 as uuid } from "uuid"
 import { parseStyle } from "./parser/parseStyle"
 
-let clips: VideoClipElement[] = []
-let elements: VideoElement[] = []
+let allElements: VideoElement[] = []
 
 export const parseVideostrate = (text: string) => {
   if (!text) return new ParsedVideostrate([], [])
 
-  clips = []
-  elements = []
+  allElements = []
 
   const parser = new DOMParser()
   const html = parser.parseFromString(text, "text/html")
@@ -28,12 +26,10 @@ export const parseVideostrate = (text: string) => {
   const { style, animations } = parseStyle(styleString)
 
   const parsed: ParsedVideostrate = new ParsedVideostrate(
-    clips.sort((a, b) => a.start - b.start),
-    elements.sort((a, b) => a.start - b.start),
+    allElements,
     style,
     animations
   )
-
   return parsed
 }
 
@@ -60,9 +56,10 @@ const parseElement = (element: ChildNode) => {
       id: htmlElement.id.length > 0 ? htmlElement.id : uuid(),
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,
+      layer: parseInt(htmlElement.style.zIndex || "0"),
       speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
     }
-    clips.push(clip)
+    allElements.push(clip)
   } else {
     console.log(htmlElement.innerHTML)
     const videoElement: CustomElement = {
@@ -75,9 +72,10 @@ const parseElement = (element: ChildNode) => {
       content: htmlElement.innerHTML,
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,
+      layer: parseInt(htmlElement.style.zIndex || "0"),
       speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
     }
-    elements.push(videoElement)
+    allElements.push(videoElement)
   }
 }
 

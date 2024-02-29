@@ -4,13 +4,13 @@ import { useStore } from "../store"
 const TimelineControls = (props: {
   zoomIn: (step: number) => void
   zoomOut: (step: number) => void
-  resetZoom: () => void
+  zoomToFit: () => void
 }) => {
   const { parsedVideostrate, playbackState } = useStore()
   const playbackTime = useTimeStamp(playbackState.time)
   const fullTime = useTimeStamp(parsedVideostrate.length)
   return (
-    <div className="flex flex-row text-lg bg-base-300 border-y border-neutral p-2">
+    <div className="flex flex-row text-lg bg-base-300 border-y border-neutral p-2 ">
       <div className="w-1/3 text-left"></div>
       <div className="w-1/3">
         {playbackTime} / {fullTime}
@@ -33,7 +33,7 @@ const TimelineControls = (props: {
           </button>
         </div>
         <div className="tooltip" data-tip="Zoom to fit">
-          <button className="btn btn-sm btn-ghost" onClick={props.resetZoom}>
+          <button className="btn btn-sm btn-ghost" onClick={props.zoomToFit}>
             <i className="bi bi-arrows-angle-contract text-lg"></i>
           </button>
         </div>

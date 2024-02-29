@@ -9,6 +9,7 @@ export interface VideoElement {
   offset: number
   type: VideoElementType
   outerHtml?: string
+  layer: number
   speed: number
 }
 
