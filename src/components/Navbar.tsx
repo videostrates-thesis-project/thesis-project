@@ -1,7 +1,8 @@
 import { useStore } from "../store"
+import clsx from "clsx"
 
 const Navbar = () => {
-  const { fileName, setFileName } = useStore()
+  const { fileName, setFileName, undoStack } = useStore()
   return (
     <nav className="navbar min-h-10 py-2 bg-base-300 border-b border-neutral">
       <div className="navbar-start flex items-center gap-2">
@@ -10,7 +11,12 @@ const Navbar = () => {
         </button>
         <h1>Videostrates</h1>
         <span className="pl-4">
-          <button className="btn btn-ghost btn-sm btn-disabled">
+          <button
+            className={clsx(
+              "btn btn-ghost btn-sm",
+              undoStack.length === 0 && "btn-disabled"
+            )}
+          >
             <i className="bi bi-arrow-counterclockwise text-lg leading-6"></i>
           </button>
           <button className="btn btn-ghost btn-sm btn-disabled">

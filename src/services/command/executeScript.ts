@@ -1,3 +1,4 @@
+import { useStore } from "../../store"
 import { processAddClipCommand } from "./commandProcessors/processAddClipCommand"
 import { processAddCustomElementCommand } from "./commandProcessors/processAddCustomElementCommand"
 import { processAssignClassCommand } from "./commandProcessors/processAssignClassCommand"
@@ -10,10 +11,14 @@ import { processDeleteStyleCommand } from "./commandProcessors/processDeleteStyl
 import { processMoveCommand } from "./commandProcessors/processMoveCommand"
 import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCommand"
 import { processSetSpeedCommand } from "./commandProcessors/processSetSpeedCommand"
+import { ExecutedScript } from "./executedScript"
 import { ExecutionContext } from "./executionContext"
 import { processCommand } from "./processCommand"
 import { RecognizedCommands } from "./recognizedCommands"
-import { mainContext, workingContext } from "./workingContext"
+import {
+  WorkingContextType,
+  resolveWorkingContext,
+} from "./resolveWorkingContext"
 
 const recognizedCommands: RecognizedCommands = {
   move: {
@@ -54,26 +59,21 @@ const recognizedCommands: RecognizedCommands = {
   },
 }
 
-export type WorkingContextType = "main" | "temporary"
-
 export const executeScript = async (
   script: string,
   contextType: WorkingContextType = "main"
 ) => {
   const lines = script.split("\n")
   const context: ExecutionContext = {}
-  const workingContext = resolveContext(contextType)
+  const workingContext = resolveWorkingContext(contextType)
   lines.forEach((line) =>
     processCommand(line, recognizedCommands, context, workingContext)
   )
-}
 
-const resolveContext = (contextType: WorkingContextType) => {
-  if (contextType === "main") {
-    return mainContext
-  } else if (contextType === "temporary") {
-    return workingContext
+  const executedScript: ExecutedScript = {
+    script,
+    contextType,
+    context,
   }
-
-  throw new Error(`Unknown context type: ${contextType}`)
+  useStore.getState().addToUndoStack(executedScript)
 }

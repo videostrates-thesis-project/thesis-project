@@ -2,7 +2,8 @@ interface CommandProperties {
   processFn: (
     args: string[],
     context: ExecutionContext,
-    workingContext: WorkingContext
+    workingContext: WorkingContext,
+    returnVariableName?: string
   ) => ReturnValue | undefined | void
 }
 
