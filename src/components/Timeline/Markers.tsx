@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react"
-import { TimelineContext } from "../../Timeline"
+import { TimelineContext } from "./Timeline"
 import clsx from "clsx"
 
 const TARGET_STEP_WIDTH = 60

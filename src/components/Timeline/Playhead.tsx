@@ -1,6 +1,6 @@
 import { useContext } from "react"
-import { useStore } from "../../../store"
-import { TimelineContext } from "../../Timeline"
+import { useStore } from "../../store"
+import { TimelineContext } from "./Timeline"
 import clsx from "clsx"
 
 const Playhead = (props: {

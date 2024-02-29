@@ -1,6 +1,6 @@
 import { useContext } from "react"
-import { TimelineContext } from "../../Timeline"
-import { useTimelineElements } from "../../../hooks/useTimelineElements"
+import { TimelineContext } from "./Timeline"
+import { useTimelineElements } from "../../hooks/useTimelineElements"
 
 const Clips = () => {
   const timeline = useContext(TimelineContext)

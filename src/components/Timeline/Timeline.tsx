@@ -1,13 +1,13 @@
 import { createContext, useCallback, useEffect, useRef, useState } from "react"
-import { useStore } from "../store"
+import { useStore } from "../../store"
 import TimelineControls from "./TimelineControls"
 import clsx from "clsx"
-import { useZoom } from "../hooks/useZoom"
-import Markers from "./Views/Timeline/Markers"
-import Clips from "./Views/Timeline/Clips"
-import Playhead from "./Views/Timeline/Playhead"
-import { useSeek } from "../hooks/useSeek"
-import { useScrollZoom } from "../hooks/useScrollZoom"
+import { useZoom } from "../../hooks/useZoom"
+import Markers from "./Markers"
+import Clips from "./Clips"
+import Playhead from "./Playhead"
+import { useSeek } from "../../hooks/useSeek"
+import { useScrollZoom } from "../../hooks/useScrollZoom"
 
 interface TimelineContextProps {
   zoom: number
