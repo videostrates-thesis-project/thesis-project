@@ -1,6 +1,6 @@
-import { useStore } from "../../../store"
 import { determineReturnValue } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
+import { workingContext } from "../workingContext"
 
 export const processMoveDeltaCommand = (
   args: string[],
@@ -12,11 +12,11 @@ export const processMoveDeltaCommand = (
   const elementId = determineReturnValue(args[0], context)
   const delta = determineReturnValue(args[1], context)
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate
+  const parsedVideostrate = workingContext.getVideostrate()
 
   try {
     parsedVideostrate.moveClipDeltaById(elementId.value, delta.value)
-    useStore.getState().setParsedVideostrate(parsedVideostrate)
+    workingContext.setVideostrate(parsedVideostrate)
   } catch (error) {
     console.error("[CommandProcessor] Error processing move command: ", error)
   }

@@ -60,6 +60,7 @@ const parseElement = (element: ChildNode) => {
       id: htmlElement.id.length > 0 ? htmlElement.id : uuid(),
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,
+      speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
     }
     clips.push(clip)
   } else {
@@ -74,6 +75,7 @@ const parseElement = (element: ChildNode) => {
       content: htmlElement.innerHTML,
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,
+      speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
     }
     elements.push(videoElement)
   }

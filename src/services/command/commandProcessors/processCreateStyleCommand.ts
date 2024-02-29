@@ -1,10 +1,11 @@
 import { ExecutionContext } from "../executionContext"
 import { determineReturnValue } from "../determineReturnValue"
-import { useStore } from "../../../store"
+import { WorkingContext } from "../workingContext"
 
 export const processCreateStyleCommand = (
   args: string[],
-  context: ExecutionContext
+  context: ExecutionContext,
+  workingContext: WorkingContext
 ) => {
   if (args.length !== 2) {
     throw new Error("Invalid number of arguments")
@@ -18,11 +19,10 @@ export const processCreateStyleCommand = (
     throw new Error("Second argument must be a string")
   }
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate
-
+  const parsedVideostrate = workingContext.getVideostrate()
   try {
     const elementId = parsedVideostrate.addStyle(selector.value, style.value)
-    useStore.getState().setParsedVideostrate(parsedVideostrate)
+    workingContext.setVideostrate(parsedVideostrate)
 
     return {
       type: "string" as const,

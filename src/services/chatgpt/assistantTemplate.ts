@@ -16,9 +16,9 @@ export const buildAssistantMessage = (
     
     HTML code:
     ${html}
-     
-    The highlighted clip is: id=${clip_id}". The user can implicitly refer to this clip.
-    If a clip is cropped or added, move other clips if needed.
     
     The user input is: "${prompt}"`
 }
+// TODO: Add this back
+// The highlighted clip is: id=${clip_id}". The user can implicitly refer to this clip.
+// If a clip is cropped or added, move other clips if needed.

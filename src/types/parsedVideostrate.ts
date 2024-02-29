@@ -70,6 +70,7 @@ export class ParsedVideostrate {
       source,
       type: "video",
       offset: 0,
+      speed: 1,
     })
     this.clips = [...this.clips]
     this.calculateAll()
@@ -110,6 +111,7 @@ export class ParsedVideostrate {
       type: "custom",
       offset: 0,
       outerHtml,
+      speed: 1,
     })
     this.elements = [...this.elements]
     this.calculateAll()
@@ -172,6 +174,20 @@ export class ParsedVideostrate {
       }
       return e
     })
+  }
+
+  public setSpeed(elementId: string, speed: number) {
+    const element = this.elements.find((e) => e.id === elementId)
+    const clip = this.clips.find((c) => c.id === elementId)
+    if (element) {
+      element.speed = speed
+    } else if (clip) {
+      clip.speed = speed
+    } else {
+      throw new Error(`Element with id ${elementId} not found`)
+    }
+
+    this.calculateAll()
   }
 
   private calculateAll() {

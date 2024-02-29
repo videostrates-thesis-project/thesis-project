@@ -1,6 +1,6 @@
 import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
-import { useStore } from "../../../store"
+import { workingContext } from "../workingContext"
 
 export const processDeleteAnimationCommand = (
   args: string[],
@@ -11,11 +11,11 @@ export const processDeleteAnimationCommand = (
   }
   const name = determineReturnValueTyped<string>("string", args[0], context)
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate
+  const parsedVideostrate = workingContext.getVideostrate()
 
   try {
     parsedVideostrate.removeAnimation(name.value)
-    useStore.getState().setParsedVideostrate(parsedVideostrate)
+    workingContext.setVideostrate(parsedVideostrate)
   } catch (error) {
     console.error(
       "[CommandProcessor] Error processing delete_animation command: ",
