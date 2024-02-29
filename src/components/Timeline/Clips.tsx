@@ -1,6 +1,7 @@
 import { useContext } from "react"
 import { TimelineContext } from "./Timeline"
 import { useTimelineElements } from "../../hooks/useTimelineElements"
+import Clip from "./Clip"
 
 const Clips = () => {
   const timeline = useContext(TimelineContext)
@@ -8,41 +9,15 @@ const Clips = () => {
   const layers = useTimelineElements(timeline.widthPerSecond)
 
   return (
-    <div className="flex flex-col gap-2 w-full my-auto overflow-y-auto">
-      {layers.map((clips) => {
+    <div className="flex flex-col gap-2 w-full my-auto py-2 overflow-y-auto">
+      {layers.map((clips, layerIndex) => {
         return (
-          <div className="flex flex-row relative h-14 min-h-14 w-full border border-neutral rounded-md">
+          <div
+            key={layerIndex}
+            className="flex flex-row relative h-12 min-h-12 w-full border border-neutral rounded-lg"
+          >
             {clips.map((clip) => {
-              return (
-                <>
-                  {clip.type !== "video" && (
-                    <div
-                      key={clip.id}
-                      onMouseDown={(e) => e.stopPropagation()}
-                      className="absolute m-0 h-full bg-green-500 rounded-md text-white flex justify-start items-center"
-                      style={{
-                        width: `${clip.width}px`,
-                        left: `${clip.left}px`,
-                      }}
-                    >
-                      {clip.type} {clip.nodeType}
-                    </div>
-                  )}
-                  {clip.type === "video" && (
-                    <div
-                      key={clip.id}
-                      onMouseDown={(e) => e.stopPropagation()}
-                      className="absolute h-full border-2 border-neutral rounded-md"
-                      style={{
-                        width: `${clip.width}px`,
-                        left: `${clip.left}px`,
-                        backgroundImage: `url(${clip.thumbnail})`,
-                        backgroundSize: "auto 100%",
-                      }}
-                    ></div>
-                  )}
-                </>
-              )
+              return <Clip key={clip.id} clip={clip} />
             })}
           </div>
         )
