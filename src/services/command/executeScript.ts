@@ -60,7 +60,6 @@ export const executeScript = async (
   script: string,
   contextType: WorkingContextType = "main"
 ) => {
-export const executeScript = async (script: string) => {
   console.log("Executing script: \n", script)
   const lines = script.split("\n")
   const context: ExecutionContext = {}

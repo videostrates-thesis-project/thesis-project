@@ -21,7 +21,7 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
         .availableClips.find((c) => c.source === clip.source)
       return `<video id="${clip.id}" clip-name="${clip.name}" class="${htmlElement.classList.toString()}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}" clip-name="${availableClip?.title}" data-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>`
     } else {
-      if (!element.outerHtml) throw new Error("Missing  outerHtml")
+      if (!element.outerHtml) throw new Error("Missing outerHtml")
 
       const parser = new DOMParser()
       const document = parser.parseFromString(element.outerHtml, "text/html")
