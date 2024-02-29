@@ -49,7 +49,7 @@ export const useTimelineElements = (widthPerSecond: number) => {
         newLayers.push(layersMap.get(layerIndex) as TimelineElement[])
       })
     console.log("newLayers", newLayers)
-    setLayers(newLayers)
+    setLayers(newLayers.reverse())
   }, [elements])
 
   return layers

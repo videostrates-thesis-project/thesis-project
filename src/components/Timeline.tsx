@@ -73,7 +73,7 @@ const Timeline = () => {
       <TimelineControls {...{ zoomToFit, zoomOut, zoomIn }} />
       <div
         className={clsx(
-          "w-full overflow-auto flex-grow select-none",
+          "w-full overflow-auto flex-grow select-none max-h-[40%]",
           isSeeking && "cursor-grabbing"
         )}
         ref={timelineContainerRef}
