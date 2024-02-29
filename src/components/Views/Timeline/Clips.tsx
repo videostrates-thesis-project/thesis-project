@@ -8,16 +8,17 @@ const Clips = () => {
   const layers = useTimelineElements(timeline.widthPerSecond)
 
   return (
-    <div className="flex flex-col gap-2 w-full">
+    <div className="flex flex-col gap-2 w-full my-auto overflow-y-auto">
       {layers.map((clips) => {
         return (
-          <div className="flex flex-row relative h-14 w-full border border-neutral rounded-md">
+          <div className="flex flex-row relative h-14 min-h-14 w-full border border-neutral rounded-md">
             {clips.map((clip) => {
               return (
                 <>
                   {clip.type !== "video" && (
                     <div
                       key={clip.id}
+                      onMouseDown={(e) => e.stopPropagation()}
                       className="absolute m-0 h-full bg-green-500 rounded-md text-white flex justify-start items-center"
                       style={{
                         width: `${clip.width}px`,
@@ -30,6 +31,7 @@ const Clips = () => {
                   {clip.type === "video" && (
                     <div
                       key={clip.id}
+                      onMouseDown={(e) => e.stopPropagation()}
                       className="absolute h-full border-2 border-neutral rounded-md"
                       style={{
                         width: `${clip.width}px`,

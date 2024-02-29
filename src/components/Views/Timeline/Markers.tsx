@@ -34,7 +34,7 @@ const Markers = () => {
   }, [timeline.width, timeline.widthPerSecond])
 
   return (
-    <div className="flex flex-row relative h-8">
+    <div className="flex flex-row relative h-6 min-h-6 mb-1">
       {markers.map((marker) => {
         return (
           <div

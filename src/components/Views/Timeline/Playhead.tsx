@@ -3,7 +3,10 @@ import { useStore } from "../../../store"
 import { TimelineContext } from "../../Timeline"
 import clsx from "clsx"
 
-const Playhead = (props: { onMouseDown: () => void; isSeeking: boolean }) => {
+const Playhead = (props: {
+  onMouseDown: (e: React.MouseEvent) => void
+  isSeeking: boolean
+}) => {
   const { playbackState } = useStore()
   const timeline = useContext(TimelineContext)
   return (
