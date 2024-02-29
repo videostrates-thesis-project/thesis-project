@@ -9,6 +9,7 @@ import { processDeleteElementCommand } from "./commandProcessors/processDeleteEl
 import { processDeleteStyleCommand } from "./commandProcessors/processDeleteStyleCommand"
 import { processMoveCommand } from "./commandProcessors/processMoveCommand"
 import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCommand"
+import { processSetSpeedCommand } from "./commandProcessors/processSetSpeedCommand"
 import { ExecutionContext } from "./executionContext"
 import { processCommand } from "./processCommand"
 import { RecognizedCommands } from "./recognizedCommands"
@@ -47,6 +48,9 @@ const recognizedCommands: RecognizedCommands = {
   },
   delete_animation: {
     processFn: processDeleteAnimationCommand,
+  },
+  set_speed: {
+    processFn: processSetSpeedCommand,
   },
 }
 
