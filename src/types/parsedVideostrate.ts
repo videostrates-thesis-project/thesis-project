@@ -69,6 +69,7 @@ export class ParsedVideostrate {
       source,
       type: "video",
       offset: 0,
+      layer: 0,
     })
     this.clips = [...this.clips]
     this.calculateAll()
@@ -108,6 +109,7 @@ export class ParsedVideostrate {
       type: "custom",
       offset: 0,
       outerHtml,
+      layer: 1,
     })
     this.elements = [...this.elements]
     this.calculateAll()

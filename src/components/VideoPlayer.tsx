@@ -138,7 +138,7 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
   }, [setVideostrateUrl, url])
 
   return (
-    <div className="flex flex-col gap-2 w-full h-full p-2 min-h-0 min-w-0">
+    <div className="flex flex-col gap-2 w-full flex-grow p-2 min-h-0 min-w-0">
       <div className="flex flex-row gap-4 w-full">
         <input
           type="text"

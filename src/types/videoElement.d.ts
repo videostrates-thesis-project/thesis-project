@@ -8,6 +8,7 @@ export interface VideoElement {
   offset: number
   type: VideoElementType
   outerHtml?: string
+  layer: number
 }
 
 export interface CustomElement extends VideoElement {

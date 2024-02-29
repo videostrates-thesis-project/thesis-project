@@ -1,120 +1,99 @@
-import { useEffect, useMemo, useState } from "react"
+import { createContext, useCallback, useEffect, useRef, useState } from "react"
 import { useStore } from "../store"
-import { useScrollNavigation } from "../hooks/useScrollNavigation"
-import { useSeek } from "../hooks/useSeek"
-import { useTimelineElements } from "../hooks/useTimelineElements"
-import { useTimelineMarkers } from "../hooks/useTimelineMarkers"
 import TimelineControls from "./TimelineControls"
 import clsx from "clsx"
+import { useZoom } from "../hooks/useZoom"
+import Markers from "./Views/Timeline/Markers"
+import Clips from "./Views/Timeline/Clips"
+import Playhead from "./Views/Timeline/Playhead"
+import { useSeek } from "../hooks/useSeek"
+
+interface TimelineContextProps {
+  zoom: number
+  widthPerSecond: number
+  width: number
+}
+
+const TimelineContext = createContext<TimelineContextProps>({
+  zoom: 1,
+  widthPerSecond: 1,
+  width: 1,
+})
 
 const Timeline = () => {
-  const { parsedVideostrate, playbackState } = useStore()
-  const [viewStart, setViewStart] = useState(0)
-  const [viewEnd, setViewEnd] = useState(0)
-  const {
-    ref: timelineDivRef,
-    zoomIn,
-    zoomOut,
-    resetZoom,
-  } = useScrollNavigation(viewStart, viewEnd, setViewStart, setViewEnd)
-  const { isSeeking, onSeek, onStartSeeking, onStopSeeking } = useSeek(
-    parsedVideostrate.length
-  )
-  const elements = useTimelineElements(viewStart, viewEnd)
-  const markers = useTimelineMarkers(viewStart, viewEnd)
+  const { parsedVideostrate } = useStore()
+  const { zoom, resetZoom, zoomIn, zoomOut } = useZoom()
+  const [timelineWidth, setTimelineWidth] = useState(1)
+  const [widthPerSecond, setWidthPerSecond] = useState(1)
+  const { onSeek, onStartSeeking, onStopSeeking, isSeeking } =
+    useSeek(widthPerSecond)
+
+  const timelineContainerRef = useRef<HTMLDivElement>(null)
+  const timelineRef = useRef<HTMLDivElement>(null)
+
+  const updateTimelineWidth = useCallback(() => {
+    console.log("updateTimelineWidth")
+    const target = timelineContainerRef.current?.parentNode as HTMLElement
+    if (!target) return
+    setTimelineWidth(
+      // Always leave half a screen width of empty space on the right
+      Math.max(target.clientWidth * (zoom + 0.5), target.clientWidth)
+    )
+    setWidthPerSecond((target.clientWidth * zoom) / parsedVideostrate.length)
+    console.log("updateTimelineWidth", target.clientWidth)
+  }, [parsedVideostrate.length, zoom])
 
   useEffect(() => {
-    setViewEnd(parsedVideostrate.length)
-  }, [parsedVideostrate.length])
+    updateTimelineWidth()
+    window.addEventListener("resize", updateTimelineWidth)
+    // Cleanup on component unmount
+    return () => {
+      window.removeEventListener("resize", updateTimelineWidth)
+    }
+  }, [updateTimelineWidth])
 
-  const playbackPosition = useMemo(
-    () => (playbackState.time / parsedVideostrate.length) * 100 + "%",
-    [parsedVideostrate.length, playbackState.time]
-  )
-
-  const formatMarker = (marker: number | null) => {
-    if (marker === null) return ""
-    const minutes = Math.floor(marker / 60)
-    const seconds = marker % 60
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`
-  }
+  const zoomToFit = useCallback(() => {
+    resetZoom()
+    const target = timelineContainerRef.current
+    if (!target) return
+    target.scrollTo({
+      left: 0,
+      behavior: "smooth",
+    })
+  }, [resetZoom])
 
   return (
-    <div className="flex flex-col mt-4 relative" ref={timelineDivRef}>
-      <TimelineControls {...{ resetZoom, zoomOut, zoomIn }} />
+    <TimelineContext.Provider
+      value={{
+        zoom,
+        widthPerSecond,
+        width: timelineWidth,
+      }}
+    >
+      <TimelineControls {...{ zoomToFit, zoomOut, zoomIn }} />
       <div
         className={clsx(
-          "relative overflow-clip",
-          isSeeking ? "cursor-grabbing" : "cursor-pointer"
+          "w-full overflow-auto flex-grow select-none",
+          isSeeking && "cursor-grabbing"
         )}
+        ref={timelineContainerRef}
         onMouseMove={onSeek}
-        onMouseDown={onStartSeeking}
         onMouseUp={onStopSeeking}
         onMouseLeave={onStopSeeking}
       >
         <div
-          className="h-full w-[0.125rem] bg-white absolute z-10"
-          style={{ left: playbackPosition }}
+          className="flex flex-col relative h-full"
+          style={{ width: timelineWidth }}
+          ref={timelineRef}
         >
-          <i className="absolute bi bi-caret-down-fill text-2xl text-white l-1/2 -translate-x-1/2 -top-3"></i>
-        </div>
-        <div className="flex flex-row relative h-8">
-          {markers.map((marker, index) => {
-            return (
-              <div
-                key={index}
-                className="absolute bg-base-content w-[1px]"
-                style={{
-                  left: `${marker.left}%`,
-                  height: `${marker.text === null ? "0.5" : "1"}rem`,
-                }}
-              >
-                <span className="relative -top-1 left-2 text-xs">
-                  {formatMarker(marker.text)}
-                </span>
-              </div>
-            )
-          })}
-        </div>
-        <div className="flex flex-row mt-4 relative h-12">
-          {elements
-            .filter((e) => e.type !== "video")
-            .map((element, index) => {
-              return (
-                <div
-                  key={index}
-                  className="absolute h-8 bg-green-500 rounded-md mx-2 text-white flex justify-start items-center"
-                  style={{
-                    width: `${element.width}%`,
-                    left: `${element.left}%`,
-                  }}
-                >
-                  {element.type} {element.nodeType}
-                </div>
-              )
-            })}
-        </div>
-        <div className="flex flex-row mt-4 relative h-20">
-          {elements
-            .filter((e) => e.type === "video")
-            .map((element, index) => {
-              return (
-                <div
-                  key={index}
-                  className="absolute h-16 border-2 border-blue-600 bg-blue-500 rounded-md text-white flex justify-center items-center"
-                  style={{
-                    width: `${element.width}%`,
-                    left: `${element.left}%`,
-                  }}
-                >
-                  {element.clipName}
-                </div>
-              )
-            })}
+          <Markers />
+          <Clips />
+          <Playhead onMouseDown={onStartSeeking} isSeeking={isSeeking} />
         </div>
       </div>
-    </div>
+    </TimelineContext.Provider>
   )
 }
 
+export { TimelineContext }
 export default Timeline
