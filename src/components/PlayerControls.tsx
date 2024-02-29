@@ -3,7 +3,6 @@ import { useStore } from "../store"
 const PlayerControls = () => {
   const { playing, setPlaying, playbackState, setSeek, parsedVideostrate } =
     useStore()
-  console.log("parsedVideostrate.length", parsedVideostrate.length)
 
   return (
     <div className="flex justify-center items-center h-12">

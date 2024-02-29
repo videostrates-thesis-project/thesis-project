@@ -43,15 +43,17 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     setIframeLeft((target.clientWidth - 1280) / 2)
     setIframeTop((newContainerHeight - 720) / 2)
     setIframeContainerHeight(newContainerHeight)
-  }, [setIframeScale])
+  }, [iframeRef])
 
   useEffect(() => {
-    window.addEventListener("resize", updateIframeSize)
-    // Cleanup on component unmount
+    updateIframeSize()
+    const current = iframeRef.current?.parentNode as HTMLElement
+    const resizeObserver = new ResizeObserver(updateIframeSize)
+    if (current) resizeObserver.observe(current)
     return () => {
-      window.removeEventListener("resize", updateIframeSize)
+      resizeObserver.disconnect()
     }
-  }, [updateIframeSize])
+  }, [updateIframeSize, iframeRef])
 
   useEffect(() => {
     controlPlayer(PlayerCommands.Seek, { time: seek })
@@ -140,7 +142,7 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
   }, [setVideostrateUrl, url])
 
   return (
-    <div className="flex flex-col gap-2 w-full h-full p-2 min-h-0 min-w-0">
+    <div className="flex flex-col gap-2 w-full flex-grow p-2 min-h-0 min-w-0">
       <div className="flex flex-row gap-4 w-full">
         <input
           type="text"
@@ -157,7 +159,6 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
         <div
           className="w-full h-full overflow-hidden min-h-0 min-w-0"
           style={{ height: `${iframeContainerHeight}px` }}
-          onLoad={() => updateIframeSize()}
         >
           <iframe
             ref={iframeRef}
