@@ -13,12 +13,13 @@ import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCom
 import { processSetSpeedCommand } from "./commandProcessors/processSetSpeedCommand"
 import { ExecutedScript } from "./executedScript"
 import { ExecutionContext } from "./executionContext"
-import { processCommand } from "./processCommand"
-import { RecognizedCommands } from "./recognizedCommands"
+import { executeCommand } from "./processCommand"
+import { ExecutableCommand, RecognizedCommands } from "./recognizedCommands"
 import {
   WorkingContextType,
   resolveWorkingContext,
 } from "./resolveWorkingContext"
+import { tokenizeCommand } from "./tokenizeCommand"
 
 const recognizedCommands: RecognizedCommands = {
   move: {
@@ -59,17 +60,26 @@ const recognizedCommands: RecognizedCommands = {
   },
 }
 
-export const executeScript = async (
+export const parseAndExecuteScript = async (
   script: string,
   contextType: WorkingContextType = "main"
 ) => {
   console.log("Executing script: \n", script)
   const lines = script.split("\n")
+  const parsed = lines.map((line) => tokenizeCommand(line))
+
+  executeScript(parsed, contextType)
+}
+
+export const executeScript = async (
+  script: ExecutableCommand[],
+  contextType: WorkingContextType = "main"
+) => {
   const context: ExecutionContext = {}
   const workingContext = resolveWorkingContext(contextType)
   const videoStrateBefore = workingContext.getVideostrate().clone()
-  lines.forEach((line) =>
-    processCommand(line, recognizedCommands, context, workingContext)
+  script.forEach((line) =>
+    executeCommand(line, recognizedCommands, context, workingContext)
   )
 
   const executedScript: ExecutedScript = {

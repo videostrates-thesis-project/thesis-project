@@ -1,19 +1,11 @@
 import { ExecutionContext } from "./executionContext"
 import { tokenizeCommand } from "./tokenizeCommand"
-import { ReturnValue } from "./returnValue"
 import { WorkingContext } from "./workingContext"
+import { ExecutableCommand, RecognizedCommands } from "./recognizedCommands"
 
-interface CommandProperties {
-  processFn: (
-    args: string[],
-    context: ExecutionContext,
-    workingContext: WorkingContext
-  ) => ReturnValue | undefined | void
-}
-
-export const processCommand = (
+export const parseAndExecuteCommand = (
   command: string,
-  recognizedCommands: { [key: string]: CommandProperties },
+  recognizedCommands: RecognizedCommands,
   context: ExecutionContext = {},
   workingContext: WorkingContext
 ) => {
@@ -27,15 +19,25 @@ export const processCommand = (
     return
   }
 
-  const { command: commandType, args, variable } = tokenizeCommand(command)
-  if (!commandType || !recognizedCommands[commandType]) {
-    throw new Error(`Command "${command}" not recognized`)
-  }
+  const executableCommand = tokenizeCommand(command)
 
-  const commandProperties = recognizedCommands[commandType]
-  const result = commandProperties.processFn(args, context, workingContext)
+  executeCommand(executableCommand, recognizedCommands, context, workingContext)
+}
 
-  if (variable) {
-    context[variable] = result
+export const executeCommand = (
+  command: ExecutableCommand,
+  recognizedCommands: RecognizedCommands,
+  context: ExecutionContext,
+  workingContext: WorkingContext
+) => {
+  const commandProperties = recognizedCommands[command.command]
+  const result = commandProperties.processFn(
+    command.args,
+    context,
+    workingContext
+  )
+
+  if (command.variable) {
+    context[command.variable] = result
   }
 }

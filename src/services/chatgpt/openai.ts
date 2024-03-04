@@ -2,7 +2,7 @@ import OpenAI from "openai"
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 import { useStore } from "../../store"
 import executeChangesFunction from "./executeChangesFunction"
-import { executeScript } from "../command/executeScript"
+import { parseAndExecuteScript } from "../command/executeScript"
 import instructions from "./instructions.txt?raw"
 
 const ASSISTANT_POLL_RATE = 5000
@@ -57,7 +57,7 @@ class OpenAIService {
             (q) => q.type === "text"
           ) as OpenAI.Beta.Threads.Messages.MessageContentText
         ).text.value
-        executeScript(text)
+        parseAndExecuteScript(text)
       } else if (run.status === "requires_action") {
         console.log("Requires action", run)
         clearInterval(interval)
@@ -120,9 +120,8 @@ class OpenAIService {
       .getState()
       .addChatMessage({ role: "assistant", content: message.explanation })
 
-    //processScript(message.script)
     if (message.script) {
-      executeScript(message.script, "temporary")
+      parseAndExecuteScript(message.script, "temporary")
     }
   }
 }

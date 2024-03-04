@@ -1,4 +1,6 @@
-import { processCommand } from "./processCommand"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { executeCommand } from "./processCommand"
+import { mockWorkingContext } from "./workingContext"
 
 test("can process command", () => {
   const recognizedCommands = {
@@ -9,16 +11,21 @@ test("can process command", () => {
     },
   }
   const context = {}
-  processCommand(
-    'add_clip("Big Buck Bunny.mp4", 0, 10)',
-    recognizedCommands,
-    context
+  executeCommand(
+    {
+      command: "add_clip",
+      args: ['"Big Buck Bunny.mp4"', "0", "10"],
+    },
+    recognizedCommands as any,
+    context,
+    mockWorkingContext
   )
 
   expect(context).toEqual({})
   expect(recognizedCommands.add_clip.processFn).toHaveBeenCalledWith(
     ['"Big Buck Bunny.mp4"', "0", "10"],
-    context
+    context,
+    mockWorkingContext
   )
 })
 
@@ -31,10 +38,18 @@ test("can process command with html", () => {
     },
   }
   const context = {}
-  processCommand(
-    "add_custom_element(\"<div style='color: red; font-size: 24px; text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);'>ChatGPT is cool!</div>\", 30, 35)",
-    recognizedCommands,
-    context
+  executeCommand(
+    {
+      command: "add_custom_element",
+      args: [
+        "\"<div style='color: red; font-size: 24px; text-align: center; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);'>ChatGPT is cool!</div>\"",
+        "30",
+        "35",
+      ],
+    },
+    recognizedCommands as any,
+    context,
+    mockWorkingContext
   )
 
   expect(context).toEqual({})
@@ -44,6 +59,7 @@ test("can process command with html", () => {
       "30",
       "35",
     ],
-    context
+    context,
+    mockWorkingContext
   )
 })

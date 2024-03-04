@@ -38,3 +38,12 @@ export const workingContext = new WorkingContext(
     return videostrate
   }
 )
+
+export const mockWorkingContext = new WorkingContext(
+  (videostrate: ParsedVideostrate) => {
+    console.log("Mock set videostrate", videostrate)
+  },
+  () => {
+    return new ParsedVideostrate([])
+  }
+)

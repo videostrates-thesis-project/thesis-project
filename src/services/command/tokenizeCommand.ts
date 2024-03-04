@@ -1,4 +1,10 @@
-export const tokenizeCommand = (input: string) => {
+import {
+  AvailableCommand,
+  ExecutableCommand,
+  availableCommands,
+} from "./recognizedCommands"
+
+export const tokenizeCommand = (input: string): ExecutableCommand => {
   const assignmentParts = input.split("=")
   let variable: string | null = null
   if (assignmentParts.length > 1 && input.indexOf("=") < input.indexOf("(")) {
@@ -8,7 +14,11 @@ export const tokenizeCommand = (input: string) => {
   }
 
   let argStart = input.indexOf("(")
-  const command = input.slice(0, argStart).trim()
+  const command = input.slice(0, argStart).trim() as AvailableCommand
+  if (!availableCommands.includes(command)) {
+    throw new Error(`Command "${command}" not recognized`)
+  }
+
   if (!argStart || input.indexOf(")") === -1)
     throw new Error(`No arguments provided for command "${command}"`)
 
