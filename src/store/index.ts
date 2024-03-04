@@ -52,6 +52,7 @@ export interface AppState {
 
   redoStack: ExecutedScript[]
   setRedoStack: (stack: ExecutedScript[]) => void
+  addToRedoStack: (script: ExecutedScript) => void
 }
 
 export const useStore = create(
@@ -115,6 +116,13 @@ export const useStore = create(
         }),
       redoStack: [],
       setRedoStack: (stack: ExecutedScript[]) => set({ redoStack: stack }),
+      addToRedoStack: (script: ExecutedScript) => {
+        set((state) => {
+          return {
+            redoStack: [...state.redoStack, script],
+          }
+        })
+      },
     }),
     {
       name: "thesis-project-storage",

@@ -103,8 +103,8 @@ class OpenAIService {
 
     const messageString = toolCall?.function.arguments
     const message = JSON.parse(messageString) as ExecuteChanges
-    if (!message.script || !message.explanation)
-      throw new Error("[ChatGPT] No script or explanation")
+    if (!message.explanation)
+      throw new Error("[ChatGPT] No script explanation in response")
     if (
       typeof message.script !== "string" ||
       typeof message.explanation !== "string"
@@ -121,7 +121,9 @@ class OpenAIService {
       .addChatMessage({ role: "assistant", content: message.explanation })
 
     //processScript(message.script)
-    executeScript(message.script, "temporary")
+    if (message.script) {
+      executeScript(message.script, "temporary")
+    }
   }
 }
 

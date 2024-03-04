@@ -67,6 +67,7 @@ export const executeScript = async (
   const lines = script.split("\n")
   const context: ExecutionContext = {}
   const workingContext = resolveWorkingContext(contextType)
+  const videoStrateBefore = workingContext.getVideostrate().clone()
   lines.forEach((line) =>
     processCommand(line, recognizedCommands, context, workingContext)
   )
@@ -75,6 +76,7 @@ export const executeScript = async (
     script,
     contextType,
     context,
+    parsedVideostrate: videoStrateBefore,
   }
   useStore.getState().addToUndoStack(executedScript)
 }

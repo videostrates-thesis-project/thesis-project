@@ -1,8 +1,20 @@
+import { useCallback } from "react"
+import { undo } from "../services/command/undo"
 import { useStore } from "../store"
 import clsx from "clsx"
+import { redo } from "../services/command/redo"
 
 const Navbar = () => {
-  const { fileName, setFileName, undoStack } = useStore()
+  const { fileName, setFileName, undoStack, redoStack } = useStore()
+
+  const onUndo = useCallback(() => {
+    undo()
+  }, [])
+
+  const onRedo = useCallback(() => {
+    redo()
+  }, [])
+
   return (
     <nav className="navbar min-h-10 py-2 bg-base-300 border-b border-neutral">
       <div className="navbar-start flex items-center gap-2">
@@ -16,10 +28,17 @@ const Navbar = () => {
               "btn btn-ghost btn-sm",
               undoStack.length === 0 && "btn-disabled"
             )}
+            onClick={onUndo}
           >
             <i className="bi bi-arrow-counterclockwise text-lg leading-6"></i>
           </button>
-          <button className="btn btn-ghost btn-sm btn-disabled">
+          <button
+            className={clsx(
+              "btn btn-ghost btn-sm",
+              redoStack.length === 0 && "btn-disabled"
+            )}
+            onClick={onRedo}
+          >
             <i className="bi bi-arrow-clockwise text-lg leading-6"></i>
           </button>
         </span>
