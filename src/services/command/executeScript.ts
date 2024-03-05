@@ -1,5 +1,7 @@
+import { useStore } from "../../store"
 import { processAddClipCommand } from "./commandProcessors/processAddClipCommand"
 import { processAddCustomElementCommand } from "./commandProcessors/processAddCustomElementCommand"
+import { processAddSubtitleCommand } from "./commandProcessors/processAddSubtitleCommand"
 import { processAssignClassCommand } from "./commandProcessors/processAssignClassCommand"
 import { processCreateAnimationCommand } from "./commandProcessors/processCreateAnimationCommand"
 import { processCreateStyleCommand } from "./commandProcessors/processCreateStyleCommand"
@@ -9,11 +11,17 @@ import { processDeleteElementCommand } from "./commandProcessors/processDeleteEl
 import { processDeleteStyleCommand } from "./commandProcessors/processDeleteStyleCommand"
 import { processMoveCommand } from "./commandProcessors/processMoveCommand"
 import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCommand"
+import { processRenameElement } from "./commandProcessors/processRenameElementCommand"
 import { processSetSpeedCommand } from "./commandProcessors/processSetSpeedCommand"
+import { ExecutedScript } from "./executedScript"
 import { ExecutionContext } from "./executionContext"
-import { processCommand } from "./processCommand"
-import { RecognizedCommands } from "./recognizedCommands"
-import { mainContext, workingContext } from "./workingContext"
+import { executeCommand } from "./processCommand"
+import { ExecutableCommand, RecognizedCommands } from "./recognizedCommands"
+import {
+  WorkingContextType,
+  resolveWorkingContext,
+} from "./resolveWorkingContext"
+import { tokenizeCommand } from "./tokenizeCommand"
 
 const recognizedCommands: RecognizedCommands = {
   move: {
@@ -52,29 +60,41 @@ const recognizedCommands: RecognizedCommands = {
   set_speed: {
     processFn: processSetSpeedCommand,
   },
+  add_subtitle: {
+    processFn: processAddSubtitleCommand,
+  },
+  rename_element: {
+    processFn: processRenameElement,
+  },
 }
 
-export type WorkingContextType = "main" | "temporary"
-
-export const executeScript = async (
+export const parseAndExecuteScript = async (
   script: string,
   contextType: WorkingContextType = "main"
 ) => {
   console.log("Executing script: \n", script)
   const lines = script.split("\n")
-  const context: ExecutionContext = {}
-  const workingContext = resolveContext(contextType)
-  lines.forEach((line) =>
-    processCommand(line, recognizedCommands, context, workingContext)
-  )
+  const parsed = lines.map((line) => tokenizeCommand(line))
+
+  executeScript(parsed, contextType)
 }
 
-const resolveContext = (contextType: WorkingContextType) => {
-  if (contextType === "main") {
-    return mainContext
-  } else if (contextType === "temporary") {
-    return workingContext
-  }
+export const executeScript = async (
+  script: ExecutableCommand[],
+  contextType: WorkingContextType = "main"
+) => {
+  const context: ExecutionContext = {}
+  const workingContext = resolveWorkingContext(contextType)
+  const videoStrateBefore = workingContext.getVideostrate().clone()
+  script.forEach((line) =>
+    executeCommand(line, recognizedCommands, context, workingContext)
+  )
 
-  throw new Error(`Unknown context type: ${contextType}`)
+  const executedScript: ExecutedScript = {
+    script,
+    contextType,
+    context,
+    parsedVideostrate: videoStrateBefore,
+  }
+  useStore.getState().addToUndoStack(executedScript)
 }
