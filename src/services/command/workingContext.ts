@@ -30,9 +30,20 @@ export const workingContext = new WorkingContext(
   () => {
     let videostrate = useStore.getState().workingVideostrate
     if (!videostrate) {
-      videostrate = useStore.getState().parsedVideostrate.clone()
+      videostrate = useStore.getState().parsedVideostrate
+      console.log("Parsed videostrate", videostrate)
+      videostrate = videostrate.clone()
       useStore.getState().setWorkingVideostrate(videostrate)
     }
     return videostrate
+  }
+)
+
+export const mockWorkingContext = new WorkingContext(
+  (videostrate: ParsedVideostrate) => {
+    console.log("Mock set videostrate", videostrate)
+  },
+  () => {
+    return new ParsedVideostrate([])
   }
 )

@@ -5,6 +5,7 @@ import { PlaybackState } from "../types/playbackState"
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 import VideoClip from "../types/videoClip"
 import { ChatMessage } from "../types/chatMessage"
+import { ExecutedScript } from "../services/command/executedScript"
 
 export interface AppState {
   videostrateUrl: string
@@ -44,6 +45,14 @@ export interface AppState {
 
   workingVideostrate: ParsedVideostrate | null
   setWorkingVideostrate: (videostrate: ParsedVideostrate | null) => void
+
+  undoStack: ExecutedScript[]
+  setUndoStack: (stack: ExecutedScript[]) => void
+  addToUndoStack: (script: ExecutedScript) => void
+
+  redoStack: ExecutedScript[]
+  setRedoStack: (stack: ExecutedScript[]) => void
+  addToRedoStack: (script: ExecutedScript) => void
 }
 
 export const useStore = create(
@@ -96,6 +105,23 @@ export const useStore = create(
           }
         })
         return get().currentMessages
+      },
+      undoStack: [],
+      setUndoStack: (stack: ExecutedScript[]) => set({ undoStack: stack }),
+      addToUndoStack: (script: ExecutedScript) =>
+        set((state) => {
+          return {
+            undoStack: [...state.undoStack, script],
+          }
+        }),
+      redoStack: [],
+      setRedoStack: (stack: ExecutedScript[]) => set({ redoStack: stack }),
+      addToRedoStack: (script: ExecutedScript) => {
+        set((state) => {
+          return {
+            redoStack: [...state.redoStack, script],
+          }
+        })
       },
     }),
     {
