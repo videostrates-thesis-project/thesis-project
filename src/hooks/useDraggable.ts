@@ -1,54 +1,40 @@
 import { useEffect, useState } from "react"
 
-const useDraggable = (initPosX: number, initPosY: number) => {
-  const [isDragging, setIsDragging] = useState(false)
-  const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 })
-  const [position, setPosition] = useState({ x: initPosX, y: initPosY })
+const useDraggable = (initPosX: number) => {
+  const [startDragPosition, setStartDragPosition] = useState(0)
+  const [draggedPosition, setDraggedPosition] = useState(initPosX)
+  const [emptyDragImage, setEmptyDragImage] = useState<HTMLImageElement | null>(
+    null
+  )
+  useEffect(() => {
+    setDraggedPosition(initPosX)
+  }, [initPosX])
 
   useEffect(() => {
-    setDragStartPos({ x: initPosX, y: initPosY })
-    console.log("useDraggable useEffect", initPosX, initPosY)
-  }, [initPosX, initPosY])
-
-  const updatePosition = (e: React.MouseEvent) => {
-    const x = e.clientX - dragStartPos.x
-    const y = e.clientY - dragStartPos.y
-    console.log(
-      "useDraggable updatePosition",
-      dragStartPos.x,
-      dragStartPos.y,
-      e.clientX,
-      e.clientY,
-      x,
-      y
-    )
-    setPosition({ x, y })
-    return { x, y }
-  }
-
-  const OnDragStart = (e: React.MouseEvent) => {
-    setIsDragging(true)
-    console.log("useDraggable onMouseDown", e.clientX, e.clientY)
-    setDragStartPos({ x: e.clientX - initPosX, y: e.clientY - initPosY })
-  }
-
-  const OnDragStop = (e: React.MouseEvent) => {
-    setIsDragging(false)
-    updatePosition(e)
-  }
-
-  const OnDrag = (e: React.MouseEvent) => {
-    if (isDragging) {
-      updatePosition(e)
+    const img = document.createElement("img")
+    img.src =
+      "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+    setEmptyDragImage(img)
+    return () => {
+      img.remove()
     }
+  }, [])
+
+  const onDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setDragImage(emptyDragImage!, 10, 10)
+    setStartDragPosition(e.clientX - initPosX)
+  }
+
+  const onDrag = (e: React.DragEvent) => {
+    setDraggedPosition(e.clientX - startDragPosition)
+    // Returns the shift in position
+    return e.clientX - startDragPosition - initPosX
   }
 
   return {
-    onMouseDown: OnDragStart,
-    onMouseUp: OnDragStop,
-    onMouseMove: OnDrag,
-    posX: position.x,
-    posY: position.y,
+    onDragStart,
+    onDrag,
+    draggedPosition,
   }
 }
 

@@ -1,68 +1,41 @@
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useContext } from "react"
 import { TimelineElement } from "../../hooks/useTimelineElements"
 import ClipContent from "./ClipContent"
 import { useStore } from "../../store"
 import { TimelineContext } from "./Timeline"
 import { executeScript } from "../../services/command/executeScript"
+import useDraggable from "../../hooks/useDraggable"
 
 const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
   const timeline = useContext(TimelineContext)
-  const { parsedVideostrate, setSelectedClipId } = useStore()
-  const [startDragPosition, setStartDragPosition] = useState(clip.left)
-  const [draggedPosition, setDraggedPosition] = useState(clip.left)
-  const [emptyDragImage, setEmptyDragImage] = useState<HTMLImageElement | null>(
-    null
+  const { setSelectedClipId } = useStore()
+  const { onDragStart, onDrag, draggedPosition } = useDraggable(clip.left)
+
+  const onDragEnd = useCallback(
+    (e: React.DragEvent) => {
+      const clipShift = onDrag(e)
+      const clipTimeShift = clipShift / timeline.widthPerSecond
+      console.log("clipTimeShift", clipTimeShift)
+      executeScript([
+        {
+          command: "move_delta",
+          args: [`"${clip.id}"`, clipTimeShift.toString()],
+        },
+      ])
+    },
+    [onDrag, timeline.widthPerSecond, clip.id]
   )
-
-  useEffect(() => {
-    setDraggedPosition(clip.left)
-  }, [clip.left])
-
-  useEffect(() => {
-    const img = document.createElement("img")
-    img.src =
-      "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
-    setEmptyDragImage(img)
-    return () => {
-      img.remove()
-    }
-  }, [])
-
-  const onDragStart = (e: React.DragEvent) => {
-    setSelectedClipId(clip.id)
-    console.log("Clip - onDragStart")
-    console.log(e)
-    e.dataTransfer.setDragImage(emptyDragImage!, 10, 10)
-    setStartDragPosition(e.clientX - clip.left)
-  }
-
-  const onDrag = (e: React.DragEvent) => {
-    setDraggedPosition(e.clientX - startDragPosition)
-  }
-
-  const onDragEnd = (e: React.DragEvent) => {
-    console.log("Clip - onDragEnd")
-    console.log(e)
-    setDraggedPosition(e.clientX - startDragPosition)
-    const clipShift = e.clientX - startDragPosition - clip.left
-    const clipTimeShift = clipShift / timeline.widthPerSecond
-    console.log("clipTimeShift", clipTimeShift)
-    executeScript([
-      {
-        command: "move_delta",
-        args: [`"${clip.id}"`, clipTimeShift.toString()],
-      },
-    ])
-    console.log("Parsed Videostrate:", parsedVideostrate.all)
-  }
 
   return (
     <>
       <div
         className="absolute m-0 h-full "
         draggable={true}
-        onDrag={onDrag}
+        onDrag={(e) => {
+          onDrag(e)
+          setSelectedClipId(clip.id)
+        }}
         onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         style={{ width: `${clip.width}px`, left: `${draggedPosition}px` }}
