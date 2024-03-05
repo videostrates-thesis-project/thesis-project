@@ -1,47 +1,72 @@
-import { useMemo } from "react"
+import { useContext, useEffect, useState } from "react"
 import { TimelineElement } from "../../hooks/useTimelineElements"
+import ClipContent from "./ClipContent"
 import { useStore } from "../../store"
-import clsx from "clsx"
+import { TimelineContext } from "./Timeline"
 
 const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
-  const { selectedClipId, setSelectedClipId } = useStore()
-
-  const backgroundStyle = useMemo(
-    () =>
-      clip.type === "video"
-        ? {
-            backgroundImage: `url(${clip.thumbnail})`,
-            backgroundSize: "auto 100%",
-          }
-        : {},
-    [clip.thumbnail, clip.type]
+  const timeline = useContext(TimelineContext)
+  const { parsedVideostrate, setParsedVideostrate } = useStore()
+  const [isDragging, setIsDragging] = useState(false)
+  const [startDragPosition, setStartDragPosition] = useState(clip.left)
+  const [draggedPosition, setDraggedPosition] = useState(clip.left)
+  const [emptyDragImage, setEmptyDragImage] = useState<HTMLImageElement | null>(
+    null
   )
 
-  const title = useMemo(
-    () => (clip.type === "video" ? "" : `${clip.type} ${clip.nodeType}`),
-    [clip.type, clip.nodeType]
-  )
+  useEffect(() => {
+    setDraggedPosition(clip.left)
+  }, [clip.left])
+
+  useEffect(() => {
+    const img = document.createElement("img")
+    img.src =
+      "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=="
+    setEmptyDragImage(img)
+    return () => {
+      img.remove()
+    }
+  }, [])
+
+  const onDragStart = (e: React.DragEvent) => {
+    console.log("Clip - onDragStart")
+    console.log(e)
+    e.dataTransfer.setDragImage(emptyDragImage!, 10, 10)
+    setIsDragging(true)
+    setStartDragPosition(e.clientX - clip.left)
+  }
+
+  const onDrag = (e: React.DragEvent) => {
+    setDraggedPosition(e.clientX - startDragPosition)
+  }
+
+  const onDragEnd = (e: React.DragEvent) => {
+    console.log("Clip - onDragEnd")
+    console.log(e)
+    setIsDragging(false)
+    setDraggedPosition(e.clientX - startDragPosition)
+    const clipShift = e.clientX - startDragPosition - clip.left
+    const clipTimeShift = clipShift / timeline.widthPerSecond
+    console.log("clipTimeShift", clipTimeShift)
+    parsedVideostrate.moveClipDeltaById(clip.id, clipTimeShift)
+    setParsedVideostrate(parsedVideostrate)
+    console.log("Parsed Videostrate:", parsedVideostrate.all)
+  }
 
   return (
-    <div
-      key={clip.id}
-      onMouseDown={(e) => e.stopPropagation()}
-      className={clsx(
-        "absolute m-0 h-full bg-secondary rounded-lg text-secondary-content border-2 flex items-center px-1",
-        selectedClipId === clip.id ? "border-accent" : "border-transparent"
-      )}
-      onClick={() => setSelectedClipId(clip.id)}
-      style={{
-        width: `${clip.width}px`,
-        left: `${clip.left}px`,
-        ...backgroundStyle,
-      }}
-    >
-      <span className="overflow-hidden whitespace-nowrap text-ellipsis w-full text-left">
-        {title}
-      </span>
-    </div>
+    <>
+      <div
+        className="absolute m-0 h-full "
+        draggable={true}
+        onDrag={onDrag}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+        style={{ width: `${clip.width}px`, left: `${draggedPosition}px` }}
+      >
+        <ClipContent clip={clip} />
+      </div>
+    </>
   )
 }
 

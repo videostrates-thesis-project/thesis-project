@@ -7,9 +7,7 @@ export const useScrollZoom = (
 ) => {
   useEffect(() => {
     const handleScroll = (event: WheelEvent) => {
-      console.log("scroll zoom", event.deltaY)
       if (elementRef.current && event.ctrlKey) {
-        console.log("scroll zoom ctrlKey", event)
         event.preventDefault()
         if (event.deltaY > 0) {
           zoomOut()
