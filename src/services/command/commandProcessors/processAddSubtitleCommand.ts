@@ -1,5 +1,5 @@
 import { ExecutionContext } from "../executionContext"
-import { determineReturnValue } from "../determineReturnValue"
+import { determineReturnValueTyped } from "../determineReturnValue"
 import { WorkingContext } from "../workingContext"
 
 export const processAddSubtitleCommand = (
@@ -10,15 +10,9 @@ export const processAddSubtitleCommand = (
   if (args.length !== 3) {
     throw new Error("Invalid number of arguments")
   }
-  const text = determineReturnValue(args[0], context)
-  if (text.type !== "string") {
-    throw new Error("First argument must be a string")
-  }
-  const start = determineReturnValue(args[1], context)
-  const end = determineReturnValue(args[2], context)
-  if (start.type !== "number" || end.type !== "number") {
-    throw new Error("Third and Fourth arguments must be numbers")
-  }
+  const text = determineReturnValueTyped<string>("string", args[0], context)
+  const start = determineReturnValueTyped<number>("number", args[1], context)
+  const end = determineReturnValueTyped<number>("number", args[2], context)
 
   const parser = new DOMParser()
   const document = parser.parseFromString(
@@ -45,7 +39,7 @@ export const processAddSubtitleCommand = (
     }
   } catch (error) {
     console.error(
-      "[CommandProcessor] Error processing add_custom_element command: ",
+      "[CommandProcessor] Error processing add_subtitle command: ",
       error
     )
   }

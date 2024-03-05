@@ -25,6 +25,7 @@ export const availableCommands = [
   "delete_animation",
   "set_speed",
   "add_subtitle",
+  "rename_element",
 ] as const
 
 export type AvailableCommand = (typeof availableCommands)[number]

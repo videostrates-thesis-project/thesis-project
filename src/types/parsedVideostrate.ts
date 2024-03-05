@@ -180,6 +180,16 @@ export class ParsedVideostrate {
     this.all = [...this.all]
   }
 
+  public renameElement(elementId: string, newName: string) {
+    const element = this.all.find((e) => e.id === elementId)
+    if (element) {
+      element.name = newName
+    } else {
+      throw new Error(`Element with id ${elementId} not found`)
+    }
+    this.all = [...this.all]
+  }
+
   private updateLayers() {
     this._all.sort((a, b) => a.layer - b.layer)
     let layerShift = 0

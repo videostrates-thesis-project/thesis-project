@@ -11,6 +11,7 @@ import { processDeleteElementCommand } from "./commandProcessors/processDeleteEl
 import { processDeleteStyleCommand } from "./commandProcessors/processDeleteStyleCommand"
 import { processMoveCommand } from "./commandProcessors/processMoveCommand"
 import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCommand"
+import { processRenameElement } from "./commandProcessors/processRenameElementCommand"
 import { processSetSpeedCommand } from "./commandProcessors/processSetSpeedCommand"
 import { ExecutedScript } from "./executedScript"
 import { ExecutionContext } from "./executionContext"
@@ -61,6 +62,9 @@ const recognizedCommands: RecognizedCommands = {
   },
   add_subtitle: {
     processFn: processAddSubtitleCommand,
+  },
+  rename_element: {
+    processFn: processRenameElement,
   },
 }
 
