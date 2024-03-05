@@ -30,7 +30,7 @@ const ClipContent = (props: { clip: TimelineElement }) => {
         e.stopPropagation()
       }}
       className={clsx(
-        "bg-secondary rounded-lg text-secondary-content border-2 flex items-center px-1 w-full h-full",
+        "bg-primary rounded-lg text-primary-content border-2 flex items-center px-1 w-full h-full",
         selectedClipId === clip.id ? "border-accent" : "border-transparent"
       )}
       onClick={() => setSelectedClipId(clip.id)}

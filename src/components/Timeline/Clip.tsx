@@ -3,12 +3,12 @@ import { TimelineElement } from "../../hooks/useTimelineElements"
 import ClipContent from "./ClipContent"
 import { useStore } from "../../store"
 import { TimelineContext } from "./Timeline"
+import { executeScript } from "../../services/command/executeScript"
 
 const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
   const timeline = useContext(TimelineContext)
-  const { parsedVideostrate, setParsedVideostrate } = useStore()
-  const [isDragging, setIsDragging] = useState(false)
+  const { parsedVideostrate, setSelectedClipId } = useStore()
   const [startDragPosition, setStartDragPosition] = useState(clip.left)
   const [draggedPosition, setDraggedPosition] = useState(clip.left)
   const [emptyDragImage, setEmptyDragImage] = useState<HTMLImageElement | null>(
@@ -30,10 +30,10 @@ const Clip = (props: { clip: TimelineElement }) => {
   }, [])
 
   const onDragStart = (e: React.DragEvent) => {
+    setSelectedClipId(clip.id)
     console.log("Clip - onDragStart")
     console.log(e)
     e.dataTransfer.setDragImage(emptyDragImage!, 10, 10)
-    setIsDragging(true)
     setStartDragPosition(e.clientX - clip.left)
   }
 
@@ -44,13 +44,16 @@ const Clip = (props: { clip: TimelineElement }) => {
   const onDragEnd = (e: React.DragEvent) => {
     console.log("Clip - onDragEnd")
     console.log(e)
-    setIsDragging(false)
     setDraggedPosition(e.clientX - startDragPosition)
     const clipShift = e.clientX - startDragPosition - clip.left
     const clipTimeShift = clipShift / timeline.widthPerSecond
     console.log("clipTimeShift", clipTimeShift)
-    parsedVideostrate.moveClipDeltaById(clip.id, clipTimeShift)
-    setParsedVideostrate(parsedVideostrate)
+    executeScript([
+      {
+        command: "move_delta",
+        args: [`"${clip.id}"`, clipTimeShift.toString()],
+      },
+    ])
     console.log("Parsed Videostrate:", parsedVideostrate.all)
   }
 
