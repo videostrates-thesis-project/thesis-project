@@ -1,6 +1,7 @@
 import { useStore } from "../../store"
 import { processAddClipCommand } from "./commandProcessors/processAddClipCommand"
 import { processAddCustomElementCommand } from "./commandProcessors/processAddCustomElementCommand"
+import { processAddSubtitleCommand } from "./commandProcessors/processAddSubtitleCommand"
 import { processAssignClassCommand } from "./commandProcessors/processAssignClassCommand"
 import { processCreateAnimationCommand } from "./commandProcessors/processCreateAnimationCommand"
 import { processCreateStyleCommand } from "./commandProcessors/processCreateStyleCommand"
@@ -57,6 +58,9 @@ const recognizedCommands: RecognizedCommands = {
   },
   set_speed: {
     processFn: processSetSpeedCommand,
+  },
+  add_subtitle: {
+    processFn: processAddSubtitleCommand,
   },
 }
 
