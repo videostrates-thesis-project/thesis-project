@@ -32,11 +32,11 @@ const Clip = (props: { clip: TimelineElement }) => {
       <div
         className="absolute m-0 h-full "
         draggable={true}
-        onDrag={(e) => {
-          onDrag(e)
+        onDrag={onDrag}
+        onDragStart={(e) => {
+          onDragStart(e)
           setSelectedClipId(clip.id)
         }}
-        onDragStart={onDragStart}
         onDragEnd={onDragEnd}
         style={{ width: `${clip.width}px`, left: `${draggedPosition}px` }}
       >
