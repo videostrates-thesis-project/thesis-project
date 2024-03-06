@@ -1,11 +1,10 @@
+import { useStore } from "../../../store"
 import { determineReturnValue } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
-import { WorkingContext } from "../workingContext"
 
 export const processCropElementCommand = (
   args: string[],
-  context: ExecutionContext,
-  workingContext: WorkingContext
+  context: ExecutionContext
 ) => {
   if (args.length !== 3) {
     throw new Error("Invalid number of arguments")
@@ -17,7 +16,7 @@ export const processCropElementCommand = (
   const start = determineReturnValue(args[1], context)
   const end = determineReturnValue(args[2], context)
 
-  const parsedVideostrate = workingContext.getVideostrate()
+  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
 
   try {
     const newLength = parsedVideostrate.cropElementById(
@@ -25,7 +24,7 @@ export const processCropElementCommand = (
       start.value,
       end.value
     )
-    workingContext.setVideostrate(parsedVideostrate)
+    useStore.getState().setParsedVideostrate(parsedVideostrate)
 
     return {
       type: "number" as const,
