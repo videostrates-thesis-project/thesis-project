@@ -46,6 +46,9 @@ export interface AppState {
     message: ChatCompletionMessageParam
   ) => ChatCompletionMessageParam[]
 
+  pendingChanges: boolean
+  setPendingChanges: (unaccepted: boolean) => void
+
   workingVideostrate: ParsedVideostrate | null
   setWorkingVideostrate: (videostrate: ParsedVideostrate | null) => void
 
@@ -76,6 +79,8 @@ export const useStore = create(
           clipsSources: uniqueClipSources,
         })
       },
+      pendingChanges: false,
+      setPendingChanges: (pendingChanges: boolean) => set({ pendingChanges }),
       workingVideostrate: null,
       setWorkingVideostrate: (videostrate: ParsedVideostrate | null) =>
         set({ workingVideostrate: videostrate ? videostrate.clone() : null }),
@@ -117,6 +122,7 @@ export const useStore = create(
         set((state) => {
           return {
             undoStack: [...state.undoStack, script],
+            redoStack: [],
           }
         }),
       redoStack: [],

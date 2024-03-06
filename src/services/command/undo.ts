@@ -20,4 +20,14 @@ export const undo = () => {
     workingContext.setVideostrate(lastCommand.parsedVideostrate)
     useStore.getState().setUndoStack(undoStack)
   }
+  if (useStore.getState().pendingChanges) {
+    useStore.getState().setPendingChanges(false)
+  }
+  return {
+    noRedo: () => {
+      const redoStack = useStore.getState().redoStack
+      redoStack.pop()
+      useStore.getState().setRedoStack(redoStack)
+    },
+  }
 }

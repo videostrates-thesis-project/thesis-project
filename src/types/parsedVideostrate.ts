@@ -42,8 +42,8 @@ export class ParsedVideostrate {
   public clone() {
     return new ParsedVideostrate(
       this.all.map((c) => ({ ...c })),
-      this.style,
-      this.animations
+      this.style.map((s) => ({ ...s })),
+      this.animations.map((a) => ({ ...a }))
     )
   }
 

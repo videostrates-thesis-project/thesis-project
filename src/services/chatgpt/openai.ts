@@ -122,6 +122,7 @@ class OpenAIService {
 
     if (message.script) {
       parseAndExecuteScript(message.script, "main")
+      useStore.getState().setPendingChanges(true)
     }
   }
 }
