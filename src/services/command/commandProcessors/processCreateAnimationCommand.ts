@@ -1,11 +1,10 @@
 import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
-import { WorkingContext } from "../workingContext"
+import { useStore } from "../../../store"
 
 export const processCreateAnimationCommand = (
   args: string[],
-  context: ExecutionContext,
-  workingContext: WorkingContext
+  context: ExecutionContext
 ) => {
   if (args.length !== 2) {
     throw new Error("Invalid number of arguments")
@@ -14,11 +13,11 @@ export const processCreateAnimationCommand = (
 
   const body = determineReturnValueTyped<string>("string", args[1], context)
 
-  const parsedVideostrate = workingContext.getVideostrate()
+  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
 
   try {
     parsedVideostrate.addAnimation(name.value, body.value)
-    workingContext.setVideostrate(parsedVideostrate)
+    useStore.getState().setParsedVideostrate(parsedVideostrate)
   } catch (error) {
     console.error(
       "[CommandProcessor] Error processing create_animatino command: ",

@@ -17,10 +17,6 @@ import { ExecutedScript } from "./executedScript"
 import { ExecutionContext } from "./executionContext"
 import { executeCommand } from "./processCommand"
 import { ExecutableCommand, RecognizedCommands } from "./recognizedCommands"
-import {
-  WorkingContextType,
-  resolveWorkingContext,
-} from "./resolveWorkingContext"
 import { tokenizeCommand } from "./tokenizeCommand"
 
 const recognizedCommands: RecognizedCommands = {
@@ -68,31 +64,21 @@ const recognizedCommands: RecognizedCommands = {
   },
 }
 
-export const parseAndExecuteScript = async (
-  script: string,
-  contextType: WorkingContextType = "main"
-) => {
+export const parseAndExecuteScript = async (script: string) => {
   console.log("Executing script: \n", script)
   const lines = script.split("\n")
   const parsed = lines.map((line) => tokenizeCommand(line))
 
-  executeScript(parsed, contextType)
+  executeScript(parsed)
 }
 
-export const executeScript = async (
-  script: ExecutableCommand[],
-  contextType: WorkingContextType = "main"
-) => {
+export const executeScript = async (script: ExecutableCommand[]) => {
   const context: ExecutionContext = {}
-  const workingContext = resolveWorkingContext(contextType)
-  const videoStrateBefore = workingContext.getVideostrate().clone()
-  script.forEach((line) =>
-    executeCommand(line, recognizedCommands, context, workingContext)
-  )
+  const videoStrateBefore = useStore.getState().parsedVideostrate.clone()
+  script.forEach((line) => executeCommand(line, recognizedCommands, context))
 
   const executedScript: ExecutedScript = {
     script,
-    contextType,
     context,
     parsedVideostrate: videoStrateBefore,
   }

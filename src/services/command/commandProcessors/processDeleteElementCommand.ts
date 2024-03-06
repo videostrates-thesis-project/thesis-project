@@ -1,6 +1,6 @@
+import { useStore } from "../../../store"
 import { determineReturnValue } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
-import { workingContext } from "../workingContext"
 
 export const processDeleteElementCommand = (
   args: string[],
@@ -11,11 +11,11 @@ export const processDeleteElementCommand = (
   }
   const elementId = determineReturnValue(args[0], context)
 
-  const parsedVideostrate = workingContext.getVideostrate()
+  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
 
   try {
     parsedVideostrate.deleteElementById(elementId.value)
-    workingContext.setVideostrate(parsedVideostrate)
+    useStore.getState().setParsedVideostrate(parsedVideostrate)
   } catch (error) {
     console.error(
       "[CommandProcessor] Error processing delete_element command: ",

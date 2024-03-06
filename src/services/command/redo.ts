@@ -1,5 +1,4 @@
 import { useStore } from "../../store"
-import { resolveWorkingContext } from "./resolveWorkingContext"
 
 export const redo = () => {
   const redoStack = useStore.getState().redoStack
@@ -11,13 +10,12 @@ export const redo = () => {
   const lastCommand = redoStack.pop()
 
   if (lastCommand) {
-    const workingContext = resolveWorkingContext(lastCommand.contextType)
-    const currentVideostrate = workingContext.getVideostrate()
+    const currentVideostrate = useStore.getState().parsedVideostrate.clone()
     useStore
       .getState()
       .addToUndoStack({ ...lastCommand, parsedVideostrate: currentVideostrate })
 
-    workingContext.setVideostrate(lastCommand.parsedVideostrate)
+    useStore.getState().setParsedVideostrate(lastCommand.parsedVideostrate)
     useStore.getState().setRedoStack(redoStack)
   }
 }

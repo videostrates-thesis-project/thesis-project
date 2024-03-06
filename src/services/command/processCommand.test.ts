@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { executeCommand } from "./processCommand"
-import { mockWorkingContext } from "./workingContext"
 
 test("can process command", () => {
   const recognizedCommands = {
@@ -17,15 +16,13 @@ test("can process command", () => {
       args: ['"Big Buck Bunny.mp4"', "0", "10"],
     },
     recognizedCommands as any,
-    context,
-    mockWorkingContext
+    context
   )
 
   expect(context).toEqual({})
   expect(recognizedCommands.add_clip.processFn).toHaveBeenCalledWith(
     ['"Big Buck Bunny.mp4"', "0", "10"],
-    context,
-    mockWorkingContext
+    context
   )
 })
 
@@ -48,8 +45,7 @@ test("can process command with html", () => {
       ],
     },
     recognizedCommands as any,
-    context,
-    mockWorkingContext
+    context
   )
 
   expect(context).toEqual({})
@@ -59,7 +55,6 @@ test("can process command with html", () => {
       "30",
       "35",
     ],
-    context,
-    mockWorkingContext
+    context
   )
 })

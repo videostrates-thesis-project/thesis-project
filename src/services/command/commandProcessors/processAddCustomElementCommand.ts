@@ -1,11 +1,10 @@
 import { ExecutionContext } from "../executionContext"
 import { determineReturnValue } from "../determineReturnValue"
-import { WorkingContext } from "../workingContext"
+import { useStore } from "../../../store"
 
 export const processAddCustomElementCommand = (
   args: string[],
-  context: ExecutionContext,
-  workingContext: WorkingContext
+  context: ExecutionContext
 ) => {
   if (args.length !== 4) {
     throw new Error("Invalid number of arguments")
@@ -36,7 +35,7 @@ export const processAddCustomElementCommand = (
   parent?.replaceChild(wrapper, htmlElement)
   wrapper.appendChild(htmlElement)
 
-  const parsedVideostrate = workingContext.getVideostrate()
+  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
 
   try {
     const elementId = parsedVideostrate.addCustomElement(
@@ -45,7 +44,7 @@ export const processAddCustomElementCommand = (
       start.value,
       end.value
     )
-    workingContext.setVideostrate(parsedVideostrate)
+    useStore.getState().setParsedVideostrate(parsedVideostrate)
 
     return {
       type: "string" as const,
