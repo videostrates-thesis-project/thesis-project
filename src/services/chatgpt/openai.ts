@@ -121,7 +121,7 @@ class OpenAIService {
       .addChatMessage({ role: "assistant", content: message.explanation })
 
     if (message.script) {
-      parseAndExecuteScript(message.script, "temporary")
+      parseAndExecuteScript(message.script, "main")
     }
   }
 }

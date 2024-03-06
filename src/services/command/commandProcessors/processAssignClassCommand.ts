@@ -1,11 +1,12 @@
 import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { ReturnValue } from "../returnValue"
-import { workingContext } from "../workingContext"
+import { WorkingContext } from "../workingContext"
 
 export const processAssignClassCommand = (
   args: string[],
-  context: ExecutionContext
+  context: ExecutionContext,
+  workingContext: WorkingContext
 ) => {
   if (args.length !== 2) {
     throw new Error("Invalid number of arguments")

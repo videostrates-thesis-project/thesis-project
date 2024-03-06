@@ -7,8 +7,13 @@ import { ChatGptSerializationStrategy } from "../services/serializationStrategie
 
 const Chat = () => {
   const [message, setMessage] = useState("")
-  const { parsedVideostrate, availableClips, chatMessages, addChatMessage } =
-    useStore()
+  const {
+    parsedVideostrate,
+    availableClips,
+    chatMessages,
+    addChatMessage,
+    selectedClipId,
+  } = useStore()
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -35,15 +40,25 @@ const Chat = () => {
     const html = new ChatGptSerializationStrategy().serializeHtml(
       parsedVideostrate
     )
-    const clip_id = "bf5e68d1-165e-4ffe-8f3d-d88f3e965008"
-    const prompt = buildAssistantMessage(availableClips, html, clip_id, message)
+    const prompt = buildAssistantMessage(
+      availableClips,
+      html,
+      selectedClipId,
+      message
+    )
     openAIService.sendChatMessage(prompt)
     addChatMessage({
       role: "user",
       content: message,
     })
     setMessage("")
-  }, [addChatMessage, availableClips, message, parsedVideostrate])
+  }, [
+    addChatMessage,
+    availableClips,
+    message,
+    parsedVideostrate,
+    selectedClipId,
+  ])
 
   return (
     <div className="flex flex-col h-full w-96 min-w-96 max-h-full bg-base-300 border-l border-neutral rounded">

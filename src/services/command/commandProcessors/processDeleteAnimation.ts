@@ -1,10 +1,11 @@
 import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
-import { workingContext } from "../workingContext"
+import { WorkingContext } from "../workingContext"
 
 export const processDeleteAnimationCommand = (
   args: string[],
-  context: ExecutionContext
+  context: ExecutionContext,
+  workingContext: WorkingContext
 ) => {
   if (args.length !== 1) {
     throw new Error("Invalid number of arguments")

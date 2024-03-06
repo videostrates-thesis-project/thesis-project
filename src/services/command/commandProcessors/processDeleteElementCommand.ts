@@ -1,10 +1,11 @@
 import { determineReturnValue } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
-import { workingContext } from "../workingContext"
+import { WorkingContext } from "../workingContext"
 
 export const processDeleteElementCommand = (
   args: string[],
-  context: ExecutionContext
+  context: ExecutionContext,
+  workingContext: WorkingContext
 ) => {
   if (args.length !== 1) {
     throw new Error("Invalid number of arguments")
