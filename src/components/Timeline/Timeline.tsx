@@ -1,12 +1,13 @@
 import { createContext, useCallback, useEffect, useRef, useState } from "react"
-import { useStore } from "../store"
+import { useStore } from "../../store"
 import TimelineControls from "./TimelineControls"
 import clsx from "clsx"
-import { useZoom } from "../hooks/useZoom"
-import Markers from "./Views/Timeline/Markers"
-import Clips from "./Views/Timeline/Clips"
-import Playhead from "./Views/Timeline/Playhead"
-import { useSeek } from "../hooks/useSeek"
+import { useZoom } from "../../hooks/useZoom"
+import Markers from "./Markers"
+import Clips from "./Clips"
+import Playhead from "./Playhead"
+import { useSeek } from "../../hooks/useSeek"
+import { useScrollZoom } from "../../hooks/useScrollZoom"
 
 interface TimelineContextProps {
   zoom: number
@@ -21,15 +22,16 @@ const TimelineContext = createContext<TimelineContextProps>({
 })
 
 const Timeline = () => {
+  const timelineContainerRef = useRef<HTMLDivElement>(null)
+  const timelineRef = useRef<HTMLDivElement>(null)
+
   const { parsedVideostrate } = useStore()
   const { zoom, resetZoom, zoomIn, zoomOut } = useZoom()
+  useScrollZoom(zoomIn, zoomOut, timelineContainerRef)
   const [timelineWidth, setTimelineWidth] = useState(1)
   const [widthPerSecond, setWidthPerSecond] = useState(1)
   const { onSeek, onStartSeeking, onStopSeeking, isSeeking } =
     useSeek(widthPerSecond)
-
-  const timelineContainerRef = useRef<HTMLDivElement>(null)
-  const timelineRef = useRef<HTMLDivElement>(null)
 
   const updateTimelineWidth = useCallback(() => {
     console.log("updateTimelineWidth")
@@ -73,13 +75,14 @@ const Timeline = () => {
       <TimelineControls {...{ zoomToFit, zoomOut, zoomIn }} />
       <div
         className={clsx(
-          "w-full overflow-auto flex-grow select-none max-h-[40%]",
+          "w-full overflow-x-auto overflow-y-hidden flex-grow select-none max-h-[40%]",
           isSeeking && "cursor-grabbing"
         )}
         ref={timelineContainerRef}
         onMouseMove={onSeek}
         onMouseUp={onStopSeeking}
         onMouseLeave={onStopSeeking}
+        onMouseDown={onStartSeeking}
       >
         <div
           className="flex flex-col relative h-full"

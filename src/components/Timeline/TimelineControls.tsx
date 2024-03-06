@@ -1,5 +1,5 @@
-import { useTimeStamp } from "../hooks/useTimeStamp"
-import { useStore } from "../store"
+import { useTimeStamp } from "../../hooks/useTimeStamp"
+import { useStore } from "../../store"
 
 const TimelineControls = (props: {
   zoomIn: (step: number) => void

@@ -28,35 +28,47 @@ export const useSeek = (widthPerSecond: number) => {
     setSeek(startPlaybackTime + shiftDuration)
   }, [setSeek, startPlaybackTime, lastPos, widthPerSecond])
 
+  const updateLastPos = useCallback(
+    (e: React.MouseEvent) => {
+      const target = e.currentTarget as HTMLElement
+      const rect = target.getBoundingClientRect()
+      console.log("seek rect", rect.left)
+      const posX = e.clientX + target.scrollLeft - rect.left
+      setLastPos(posX)
+    },
+    [setLastPos]
+  )
+
   const onSeek = useCallback(
     (e: React.MouseEvent) => {
       if (isSeeking) {
-        const target = e.currentTarget as HTMLElement
-        const rect = target.getBoundingClientRect()
-        console.log("seek rect", rect.left)
-        const posX = e.clientX + target.scrollLeft - rect.left
-        setLastPos(posX)
+        updateLastPos(e)
         clearTimeout(seekTimeout)
         if (shouldSeekAgain(lastSeekTime)) {
           updateSeek()
-          console.log("on seek", posX)
         } else {
           const newTimeout = setTimeout(updateSeek, 100)
           setSeekTimeout(newTimeout)
         }
       }
     },
-    [isSeeking, lastSeekTime, seekTimeout, updateSeek]
+    [isSeeking, lastSeekTime, seekTimeout, updateLastPos, updateSeek]
   )
 
-  const onStartSeeking = useCallback(() => {
-    setStartPlaybackTime(playbackState.time)
-    setIsSeeking(true)
-    if (playing) {
-      setShouldPlayAfterSeek(true)
-      setPlaying(false)
-    }
-  }, [playbackState.time, playing, setPlaying])
+  const onStartSeeking = useCallback(
+    (e: React.MouseEvent) => {
+      setStartPlaybackTime(playbackState.time)
+      setIsSeeking(true)
+      if (playing) {
+        setShouldPlayAfterSeek(true)
+        setPlaying(false)
+      }
+      console.log("onStart seek")
+      updateLastPos(e)
+      updateSeek()
+    },
+    [playbackState.time, playing, setPlaying, updateLastPos, updateSeek]
+  )
 
   const onStopSeeking = useCallback(() => {
     if (isSeeking) {

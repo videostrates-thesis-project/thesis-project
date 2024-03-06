@@ -1,4 +1,4 @@
-import Timeline from "../Timeline"
+import Timeline from "../Timeline/Timeline"
 import VideoPlayer from "../VideoPlayer"
 import DefaultSidePanel from "./DefaultSidePanel"
 

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react"
-import { TimelineContext } from "../../Timeline"
+import { TimelineContext } from "./Timeline"
 import clsx from "clsx"
 
 const TARGET_STEP_WIDTH = 60
@@ -34,7 +34,7 @@ const Markers = () => {
   }, [timeline.width, timeline.widthPerSecond])
 
   return (
-    <div className="flex flex-row relative h-8">
+    <div className="flex flex-row relative h-6 min-h-6 mb-1">
       {markers.map((marker) => {
         return (
           <div
