@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useStore } from "../store"
 import { parseVideostrate } from "../services/videostrateParser"
-import { WebstrateSerializationStrategy } from "../services/serializationStrategies/webstrateSerializationStrategy"
 import PlayerCommands from "../types/playerCommands"
 import PlayerControls from "./PlayerControls"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"

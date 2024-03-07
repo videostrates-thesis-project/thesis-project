@@ -41,12 +41,18 @@ const parseElement = (element: ChildNode) => {
     htmlElement.childNodes.forEach((childNode) => parseElement(childNode))
   }
 
-  if (!htmlElement?.classList || !htmlElement.classList.contains("composited"))
+  if (
+    !htmlElement?.classList ||
+    !htmlElement.classList.contains("composited") ||
+    (htmlElement.hasAttribute("clip-name") &&
+      (htmlElement.childNodes?.[0]?.childNodes?.[0].nodeName === "video" ||
+        htmlElement.childNodes?.[0].nodeName === "video"))
+  )
     return
 
   if (htmlElement.nodeName.toLowerCase() === "video") {
     // Is this in the root?
-    if (htmlElement.parentElement?.parentElement?.getAttribute("clip-name")) {
+    if (htmlElement.parentElement?.parentElement?.hasAttribute("clip-name")) {
       const grandParent = htmlElement.parentElement.parentElement
       const clip: VideoClipElement = {
         name: grandParent.getAttribute("clip-name") ?? "",
@@ -69,7 +75,7 @@ const parseElement = (element: ChildNode) => {
       return
     }
     // Is this attached to a custom element?
-    else if (htmlElement.parentElement?.getAttribute("clip-name")) {
+    else if (htmlElement.parentElement?.hasAttribute("clip-name")) {
       const clip: VideoClipElement = {
         name: htmlElement.parentElement.getAttribute("clip-name") ?? "",
         id: htmlElement.parentElement.id,
