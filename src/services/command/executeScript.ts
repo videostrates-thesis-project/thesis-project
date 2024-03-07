@@ -1,5 +1,6 @@
 import { useStore } from "../../store"
 import { processAddClipCommand } from "./commandProcessors/processAddClipCommand"
+import { processAddClipToElementCommand } from "./commandProcessors/processAddClipToElementCommand"
 import { processAddCustomElementCommand } from "./commandProcessors/processAddCustomElementCommand"
 import { processAddSubtitleCommand } from "./commandProcessors/processAddSubtitleCommand"
 import { processAssignClassCommand } from "./commandProcessors/processAssignClassCommand"
@@ -61,6 +62,9 @@ const recognizedCommands: RecognizedCommands = {
   },
   rename_element: {
     processFn: processRenameElement,
+  },
+  add_clip_to_element: {
+    processFn: processAddClipToElementCommand,
   },
 }
 

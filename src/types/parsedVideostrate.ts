@@ -86,6 +86,31 @@ export class ParsedVideostrate {
     return newId
   }
 
+  public addClipToElement(
+    elementId: string,
+    source: string,
+    start: number,
+    end: number
+  ) {
+    const newId = uuid()
+    this.all.push({
+      id: newId,
+      name: "",
+      start,
+      end,
+      nodeType: "video",
+      source,
+      type: "video",
+      offset: 0,
+      speed: 1,
+      layer: 0,
+      parentId: elementId,
+    } as VideoClipElement)
+    this.all = [...this.all]
+
+    return newId
+  }
+
   public deleteElementById(elementId: string) {
     this.all = this.all.filter((c) => c.id !== elementId)
   }
@@ -184,6 +209,16 @@ export class ParsedVideostrate {
     const element = this.all.find((e) => e.id === elementId)
     if (element) {
       element.name = newName
+    } else {
+      throw new Error(`Element with id ${elementId} not found`)
+    }
+    this.all = [...this.all]
+  }
+
+  public changeLayer(elementId: string, layer: number) {
+    const element = this.all.find((e) => e.id === elementId)
+    if (element) {
+      element.layer = layer
     } else {
       throw new Error(`Element with id ${elementId} not found`)
     }

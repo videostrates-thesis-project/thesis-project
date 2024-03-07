@@ -18,6 +18,9 @@ export const processMoveDeltaCommand = (
     parsedVideostrate.moveClipDeltaById(elementId.value, delta.value)
     useStore.getState().setParsedVideostrate(parsedVideostrate)
   } catch (error) {
-    console.error("[CommandProcessor] Error processing move command: ", error)
+    console.error(
+      "[CommandProcessor] Error processing move_delta command: ",
+      error
+    )
   }
 }
