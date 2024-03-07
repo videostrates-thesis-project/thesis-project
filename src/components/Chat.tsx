@@ -3,7 +3,7 @@ import clsx from "clsx"
 import openAIService from "../services/chatgpt/openai"
 import { useStore } from "../store"
 import { buildAssistantMessage } from "../services/chatgpt/assistantTemplate"
-import { ChatGptSerializationStrategy } from "../services/serializationStrategies/chatGptSerializationStrategy"
+import { serializeVideostrate } from "../services/parser/serializationExecutor"
 
 const Chat = () => {
   const [message, setMessage] = useState("")
@@ -32,9 +32,7 @@ const Chat = () => {
   }
 
   const onSend = useCallback(() => {
-    const html = new ChatGptSerializationStrategy().serializeHtml(
-      parsedVideostrate
-    )
+    const html = serializeVideostrate(parsedVideostrate, "chatGPT").html
     const clip_id = "bf5e68d1-165e-4ffe-8f3d-d88f3e965008"
     const prompt = buildAssistantMessage(availableClips, html, clip_id, message)
     openAIService.sendChatMessage(prompt)

@@ -19,4 +19,6 @@ export interface CustomElement extends VideoElement {
 
 export interface VideoClipElement extends VideoElement {
   source: string
+  className: string
+  parentId?: string
 }

@@ -4,6 +4,7 @@ import { parseVideostrate } from "../services/videostrateParser"
 import { WebstrateSerializationStrategy } from "../services/serializationStrategies/webstrateSerializationStrategy"
 import PlayerCommands from "../types/playerCommands"
 import PlayerControls from "./PlayerControls"
+import { serializeVideostrate } from "../services/parser/serializationExecutor"
 
 function VideoPlayer(props: { videoPlayerUrl: string }) {
   const {
@@ -110,10 +111,8 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
   }, [loadVideo, setPlaybackState, setParsedVideostrate, setMetamaxRealm])
 
   useEffect(() => {
-    const strategy = new WebstrateSerializationStrategy()
     const videostrate = workingVideostrate ?? parsedVideostrate
-    const html = strategy.serializeHtml(videostrate)
-    const style = strategy.serializeStyle(videostrate)
+    const { html, style } = serializeVideostrate(videostrate, "webstrate")
     controlPlayer(PlayerCommands.UpdateVideo, { html, style: style })
   }, [parsedVideostrate, workingVideostrate])
 

@@ -66,6 +66,9 @@ const recognizedCommands: RecognizedCommands = {
   rename_element: {
     processFn: processRenameElement,
   },
+  add_clip_to_element: {
+    processFn: processAddClipCommand,
+  },
 }
 
 export const parseAndExecuteScript = async (
