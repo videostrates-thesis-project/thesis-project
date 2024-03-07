@@ -1,12 +1,10 @@
 import { ExecutionContext } from "./executionContext"
 import { ReturnValue } from "./returnValue"
-import { WorkingContext } from "./workingContext"
 
 interface CommandProperties {
   processFn: (
     args: string[],
     context: ExecutionContext,
-    workingContext: WorkingContext,
     returnVariableName?: string
   ) => ReturnValue | undefined | void
 }

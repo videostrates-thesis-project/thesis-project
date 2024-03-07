@@ -1,13 +1,11 @@
 import { ExecutionContext } from "./executionContext"
 import { tokenizeCommand } from "./tokenizeCommand"
-import { WorkingContext } from "./workingContext"
 import { ExecutableCommand, RecognizedCommands } from "./recognizedCommands"
 
 export const parseAndExecuteCommand = (
   command: string,
   recognizedCommands: RecognizedCommands,
-  context: ExecutionContext = {},
-  workingContext: WorkingContext
+  context: ExecutionContext = {}
 ) => {
   if (!command || command.includes("```")) return
 
@@ -21,21 +19,16 @@ export const parseAndExecuteCommand = (
 
   const executableCommand = tokenizeCommand(command)
 
-  executeCommand(executableCommand, recognizedCommands, context, workingContext)
+  executeCommand(executableCommand, recognizedCommands, context)
 }
 
 export const executeCommand = (
   command: ExecutableCommand,
   recognizedCommands: RecognizedCommands,
-  context: ExecutionContext,
-  workingContext: WorkingContext
+  context: ExecutionContext
 ) => {
   const commandProperties = recognizedCommands[command.command]
-  const result = commandProperties.processFn(
-    command.args,
-    context,
-    workingContext
-  )
+  const result = commandProperties.processFn(command.args, context)
 
   if (command.variable) {
     context[command.variable] = result

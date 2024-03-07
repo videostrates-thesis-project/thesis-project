@@ -1,7 +1,7 @@
 import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { ReturnValue } from "../returnValue"
-import { workingContext } from "../workingContext"
+import { useStore } from "../../../store"
 
 export const processAssignClassCommand = (
   args: string[],
@@ -22,7 +22,7 @@ export const processAssignClassCommand = (
     context
   )
 
-  const parsedVideostrate = workingContext.getVideostrate()
+  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
   const elements = (elementIds.value as ReturnValue[]).map((value) => {
     if (value.type !== "string") {
       throw new Error("Array elements must be strings")
@@ -32,7 +32,7 @@ export const processAssignClassCommand = (
 
   try {
     parsedVideostrate.assignClass(elements, className.value)
-    workingContext.setVideostrate(parsedVideostrate)
+    useStore.getState().setParsedVideostrate(parsedVideostrate)
   } catch (error) {
     console.error(
       "[CommandProcessor] Error processing assign_class command: ",

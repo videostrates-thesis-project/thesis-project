@@ -74,7 +74,7 @@ const ClipContent = (props: { clip: TimelineElement }) => {
       </div>
       <span
         className={clsx(
-          "overflow-hidden whitespace-nowrap text-ellipsis w-full text-left",
+          "overflow-hidden whitespace-nowrap text-ellipsis w-full text-left transition-all",
           !hideResizeHandle && "mx-4"
         )}
       >

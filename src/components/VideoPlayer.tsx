@@ -17,7 +17,6 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     playing,
     setPlaying,
     seek,
-    workingVideostrate,
   } = useStore()
   const [url, setUrl] = useState(videostrateUrl)
   const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -111,10 +110,9 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
   }, [loadVideo, setPlaybackState, setParsedVideostrate, setMetamaxRealm])
 
   useEffect(() => {
-    const videostrate = workingVideostrate ?? parsedVideostrate
-    const { html, style } = serializeVideostrate(videostrate, "webstrate")
+    const { html, style } = serializeVideostrate(parsedVideostrate, "webstrate")
     controlPlayer(PlayerCommands.UpdateVideo, { html, style: style })
-  }, [parsedVideostrate, workingVideostrate])
+  }, [parsedVideostrate])
 
   function controlPlayer(command: PlayerCommands, args?: object) {
     if (command === PlayerCommands.Play) setPlaying(true)

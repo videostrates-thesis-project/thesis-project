@@ -1,11 +1,10 @@
 import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
-import { WorkingContext } from "../workingContext"
+import { useStore } from "../../../store"
 
 export const processAddSubtitleCommand = (
   args: string[],
-  context: ExecutionContext,
-  workingContext: WorkingContext
+  context: ExecutionContext
 ) => {
   if (args.length !== 3) {
     throw new Error("Invalid number of arguments")
@@ -22,7 +21,7 @@ export const processAddSubtitleCommand = (
   )
   const htmlElement = document.body.firstChild as HTMLElement
 
-  const parsedVideostrate = workingContext.getVideostrate()
+  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
 
   try {
     const elementId = parsedVideostrate.addCustomElement(
@@ -31,7 +30,7 @@ export const processAddSubtitleCommand = (
       start.value,
       end.value
     )
-    workingContext.setVideostrate(parsedVideostrate)
+    useStore.getState().setParsedVideostrate(parsedVideostrate)
 
     return {
       type: "string" as const,

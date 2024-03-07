@@ -1,12 +1,10 @@
 import { useStore } from "../../../store"
 import { determineReturnValue } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
-import { WorkingContext } from "../workingContext"
 
 export const processAddClipCommand = (
   args: string[],
-  context: ExecutionContext,
-  workingContext: WorkingContext
+  context: ExecutionContext
 ) => {
   if (args.length !== 2) {
     throw new Error("Invalid number of arguments")
@@ -31,11 +29,11 @@ export const processAddClipCommand = (
   // TODO: look up clip metadata and use that to determine the end time
   const end = start + 25
 
-  const parsedVideostrate = workingContext.getVideostrate()
+  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
 
   try {
     const clipId = parsedVideostrate.addClip(availableClip.source, start, end)
-    workingContext.setVideostrate(parsedVideostrate)
+    useStore.getState().setParsedVideostrate(parsedVideostrate)
 
     return {
       type: "string" as const,

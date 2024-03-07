@@ -1,11 +1,10 @@
 import { ExecutionContext } from "../executionContext"
 import { determineReturnValue } from "../determineReturnValue"
-import { WorkingContext } from "../workingContext"
+import { useStore } from "../../../store"
 
 export const processDeleteStyleCommand = (
   args: string[],
-  context: ExecutionContext,
-  workingContext: WorkingContext
+  context: ExecutionContext
 ) => {
   if (args.length !== 1) {
     throw new Error("Invalid number of arguments")
@@ -15,11 +14,11 @@ export const processDeleteStyleCommand = (
     throw new Error("First argument must be a string")
   }
 
-  const parsedVideostrate = workingContext.getVideostrate()
+  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
 
   try {
     const elementId = parsedVideostrate.removeStyle(selector.value)
-    workingContext.setVideostrate(parsedVideostrate)
+    useStore.getState().setParsedVideostrate(parsedVideostrate)
 
     return {
       type: "string" as const,
