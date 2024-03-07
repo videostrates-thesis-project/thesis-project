@@ -9,6 +9,7 @@ import Playhead from "./Playhead"
 import { useSeek } from "../../hooks/useSeek"
 import { useScrollZoom } from "../../hooks/useScrollZoom"
 import { useLatestChanges } from "../../hooks/useLatestChanges"
+import HoveredClipDetails from "./HoveredClipDetails"
 
 interface TimelineContextProps {
   zoom: number
@@ -78,6 +79,7 @@ const Timeline = () => {
         width: timelineWidth,
       }}
     >
+      <HoveredClipDetails />
       <TimelineControls {...{ zoomToFit, zoomOut, zoomIn }} />
       <div
         className={clsx(

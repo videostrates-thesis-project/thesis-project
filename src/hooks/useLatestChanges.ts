@@ -64,7 +64,7 @@ export const useLatestChanges = () => {
             element = element.parentElement
           }
           if (element) {
-            addToEdited(element.id, "styled")
+            addToEdited(element.id, "Styled")
           }
         })
         console.log("Matching elements: ", matchingElements)
@@ -75,7 +75,7 @@ export const useLatestChanges = () => {
           lastExecutedChange.context
         )
         elementIds.value.forEach((elementId) => {
-          addToEdited(elementId.value, "styled")
+          addToEdited(elementId.value, "Styled")
         })
       } else if (command.command === "rename_element") {
         const elementId = determineReturnValueTyped<string>(
@@ -83,27 +83,27 @@ export const useLatestChanges = () => {
           command.args[0],
           lastExecutedChange.context
         )
-        addToEdited(elementId.value, "renamed")
+        addToEdited(elementId.value, "Renamed")
       } else if (command.command === "set_speed") {
         const elementId = determineReturnValueTyped<string>(
           "string",
           command.args[0],
           lastExecutedChange.context
         )
-        addToEdited(elementId.value, "speedChanged")
+        addToEdited(elementId.value, "Speed Changed")
       } else if (["move", "move_delta", "crop"].includes(command.command)) {
         const elementId = determineReturnValue(
           command.args[0],
           lastExecutedChange.context
         )
-        addToEdited(elementId.value, "moved")
+        addToEdited(elementId.value, "Moved")
       }
     })
     newElements.forEach((element) => {
-      addToEdited(element.id, "created")
+      addToEdited(element.id, "Created")
     })
     removedElements.forEach((element) => {
-      addToEdited(element.id, "removed")
+      addToEdited(element.id, "Removed")
     })
     return editedElements
   }, [lastExecutedChange, newElements, parsedVideostrate, removedElements])

@@ -60,7 +60,7 @@ const ClipContent = (props: { clip: TimelineElement; isOldClip?: boolean }) => {
       className={clsx(
         "bg-primary rounded-lg text-primary-content border-2 flex items-center px-1 w-full h-full cursor-pointer overflow-clip relative transition-all duration-400",
         props.isOldClip
-          ? "opacity-50 border-transparent"
+          ? "opacity-30 border-transparent"
           : isSelected
             ? "border-accent"
             : "border-transparent hover:border-gray-300",

@@ -6,12 +6,14 @@ import { TimelineContext } from "./Timeline"
 import { executeScript } from "../../services/command/executeScript"
 import useDraggable from "../../hooks/useDraggable"
 import clsx from "clsx"
+import { useEditedClipDetails } from "../../store/editedClipDetails"
 
 const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
   const timeline = useContext(TimelineContext)
   const { setSelectedClipId } = useStore()
   const { onDragStart, onDrag, draggedPosition } = useDraggable(clip.left)
+  const { setPosition, setDetails } = useEditedClipDetails()
 
   const onDragEnd = useCallback(
     (e: React.DragEvent) => {
@@ -26,6 +28,16 @@ const Clip = (props: { clip: TimelineElement }) => {
       ])
     },
     [onDrag, timeline.widthPerSecond, clip.id]
+  )
+
+  const onMouseOver = useCallback(
+    (e: React.MouseEvent) => {
+      setPosition({
+        x: e.clientX,
+        y: window.innerHeight - e.clientY,
+      })
+    },
+    [setPosition]
   )
 
   return (
@@ -51,6 +63,12 @@ const Clip = (props: { clip: TimelineElement }) => {
         )}
         <div
           className="absolute m-0 top-0 h-10 z-10"
+          onMouseOver={() => setDetails(clip.edits)}
+          onMouseMove={onMouseOver}
+          onMouseLeave={() => {
+            setDetails(undefined)
+            console.log("mouse leave")
+          }}
           draggable={true}
           onDrag={onDrag}
           onDragStart={(e) => {
