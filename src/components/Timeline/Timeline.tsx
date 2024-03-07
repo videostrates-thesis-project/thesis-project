@@ -8,7 +8,7 @@ import Clips from "./Clips"
 import Playhead from "./Playhead"
 import { useSeek } from "../../hooks/useSeek"
 import { useScrollZoom } from "../../hooks/useScrollZoom"
-import { usePreviousVideostrate } from "../../hooks/usePreviousVideostrate"
+import { useLatestChanges } from "../../hooks/useLatestChanges"
 
 interface TimelineContextProps {
   zoom: number
@@ -33,7 +33,7 @@ const Timeline = () => {
   const [widthPerSecond, setWidthPerSecond] = useState(1)
   const { onSeek, onStartSeeking, onStopSeeking, isSeeking } =
     useSeek(widthPerSecond)
-  const { previousVideostrate } = usePreviousVideostrate()
+  const { previousVideostrate } = useLatestChanges()
 
   const updateTimelineWidth = useCallback(() => {
     console.log("updateTimelineWidth")

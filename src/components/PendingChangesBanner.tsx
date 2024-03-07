@@ -5,7 +5,7 @@ const PendingChangesBanner = () => {
   const { setPendingChanges } = useStore()
   return (
     <div className="bg-base-100 border border-accent rounded-lg p-2 pl-3 w-full flex justify-between">
-      <p>Pending changes...</p>
+      <p className="my-auto">Pending changes...</p>
       <div>
         <button
           onClick={() => {

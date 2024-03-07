@@ -1,20 +1,22 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useStore } from "../store"
 import { VideoClipElement, VideoElement } from "../types/videoElement"
-import { usePreviousVideostrate } from "./usePreviousVideostrate"
+import { useLatestChanges } from "./useLatestChanges"
 
 export interface TimelineElement extends VideoElement {
   width: number
   left: number
   clipName: string | undefined
   thumbnail: string | undefined
+  edits: string[] | undefined
   oldElement: TimelineElement | undefined
 }
 
 export const useTimelineElements = (widthPerSecond: number) => {
   const { parsedVideostrate, availableClips } = useStore()
   const [layers, setLayers] = useState<TimelineElement[][]>([])
-  const { previousVideostrate } = usePreviousVideostrate()
+  const { previousVideostrate, movedElements, editedElements } =
+    useLatestChanges()
 
   const getElementDetails = useCallback(
     (element: VideoElement) => {
@@ -36,23 +38,26 @@ export const useTimelineElements = (widthPerSecond: number) => {
   const elements = useMemo(() => {
     return parsedVideostrate.all.map((element) => {
       const elementDetails = getElementDetails(element)
-      const oldElement = previousVideostrate?.all.find(
-        (e) => e.id === element.id
-      )
-      const oldElementDetails = oldElement
-        ? getElementDetails(oldElement)
-        : undefined
+      elementDetails.edits = editedElements.get(element.id)
+      if (movedElements.includes(element.id)) {
+        const oldElement = previousVideostrate?.all.find(
+          (e) => e.id === element.id
+        )
+        const oldElementDetails = oldElement
+          ? getElementDetails(oldElement)
+          : undefined
 
-      const isChanged =
-        oldElement &&
-        (oldElementDetails?.left !== elementDetails.left ||
-          oldElementDetails?.width !== elementDetails.width)
-      return {
-        ...getElementDetails(element),
-        oldElement: isChanged ? oldElementDetails : undefined,
-      } as TimelineElement
+        elementDetails.oldElement = oldElementDetails
+      }
+      return elementDetails as TimelineElement
     })
-  }, [getElementDetails, parsedVideostrate.all, previousVideostrate?.all])
+  }, [
+    editedElements,
+    getElementDetails,
+    movedElements,
+    parsedVideostrate.all,
+    previousVideostrate?.all,
+  ])
 
   // Group elements by layer
   useEffect(() => {

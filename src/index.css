@@ -35,3 +35,9 @@ html, body, #root {
 h1 {
   @apply text-xl font-semibold text-primary
 }
+
+.highlight-clip {
+  @apply shadow-warning shadow-xl;
+  box-shadow: 0 0 5px 3px theme('colors.warning');
+  ;
+}

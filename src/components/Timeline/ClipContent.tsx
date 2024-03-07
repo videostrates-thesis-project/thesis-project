@@ -58,12 +58,13 @@ const ClipContent = (props: { clip: TimelineElement; isOldClip?: boolean }) => {
         e.stopPropagation()
       }}
       className={clsx(
-        "bg-primary rounded-lg text-primary-content border-2 flex items-center px-1 w-full h-full cursor-pointer overflow-clip relative transition-colors duration-400",
+        "bg-primary rounded-lg text-primary-content border-2 flex items-center px-1 w-full h-full cursor-pointer overflow-clip relative transition-all duration-400",
         props.isOldClip
           ? "opacity-50 border-transparent"
           : isSelected
             ? "border-accent"
-            : "border-transparent hover:border-gray-300"
+            : "border-transparent hover:border-gray-300",
+        clip.edits && "highlight-clip"
       )}
       onClick={() => setSelectedClipId(clip.id)}
       style={{
