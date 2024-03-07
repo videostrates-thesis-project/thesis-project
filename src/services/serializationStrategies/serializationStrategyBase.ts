@@ -1,13 +1,26 @@
 import { ParsedVideostrate } from "../../types/parsedVideostrate"
-import { VideoElement } from "../../types/videoElement"
+import { VideoClipElement, VideoElement } from "../../types/videoElement"
 
 export abstract class SerializationStrategyBase {
   public serializeHtml(parsedVideostrate: ParsedVideostrate): string {
-    const serializedElements = parsedVideostrate.all.map((element) => {
-      return this.serializeElement(element)
-    })
+    const serializedElements = parsedVideostrate.all
+      .filter((e) => {
+        return e.type !== "video" || !(e as VideoClipElement).parentId
+      })
+      .map((element) => {
+        return this.serializeElement(element)
+      })
     const html = serializedElements.join("\n")
-    return html
+
+    const parser = new DOMParser()
+    const document = parser.parseFromString(html, "text/html")
+    parsedVideostrate.all
+      .filter((e) => e.type === "video" && (e as VideoClipElement).parentId)
+      .forEach((element) => {
+        this.addElementToHtml(element, document)
+      })
+
+    return document.body.innerHTML
   }
 
   public serializeStyle(parsedVideostrate: ParsedVideostrate): string {
@@ -24,4 +37,9 @@ export abstract class SerializationStrategyBase {
   }
 
   protected abstract serializeElement(element: VideoElement): string
+
+  protected abstract addElementToHtml(
+    element: VideoElement,
+    document: Document
+  ): void
 }

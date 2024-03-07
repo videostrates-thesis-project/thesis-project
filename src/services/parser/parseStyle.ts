@@ -37,6 +37,13 @@ export const parseStyle = (
     return { selector, style }
   })
 
+  if (!parsedCSS.find((block) => block.selector === "div video")) {
+    parsedCSS.push({
+      selector: "div video",
+      style: "position: relative !important;",
+    })
+  }
+
   return {
     style: parsedCSS.filter(
       (block) => !block.selector.startsWith("@keyframes")
