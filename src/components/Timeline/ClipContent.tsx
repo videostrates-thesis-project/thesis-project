@@ -36,8 +36,8 @@ const ClipContent = (props: { clip: TimelineElement; isOldClip?: boolean }) => {
   )
 
   const title = useMemo(
-    () => (clip.type === "video" ? "" : `${clip.type} ${clip.nodeType}`),
-    [clip.type, clip.nodeType]
+    () => (clip.type === "video" ? "" : `${clip.name}`),
+    [clip.type, clip.name]
   )
 
   const isSelected = useMemo(
