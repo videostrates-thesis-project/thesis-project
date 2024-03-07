@@ -23,7 +23,7 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
       const clip = element as VideoClipElement
 
       return `<div clip-name="${clip.name}" id="${clip.id}" style="z-index: ${clip.layer};" class="composited" data-start="${clip.start}" data-end="${clip.end}">
-        <div class="${clip.className.replace("composited", "")}">
+        <div class="${clip.className?.replace("composited", "") ?? ""}">
          <video class="composited" data-offset="${clip.offset ?? 0}" data-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>
         </div>
       </div>`
@@ -53,6 +53,21 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
         "data-speed",
         (isNaN(element.speed) ? 1 : element.speed).toString()
       )
+      const removeElementsWithClipNameAttribute = (doc: HTMLElement) => {
+        const elementsToRemove = doc.querySelectorAll("[clip-name]")
+        elementsToRemove.forEach((element) => {
+          element.remove()
+        })
+
+        // Recursively process child nodes
+        doc.childNodes.forEach((childNode) => {
+          if (childNode.nodeType === Node.ELEMENT_NODE) {
+            removeElementsWithClipNameAttribute(childNode as HTMLElement)
+          }
+        })
+      }
+      removeElementsWithClipNameAttribute(htmlElement)
+
       return htmlElement.outerHTML
     }
   }

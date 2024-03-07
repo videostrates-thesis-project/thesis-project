@@ -1,14 +1,11 @@
 import { useStore } from "../../../store"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
-import { WorkingContext } from "../workingContext"
 
 export const processAddClipToElementCommand = (
   args: string[],
-  context: ExecutionContext,
-  workingContext: WorkingContext
+  context: ExecutionContext
 ) => {
-  throw new Error("Not implemented")
   if (args.length !== 4) {
     throw new Error("Invalid number of arguments")
   }
@@ -31,11 +28,16 @@ export const processAddClipToElementCommand = (
     )
   }
 
-  const parsedVideostrate = workingContext.getVideostrate()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
-    const clipId = parsedVideostrate.addClip(availableClip.source, start, end)
-    workingContext.setVideostrate(parsedVideostrate)
+    const clipId = parsedVideostrate.addClipToElement(
+      elementId.value,
+      availableClip.source,
+      start.value,
+      end.value
+    )
+    useStore.getState().setParsedVideostrate(parsedVideostrate)
 
     return {
       type: "string" as const,

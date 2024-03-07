@@ -4,7 +4,9 @@ import { VideoClipElement, VideoElement } from "../../types/videoElement"
 export abstract class SerializationStrategyBase {
   public serializeHtml(parsedVideostrate: ParsedVideostrate): string {
     const serializedElements = parsedVideostrate.all
-      .filter((e) => e.type !== "video" || !(e as VideoClipElement).parentId)
+      .filter((e) => {
+        return e.type !== "video" || !(e as VideoClipElement).parentId
+      })
       .map((element) => {
         return this.serializeElement(element)
       })

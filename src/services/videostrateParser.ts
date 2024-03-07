@@ -41,12 +41,32 @@ const parseElement = (element: ChildNode) => {
     htmlElement.childNodes.forEach((childNode) => parseElement(childNode))
   }
 
+  const isRootVideoContainer =
+    htmlElement.classList?.contains("composited") &&
+    htmlElement.hasAttribute?.("clip-name") &&
+    Array.from(
+      Array.from(htmlElement.childNodes ?? []).find((n) => n.nodeName === "DIV")
+        ?.childNodes ?? []
+    ).find((n) => n.nodeName === "VIDEO")
+  const isCustomVideoContainer =
+    htmlElement.classList?.contains("composited") &&
+    htmlElement.hasAttribute?.("clip-name") &&
+    Array.from(htmlElement.childNodes ?? []).find((n) => n.nodeName === "VIDEO")
+
+  console.log(
+    "[Parser]",
+    htmlElement,
+    htmlElement.nodeName,
+    htmlElement.hasAttribute?.("clip-name"),
+    isCustomVideoContainer,
+    isRootVideoContainer
+  )
+
   if (
     !htmlElement?.classList ||
     !htmlElement.classList.contains("composited") ||
-    (htmlElement.hasAttribute("clip-name") &&
-      (htmlElement.childNodes?.[0]?.childNodes?.[0].nodeName === "video" ||
-        htmlElement.childNodes?.[0].nodeName === "video"))
+    isRootVideoContainer ||
+    isCustomVideoContainer
   )
     return
 
@@ -91,6 +111,7 @@ const parseElement = (element: ChildNode) => {
         offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
         speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
         className: htmlElement.parentElement?.className ?? "",
+        parentId: htmlElement.parentElement?.parentElement?.id ?? "",
       }
 
       allElements.push(clip)
@@ -112,7 +133,6 @@ const parseElement = (element: ChildNode) => {
       layer: parseInt(htmlElement.style.zIndex || "0"),
       speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
       className: htmlElement.className,
-      parentId: htmlElement.parentElement?.parentElement?.id ?? "",
     }
     allElements.push(clip)
   } else {
