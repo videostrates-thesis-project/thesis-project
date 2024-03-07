@@ -45,6 +45,13 @@ function move(element_id: string, absolute_start: number)
 function move_delta(element_id: string, delta: number)
 
 /**
+ * Moves the layer of the element. Affects the z-index attribute.
+ * @param {element_id} id of the element in the html. Needs to be a root element.
+ * @param {layer} the new layer of the element. 0 is the bottom layer, 1 is the layer above 0, and so on.
+ */
+function move_layer(element_id: string, layer: number)
+
+/**
  * Crops the clip. Can also be used on custom elements to change their duration with relative_start=0 and relative_end={length}.
  *    This function affects relative-start, relative-end directly, and also affects absolute-end if the length changes.
  * @param {element_id} id of the element in the html

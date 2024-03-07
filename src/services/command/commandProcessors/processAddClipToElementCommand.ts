@@ -45,7 +45,7 @@ export const processAddClipToElementCommand = (
     }
   } catch (error) {
     console.error(
-      "[CommandProcessor] Error processing add_clip command: ",
+      "[CommandProcessor] Error processing add_clip_to_element command: ",
       error
     )
   }
