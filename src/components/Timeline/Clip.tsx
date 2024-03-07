@@ -5,6 +5,7 @@ import { useStore } from "../../store"
 import { TimelineContext } from "./Timeline"
 import { executeScript } from "../../services/command/executeScript"
 import useDraggable from "../../hooks/useDraggable"
+import clsx from "clsx"
 
 const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
@@ -29,18 +30,38 @@ const Clip = (props: { clip: TimelineElement }) => {
 
   return (
     <>
-      <div
-        className="absolute m-0 h-full "
-        draggable={true}
-        onDrag={onDrag}
-        onDragStart={(e) => {
-          onDragStart(e)
-          setSelectedClipId(clip.id)
-        }}
-        onDragEnd={onDragEnd}
-        style={{ width: `${clip.width}px`, left: `${draggedPosition}px` }}
-      >
-        <ClipContent clip={clip} />
+      <div className={clsx("w-full", clip.oldElement ? "h-14" : "h-10")}>
+        {clip.oldElement && (
+          <div
+            className="absolute m-0 top-4 h-10"
+            draggable={true}
+            onDrag={onDrag}
+            onDragStart={(e) => {
+              onDragStart(e)
+              setSelectedClipId(clip.id)
+            }}
+            onDragEnd={onDragEnd}
+            style={{
+              width: `${clip.oldElement.width}px`,
+              left: `${clip.oldElement.left}px`,
+            }}
+          >
+            <ClipContent clip={clip.oldElement} isOldClip={true} />
+          </div>
+        )}
+        <div
+          className="absolute m-0 top-0 h-10 z-10"
+          draggable={true}
+          onDrag={onDrag}
+          onDragStart={(e) => {
+            onDragStart(e)
+            setSelectedClipId(clip.id)
+          }}
+          onDragEnd={onDragEnd}
+          style={{ width: `${clip.width}px`, left: `${draggedPosition}px` }}
+        >
+          <ClipContent clip={clip} />
+        </div>
       </div>
     </>
   )

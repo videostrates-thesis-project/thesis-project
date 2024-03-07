@@ -121,7 +121,7 @@ class OpenAIService {
       .addChatMessage({ role: "assistant", content: message.explanation })
 
     if (message.script) {
-      parseAndExecuteScript(message.script, "main")
+      parseAndExecuteScript(message.script)
       useStore.getState().setPendingChanges(true)
     }
   }

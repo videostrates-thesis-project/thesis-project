@@ -74,6 +74,7 @@ export const useStore = create(
         set({
           parsedVideostrate: parsed.clone(),
           clipsSources: uniqueClipSources,
+          pendingChanges: false,
         })
       },
       pendingChanges: false,
