@@ -2,10 +2,10 @@ import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 import { ParsedVideostrate } from "../types/parsedVideostrate"
 import { PlaybackState } from "../types/playbackState"
-import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 import VideoClip from "../types/videoClip"
 import { ChatMessage } from "../types/chatMessage"
 import { ExecutedScript } from "../services/command/executedScript"
+import { ChatRequestMessage } from "@azure/openai"
 
 export interface AppState {
   videostrateUrl: string
@@ -41,10 +41,10 @@ export interface AppState {
   chatMessages: ChatMessage[]
   addChatMessage: (message: ChatMessage) => ChatMessage[]
 
-  currentMessages: ChatCompletionMessageParam[]
+  currentMessages: ChatRequestMessage[]
   addMessage: (
-    message: ChatCompletionMessageParam
-  ) => ChatCompletionMessageParam[]
+    message: ChatRequestMessage
+  ) => ChatRequestMessage[]
 
   pendingChanges: boolean
   setPendingChanges: (unaccepted: boolean) => void
@@ -102,7 +102,7 @@ export const useStore = create(
         return get().chatMessages
       },
       currentMessages: [],
-      addMessage: (message: ChatCompletionMessageParam) => {
+      addMessage: (message: ChatRequestMessage) => {
         set((state) => {
           return {
             currentMessages: [...state.currentMessages, message],

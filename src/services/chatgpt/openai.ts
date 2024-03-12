@@ -1,75 +1,78 @@
-import OpenAI from "openai"
-import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
+import { OpenAIClient, AzureKeyCredential } from "@azure/openai"
 import { useStore } from "../../store"
 import executeChangesFunction from "./executeChangesFunction"
 import { parseAndExecuteScript } from "../command/executeScript"
 import instructions from "./instructions.txt?raw"
+import { ChatRequestMessage } from "@azure/openai"
 
-const ASSISTANT_POLL_RATE = 5000
+// const ASSISTANT_POLL_RATE = 5000
 
 interface ExecuteChanges {
   script: string
   explanation: string
 }
 
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  organization: import.meta.env.VITE_OPENAI_ORG_ID,
-  dangerouslyAllowBrowser: true,
-})
+const openai = new OpenAIClient(
+  "https://mirrorverse.openai.azure.com",
+  import.meta.env.VITE_OPENAI_API_KEY,
+  // {
+  //   apiVersion: "2024-02-15-preview"
+  //   // , allowInsecureConnection: true
+  // }
+)
 
 class OpenAIService {
-  thread: OpenAI.Beta.Thread | null = null
-  public messages: OpenAI.Beta.Threads.Messages.ThreadMessage[] = []
+  // thread: OpenAI.Beta.Thread | null = null
+  // public messages: OpenAI.Beta.Threads.Messages.ThreadMessage[] = []
 
   async init() {
-    this.thread = await openai.beta.threads.create()
+    // this.thread = await openai.beta.threads.create()
   }
 
   /**
    * @deprecated Use `sendChatMessage` instead.
    */
-  async sendAssistantMessage(text: string) {
-    if (!this.thread) throw new Error("OpenAIService not initialized")
+  // async sendAssistantMessage(text: string) {
+  //   if (!this.thread) throw new Error("OpenAIService not initialized")
 
-    await openai.beta.threads.messages.create(this.thread.id, {
-      role: "user",
-      content: text,
-    })
+  //   await openai.beta.threads.messages.create(this.thread.id, {
+  //     role: "user",
+  //     content: text,
+  //   })
 
-    let run = await openai.beta.threads.runs.create(this.thread.id, {
-      assistant_id: "asst_MTOg1HPrk1J497bXa4k1II52",
-      instructions: "",
-    })
+  //   let run = await openai.beta.threads.runs.create(this.thread.id, {
+  //     assistant_id: "asst_MTOg1HPrk1J497bXa4k1II52",
+  //     instructions: "",
+  //   })
 
-    const interval = setInterval(async () => {
-      run = await openai.beta.threads.runs.retrieve(this.thread!.id, run.id)
+  //   const interval = setInterval(async () => {
+  //     run = await openai.beta.threads.runs.retrieve(this.thread!.id, run.id)
 
-      if (run.status === "completed") {
-        clearInterval(interval)
+  //     if (run.status === "completed") {
+  //       clearInterval(interval)
 
-        this.messages = (
-          await openai.beta.threads.messages.list(this.thread!.id)
-        ).data
-        const latestMessage = this.messages[0]
-        const text = (
-          latestMessage.content.find(
-            (q) => q.type === "text"
-          ) as OpenAI.Beta.Threads.Messages.MessageContentText
-        ).text.value
-        parseAndExecuteScript(text)
-      } else if (run.status === "requires_action") {
-        console.log("Requires action", run)
-        clearInterval(interval)
-      } else if (["cancelled", "failed", "expired"].includes(run.status)) {
-        clearInterval(interval)
-        console.error("Run failed:", run.status, run.last_error)
-      }
-    }, ASSISTANT_POLL_RATE)
-  }
+  //       this.messages = (
+  //         await openai.beta.threads.messages.list(this.thread!.id)
+  //       ).data
+  //       const latestMessage = this.messages[0]
+  //       const text = (
+  //         latestMessage.content.find(
+  //           (q) => q.type === "text"
+  //         ) as OpenAI.Beta.Threads.Messages.MessageContentText
+  //       ).text.value
+  //       parseAndExecuteScript(text)
+  //     } else if (run.status === "requires_action") {
+  //       console.log("Requires action", run)
+  //       clearInterval(interval)
+  //     } else if (["cancelled", "failed", "expired"].includes(run.status)) {
+  //       clearInterval(interval)
+  //       console.error("Run failed:", run.status, run.last_error)
+  //     }
+  //   }, ASSISTANT_POLL_RATE)
+  // }
 
   async sendChatMessage(text: string) {
-    const userMessage: ChatCompletionMessageParam = {
+    const userMessage: ChatRequestMessage = {
       role: "user",
       content: text,
     }
@@ -77,7 +80,7 @@ class OpenAIService {
       useStore.getState().currentMessages.filter((m) => m.role === "system")
         .length === 0
     ) {
-      const systemMessage: ChatCompletionMessageParam = {
+      const systemMessage: ChatRequestMessage = {
         role: "system",
         content: instructions,
       }
@@ -85,45 +88,61 @@ class OpenAIService {
     }
     const messages = useStore.getState().addMessage(userMessage)
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4-turbo-preview",
-      messages: messages,
-      tool_choice: { type: "function", function: { name: "execute_changes" } },
-      tools: [executeChangesFunction],
-    })
+    // const response = await openai.chat.completions.create({
+    //   model: "gpt-4-turbo-preview",
+    //   messages: messages,
+    //   tool_choice: { type: "function", function: { name: "execute_changes" } },
+    //   tools: [executeChangesFunction],
+    // })
 
-    console.log(response)
-    if (response?.choices.length === 0) throw new Error("[ChatGPT] No response")
-    const choice = response.choices[0]
-    if (choice.message.tool_calls?.length === 0)
-      throw new Error("[ChatGPT] No tool calls")
-    const toolCall = choice.message.tool_calls?.[0]
-    if (!toolCall?.function?.arguments)
-      throw new Error("[ChatGPT] No function arguments")
-
-    const messageString = toolCall?.function.arguments
-    const message = JSON.parse(messageString) as ExecuteChanges
-    if (!message.explanation)
-      throw new Error("[ChatGPT] No script explanation in response")
-    if (
-      typeof message.script !== "string" ||
-      typeof message.explanation !== "string"
+    // TEST REQUEST
+    const completions  = await openai.getCompletions(
+      "mirrorverse-gpt-4",
+      ["Hello, I'm a human."],
+      // { requestOptions: { headers: { "Access-Control-Allow-Origin": "*" } } }
     )
-      throw new Error("[ChatGPT] Script or explanation not a string")
+    console.log(completions)
 
-    const chatMessage: ChatCompletionMessageParam = {
-      role: "assistant",
-      content: JSON.stringify(message),
-    }
-    useStore.getState().addMessage(chatMessage)
-    useStore
-      .getState()
-      .addChatMessage({ role: "assistant", content: message.explanation })
+    // ACTUAL REQUEST
+    // const events = await openai.streamChatCompletions(
+    //   "mirrorverse-gpt-4",
+    //   messages,
+    //   { maxTokens: 2000 }
+    // )
+    //   // https://mirrorverse.openai.azure.com/openai/deployments/mirrorverse-gpt-4/chat/completions?api-version=2024-02-15-preview
+    // for await (const event of events) {
+    //   for (const choice of event.choices) {
+    //     const toolCall = choice.delta?.toolCalls?.[0]
+    //     if (toolCall?.function?.name === "execute_changes") {
+    //       const messageString = toolCall.function.arguments
+    //       const message = JSON.parse(messageString) as ExecuteChanges
+    //       if (!message.explanation)
+    //         throw new Error("[ChatGPT] No script explanation in response")
 
-    if (message.script) {
-      parseAndExecuteScript(message.script)
-      useStore.getState().setPendingChanges(true)
-    }
+    //       if (
+    //         typeof message.script !== "string" ||
+    //         typeof message.explanation !== "string"
+    //       )
+    //         throw new Error("[ChatGPT] Script or explanation not a string")
+
+    //       const chatMessage: ChatRequestMessage = {
+    //         role: "assistant",
+    //         content: JSON.stringify(message),
+    //       }
+    //       useStore.getState().addMessage(chatMessage)
+    //       useStore
+    //         .getState()
+    //         .addChatMessage({ role: "assistant", content: message.explanation })
+
+    //       if (message.script) {
+    //         parseAndExecuteScript(message.script)
+    //         useStore.getState().setPendingChanges(true)
+    //       }
+    //     }
+    //   }
+    // }
+
+    // throw new Error("[ChatGPT] No response")
   }
 }
 

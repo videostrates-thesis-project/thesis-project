@@ -11,6 +11,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@azure/openai": "^1.0.0-beta.11",
     "bootstrap-icons": "^1.11.3",
     "clsx": "^2.1.0",
     "firebase": "^10.6.0",
