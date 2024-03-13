@@ -7,7 +7,7 @@ const updateLayers = (
     if (index > 0) {
       const prevElement = sorted[index - 1]
       if (
-        prevElement.layer === currentLayer &&
+        prevElement.layer !== element.layer ||
         prevElement.end > element.start
       ) {
         currentLayer += 1
