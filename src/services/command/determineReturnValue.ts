@@ -19,6 +19,32 @@ export const determineReturnValue = (
   value: string,
   context: ExecutionContext
 ): ReturnValue => {
+  // if value has + signs in it outside of quotes, it's a concatenation
+  let quoteCounter = 0
+  const parts: string[] = []
+  let previousPartIndex = 0
+  for (let i = 0; i < value.length; i++) {
+    if (value[i] === '"' && value[i - 1] !== "\\") {
+      quoteCounter++
+    }
+
+    if (value[i] === "+" && quoteCounter % 2 === 0) {
+      const nextPart = value.slice(previousPartIndex, i - 1).trim()
+      parts.push(nextPart)
+      previousPartIndex = i + 1
+    }
+  }
+  parts.push(value.slice(previousPartIndex).trim())
+
+  if (parts.length > 1) {
+    return {
+      type: "string",
+      value: parts
+        .map((part) => determineReturnValue(part, context).value)
+        .join(""),
+    }
+  }
+
   // if value starts and ends with square brackets, it's an array
   if (value.startsWith("[") && value.endsWith("]")) {
     const array = value.slice(1, -1).split(",")

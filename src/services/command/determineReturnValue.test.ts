@@ -79,3 +79,76 @@ test("can parse arrays", () => {
     ],
   })
 })
+
+test("can parse string concatenations", () => {
+  const value = determineReturnValue('"hello" + " world"', {
+    variable: {
+      type: "string",
+      value: "hello",
+    },
+  })
+
+  expect(value).toEqual({
+    type: "string",
+    value: "hello world",
+  })
+})
+
+test("can parse string concatenations with variables", () => {
+  const value = determineReturnValue('"hello" + variable', {
+    variable: {
+      type: "string",
+      value: " world",
+    },
+  })
+
+  expect(value).toEqual({
+    type: "string",
+    value: "hello world",
+  })
+})
+
+test("can parse string concatenations with variables at the start", () => {
+  const value = determineReturnValue('variable + "hello"', {
+    variable: {
+      type: "string",
+      value: " world",
+    },
+  })
+
+  expect(value).toEqual({
+    type: "string",
+    value: " worldhello",
+  })
+})
+
+test("can parse string concatenations with variables in the middle", () => {
+  const value = determineReturnValue('"hello" + variable + "world"', {
+    variable: {
+      type: "string",
+      value: " big",
+    },
+  })
+
+  expect(value).toEqual({
+    type: "string",
+    value: "hello bigworld",
+  })
+})
+
+test("can parse string concatenations with many variables, strings and numbers", () => {
+  const value = determineReturnValue(
+    'variable + "hello" + 123 + "world" + variable',
+    {
+      variable: {
+        type: "string",
+        value: " big",
+      },
+    }
+  )
+
+  expect(value).toEqual({
+    type: "string",
+    value: " bighello123world big",
+  })
+})
