@@ -8,6 +8,8 @@ import useDraggable from "../../hooks/useDraggable"
 import clsx from "clsx"
 import { useEditedClipDetails } from "../../store/editedClipDetails"
 
+const MIN_ELEMENT_WIDTH = 10
+
 const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
   const timeline = useContext(TimelineContext)
@@ -54,7 +56,7 @@ const Clip = (props: { clip: TimelineElement }) => {
             }}
             onDragEnd={onDragEnd}
             style={{
-              width: `${clip.oldElement.width}px`,
+              width: `${Math.max(clip.oldElement.width, MIN_ELEMENT_WIDTH)}px`,
               left: `${clip.oldElement.left}px`,
             }}
           >
@@ -76,7 +78,10 @@ const Clip = (props: { clip: TimelineElement }) => {
             setSelectedClipId(clip.id)
           }}
           onDragEnd={onDragEnd}
-          style={{ width: `${clip.width}px`, left: `${draggedPosition}px` }}
+          style={{
+            width: `${Math.max(clip.width, MIN_ELEMENT_WIDTH)}px`,
+            left: `${draggedPosition}px`,
+          }}
         >
           <ClipContent clip={clip} />
         </div>

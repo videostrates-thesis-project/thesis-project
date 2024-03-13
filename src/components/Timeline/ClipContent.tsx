@@ -45,10 +45,9 @@ const ClipContent = (props: { clip: TimelineElement; isOldClip?: boolean }) => {
     [props.isOldClip, selectedClipId, clip.id]
   )
 
-  const hideResizeHandle = useMemo(
-    () => !isSelected || width < 50,
-    [isSelected, width]
-  )
+  const hideResizeHandle = useMemo(() => !isSelected, [isSelected])
+
+  const handleWidth = useMemo(() => (width > 50 ? "w-4" : "w-1"), [width])
 
   const clipHighlight = useMemo(() => {
     if (clip.edits) {
@@ -76,17 +75,21 @@ const ClipContent = (props: { clip: TimelineElement; isOldClip?: boolean }) => {
         props.isOldClip
           ? "opacity-30 border-transparent"
           : isSelected
-            ? "!border-accent"
+            ? "!border-accent border-x-0"
             : "border-transparent hover:border-gray-300"
       )}
-      onClick={() => setSelectedClipId(clip.id)}
+      onClick={() => {
+        if (selectedClipId === clip.id) setSelectedClipId(null)
+        else setSelectedClipId(clip.id)
+      }}
       style={{
         ...backgroundStyle,
       }}
     >
       <div
         className={clsx(
-          "bg-accent w-4 h-full absolute left-0 flex items-center justify-center gap-1 transition-opacity",
+          "bg-accent h-full absolute left-0 flex items-center justify-center gap-1 transition-opacity",
+          handleWidth,
           hideResizeHandle ? "opacity-0 pointer-events-none" : "opacity-100"
         )}
       >
@@ -103,7 +106,8 @@ const ClipContent = (props: { clip: TimelineElement; isOldClip?: boolean }) => {
       </span>
       <div
         className={clsx(
-          "bg-accent w-4 h-full absolute right-0 flex items-center justify-center gap-1 transition-opacity",
+          "bg-accent h-full absolute right-0 flex items-center justify-center gap-1 transition-opacity",
+          handleWidth,
           hideResizeHandle ? "opacity-0 pointer-events-none" : "opacity-100"
         )}
       >
