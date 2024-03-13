@@ -1,5 +1,9 @@
 import updateLayers from "../utils/updateLayers"
-import { VideoClipElement, VideoElement } from "./videoElement"
+import {
+  VideoClipElement,
+  VideoElement,
+  VideoElementType,
+} from "./videoElement"
 import { v4 as uuid } from "uuid"
 
 export interface VideostrateStyle {
@@ -134,7 +138,9 @@ export class ParsedVideostrate {
     name: string,
     outerHtml: string,
     start: number,
-    end: number
+    end: number,
+    type: VideoElementType = "custom",
+    nodeType = "div"
   ) {
     const newId = uuid()
     this.all.push({
@@ -142,8 +148,8 @@ export class ParsedVideostrate {
       name,
       start,
       end,
-      nodeType: "div",
-      type: "custom",
+      nodeType,
+      type,
       offset: 0,
       outerHtml,
       layer: 0,
