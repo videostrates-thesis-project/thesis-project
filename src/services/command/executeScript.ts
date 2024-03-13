@@ -4,6 +4,7 @@ import { processAddClipToElementCommand } from "./commandProcessors/processAddCl
 import { processAddCustomElementCommand } from "./commandProcessors/processAddCustomElementCommand"
 import { processAddSubtitleCommand } from "./commandProcessors/processAddSubtitleCommand"
 import { processAssignClassCommand } from "./commandProcessors/processAssignClassCommand"
+import { processChangeLayerCommand } from "./commandProcessors/processChangeLayerCommand"
 import { processCreateAnimationCommand } from "./commandProcessors/processCreateAnimationCommand"
 import { processCreateStyleCommand } from "./commandProcessors/processCreateStyleCommand"
 import { processCropElementCommand } from "./commandProcessors/processCropElementCommand"
@@ -65,6 +66,9 @@ const recognizedCommands: RecognizedCommands = {
   },
   add_clip_to_element: {
     processFn: processAddClipToElementCommand,
+  },
+  move_layer: {
+    processFn: processChangeLayerCommand,
   },
 }
 

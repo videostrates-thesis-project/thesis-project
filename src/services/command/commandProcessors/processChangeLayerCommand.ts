@@ -23,7 +23,7 @@ export const processChangeLayerCommand = (
     useStore.getState().setParsedVideostrate(parsedVideostrate)
   } catch (error) {
     console.error(
-      "[CommandProcessor] Error processing change_Layer command: ",
+      "[CommandProcessor] Error processing change_layer command: ",
       error
     )
   }

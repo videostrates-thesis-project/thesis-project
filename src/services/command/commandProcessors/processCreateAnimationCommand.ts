@@ -20,7 +20,7 @@ export const processCreateAnimationCommand = (
     useStore.getState().setParsedVideostrate(parsedVideostrate)
   } catch (error) {
     console.error(
-      "[CommandProcessor] Error processing create_animatino command: ",
+      "[CommandProcessor] Error processing create_animation command: ",
       error
     )
   }

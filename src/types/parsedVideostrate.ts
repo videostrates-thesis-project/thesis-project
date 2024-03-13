@@ -1,3 +1,4 @@
+import updateLayers from "../utils/updateLayers"
 import { VideoClipElement, VideoElement } from "./videoElement"
 import { v4 as uuid } from "uuid"
 
@@ -226,23 +227,7 @@ export class ParsedVideostrate {
   }
 
   private updateLayers() {
-    this._all.sort((a, b) => a.layer - b.layer)
-    let layerShift = 0
-    this._all.forEach((element, index) => {
-      let proposedLayer = element.layer + layerShift
-      if (index > 0) {
-        const prevElement = this._all[index - 1]
-        if (
-          prevElement.layer === proposedLayer &&
-          prevElement.end > element.start
-        ) {
-          proposedLayer += 1
-          layerShift += 1
-        }
-      }
-      element.layer = proposedLayer
-    })
-    this._all = [...this._all]
+    this._all = updateLayers(this._all) as VideoElement[]
   }
 
   private updateComputedProperties() {
