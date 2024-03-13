@@ -5,9 +5,12 @@ import { useStore } from "../store"
 import { buildAssistantMessage } from "../services/chatgpt/assistantTemplate"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 import PendingChangesBanner from "./PendingChangesBanner"
+import { v4 as uuid } from "uuid"
 
 const Chat = () => {
   const [message, setMessage] = useState("")
+  const [loading, setLoading] = useState(false)
+  const endRef = useRef<HTMLDivElement>(null)
   const {
     parsedVideostrate,
     availableClips,
@@ -50,8 +53,11 @@ const Chat = () => {
     addChatMessage({
       role: "user",
       content: message,
+      id: uuid(),
     })
+    openAIService.sendChatMessageForReaction()
     setMessage("")
+    setLoading(true)
   }, [
     addChatMessage,
     availableClips,
@@ -59,6 +65,22 @@ const Chat = () => {
     parsedVideostrate,
     selectedClipId,
   ])
+
+  useEffect(() => {
+    if (endRef.current) {
+      endRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+    if (chatMessages.at(-1)?.role === "assistant") {
+      setLoading(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatMessages.length])
+
+  useEffect(() => {
+    if (loading && endRef.current) {
+      endRef.current.scrollIntoView({ behavior: "smooth" })
+    }
+  }, [loading])
 
   return (
     <div className="flex flex-col h-full w-96 min-w-96 max-h-full bg-base-300 border-l border-neutral rounded">
@@ -68,19 +90,50 @@ const Chat = () => {
             key={index}
             className={clsx(
               "chat",
-              msg.role === "user" ? "chat-end" : "chat-start"
+              msg.role === "user" ? "chat-end" : "chat-start",
+              msg.reaction && "pb-4"
             )}
           >
             <div
               className={clsx(
-                "chat-bubble text-left break-normal text-sm",
+                "chat-bubble text-left break-normal text-sm relative pb-4",
                 msg.role === "user" && "chat-bubble-primary"
               )}
             >
               {msg.content}
+
+              {msg.reaction && (
+                <div
+                  className="animate-shrink text-[1.2rem] absolute left-2 -bottom-4 bg-neutral rounded-full border-base-300 border-2"
+                  style={{
+                    padding: "5px",
+                    paddingBottom: "3.5px",
+                  }}
+                >
+                  {msg.reaction}
+                </div>
+              )}
             </div>
           </div>
         ))}
+        {loading && (
+          <div className="chat chat-start">
+            <div className="chat-bubble text-left break-normal text-sm relative pb-4 flex justify-center items-center">
+              <div className="flex flex-row gap-1 -mb-2">
+                <div className="w-2 h-2 bg-neutral-content rounded-full animate-bounce-big" />
+                <div
+                  className="w-2 h-2 bg-neutral-content rounded-full animate-bounce-big"
+                  style={{ animationDelay: "100ms" }}
+                />
+                <div
+                  className="w-2 h-2 bg-neutral-content rounded-full animate-bounce-big delay-200"
+                  style={{ animationDelay: "200ms" }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+        <div className="mt-2" ref={endRef} />
       </div>
       <div className="flex flex-col gap-2 w-full mt-auto p-2">
         {pendingChanges && <PendingChangesBanner />}
