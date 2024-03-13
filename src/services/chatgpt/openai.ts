@@ -6,6 +6,7 @@ import { parseAndExecuteScript } from "../command/executeScript"
 import instructions from "./instructions.txt?raw"
 import { v4 as uuid } from "uuid"
 import { buildReactionMessage } from "./reactionTemplate"
+import { azureFunctionRequest } from "../api/api"
 
 const ASSISTANT_POLL_RATE = 5000
 
@@ -70,7 +71,55 @@ class OpenAIService {
     }, ASSISTANT_POLL_RATE)
   }
 
-  async sendChatMessage(text: string) {
+  async sendChatMessageToAzure(text: string) {
+    const userMessage: ChatCompletionMessageParam = {
+      role: "user",
+      content: text,
+    }
+    if (
+      useStore.getState().currentMessages.filter((m) => m.role === "system")
+        .length === 0
+    ) {
+      const systemMessage: ChatCompletionMessageParam = {
+        role: "system",
+        content: instructions,
+      }
+      useStore.getState().addMessage(systemMessage)
+    }
+    const messages = useStore.getState().addMessage(userMessage)
+
+    console.log(messages)
+    const response = await azureFunctionRequest({
+      model: "mirrorverse-gpt-4-turbo",
+      messages: messages,
+      tool_choice: { type: "function", function: { name: "execute_changes" } },
+      functions: [executeChangesFunction],
+    })
+
+    console.log("[ChatGPT] Response", response)
+    const message = response as ExecuteChanges
+
+    const chatMessage: ChatCompletionMessageParam = {
+      role: "assistant",
+      content: JSON.stringify(message),
+    }
+    useStore.getState().addMessage(chatMessage)
+    useStore.getState().addChatMessage({
+      role: "assistant",
+      content: message.explanation,
+      id: uuid(),
+    })
+
+    if (message.script) {
+      parseAndExecuteScript(message.script)
+      useStore.getState().setPendingChanges(true)
+    }
+  }
+
+  /**
+   * @deprecated Use `sendChatMessage` to use our local pythonb backend instead.
+   */
+  async sendChatMessageToOpenAi(text: string) {
     const userMessage: ChatCompletionMessageParam = {
       role: "user",
       content: text,

@@ -49,7 +49,7 @@ const Chat = () => {
       selectedClipId,
       message
     )
-    openAIService.sendChatMessage(prompt)
+    openAIService.sendChatMessageToAzure(prompt)
     addChatMessage({
       role: "user",
       content: message,
