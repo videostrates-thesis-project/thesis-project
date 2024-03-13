@@ -29,7 +29,7 @@ export const processAddClipCommand = (
   // TODO: look up clip metadata and use that to determine the end time
   const end = start + 25
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
     const clipId = parsedVideostrate.addClip(availableClip.source, start, end)

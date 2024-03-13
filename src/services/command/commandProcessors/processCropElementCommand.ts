@@ -16,7 +16,7 @@ export const processCropElementCommand = (
   const start = determineReturnValue(args[1], context)
   const end = determineReturnValue(args[2], context)
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
     const newLength = parsedVideostrate.cropElementById(

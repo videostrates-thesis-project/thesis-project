@@ -40,6 +40,10 @@ export class ParsedVideostrate {
     this.updateComputedProperties()
   }
 
+  public getElementById(id: string) {
+    return this.all.find((e) => e.id === id)
+  }
+
   public clone() {
     return new ParsedVideostrate(
       this.all.map((c) => ({ ...c })),
@@ -227,6 +231,7 @@ export class ParsedVideostrate {
   }
 
   private updateLayers() {
+    console.log("updateLayers", this._all)
     this._all = updateLayers(this._all) as VideoElement[]
   }
 

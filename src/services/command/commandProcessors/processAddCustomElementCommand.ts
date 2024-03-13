@@ -35,7 +35,7 @@ export const processAddCustomElementCommand = (
   parent?.replaceChild(wrapper, htmlElement)
   wrapper.appendChild(htmlElement)
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
     const elementId = parsedVideostrate.addCustomElement(

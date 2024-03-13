@@ -14,7 +14,7 @@ export const processMoveCommand = (
 
   const start = parseInt(startString)
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
     parsedVideostrate.moveClipById(elementId.value, start)

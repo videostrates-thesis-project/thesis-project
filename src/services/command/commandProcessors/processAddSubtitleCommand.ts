@@ -21,7 +21,7 @@ export const processAddSubtitleCommand = (
   )
   const htmlElement = document.body.firstChild as HTMLElement
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
     const elementId = parsedVideostrate.addCustomElement(
