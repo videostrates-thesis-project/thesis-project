@@ -4,6 +4,8 @@ import { useStore } from "../../store"
 import executeChangesFunction from "./executeChangesFunction"
 import { parseAndExecuteScript } from "../command/executeScript"
 import instructions from "./instructions.txt?raw"
+import { v4 as uuid } from "uuid"
+import { buildReactionMessage } from "./reactionTemplate"
 
 const ASSISTANT_POLL_RATE = 5000
 
@@ -92,7 +94,7 @@ class OpenAIService {
       tools: [executeChangesFunction],
     })
 
-    console.log(response)
+    console.log("[ChatGPT] Response", response)
     if (response?.choices.length === 0) throw new Error("[ChatGPT] No response")
     const choice = response.choices[0]
     if (choice.message.tool_calls?.length === 0)
@@ -116,14 +118,51 @@ class OpenAIService {
       content: JSON.stringify(message),
     }
     useStore.getState().addMessage(chatMessage)
-    useStore
-      .getState()
-      .addChatMessage({ role: "assistant", content: message.explanation })
+    useStore.getState().addChatMessage({
+      role: "assistant",
+      content: message.explanation,
+      id: uuid(),
+    })
 
     if (message.script) {
       parseAndExecuteScript(message.script)
       useStore.getState().setPendingChanges(true)
     }
+  }
+
+  async sendChatMessageForReaction() {
+    const messages = [...useStore.getState().chatMessages]
+
+    // Find last user message in list
+    let lastUserMessageIndex = -1
+    for (let i = messages.length - 1; i >= 0; i--) {
+      if (messages[i].role === "user") {
+        lastUserMessageIndex = i
+        break
+      }
+    }
+    if (lastUserMessageIndex === -1) {
+      throw new Error("No user message found")
+    }
+    messages[lastUserMessageIndex] = {
+      ...messages[lastUserMessageIndex],
+      content: buildReactionMessage(
+        (messages[lastUserMessageIndex].content as string) ?? ""
+      ),
+    }
+
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+    })
+
+    const reaction = response.choices[0].message.content?.trim()
+    console.log("[ChatGPT] Reaction:", reaction)
+    if (!reaction || reaction.toLowerCase().includes("no reaction")) return
+
+    useStore
+      .getState()
+      .addReactionToMessage(messages[lastUserMessageIndex].id, reaction ?? "")
   }
 }
 

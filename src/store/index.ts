@@ -101,6 +101,17 @@ export const useStore = create(
         })
         return get().chatMessages
       },
+      addReactionToMessage: (id: string, reaction: string) => {
+        set((state) => {
+          const messages = state.chatMessages.map((m) => {
+            if (m.id === id) {
+              return { ...m, reaction }
+            }
+            return m
+          })
+          return { chatMessages: messages }
+        })
+      },
       currentMessages: [],
       addMessage: (message: ChatCompletionMessageParam) => {
         set((state) => {
