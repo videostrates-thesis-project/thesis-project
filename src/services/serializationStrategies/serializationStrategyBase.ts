@@ -7,6 +7,7 @@ export abstract class SerializationStrategyBase {
       .filter((e) => {
         return e.type !== "video" || !(e as VideoClipElement).parentId
       })
+      .filter((e) => e.type !== "subtitle")
       .map((element) => {
         return this.serializeElement(element)
       })
@@ -14,6 +15,20 @@ export abstract class SerializationStrategyBase {
 
     const parser = new DOMParser()
     const document = parser.parseFromString(html, "text/html")
+
+    // Create a new div for the subtitle elements
+    const subtitles = document.createElement("div")
+    subtitles.classList.add("composited", "subtitles")
+    document.body.appendChild(subtitles)
+
+    // Iterate through all subtitles and add it as a child of that div
+    parsedVideostrate.all
+      .filter((e) => e.type === "subtitle")
+      .forEach((element) => {
+        const html = this.serializeElement(element)
+        subtitles.innerHTML += html
+      })
+
     parsedVideostrate.all
       .filter((e) => e.type === "video" && (e as VideoClipElement).parentId)
       .forEach((element) => {

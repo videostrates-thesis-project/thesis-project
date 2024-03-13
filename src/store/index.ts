@@ -40,6 +40,7 @@ export interface AppState {
 
   chatMessages: ChatMessage[]
   addChatMessage: (message: ChatMessage) => ChatMessage[]
+  addReactionToMessage: (id: string, reaction: string) => void
 
   currentMessages: ChatCompletionMessageParam[]
   addMessage: (
@@ -116,8 +117,25 @@ export const useStore = create(
       currentMessages: [],
       addMessage: (message: ChatCompletionMessageParam) => {
         set((state) => {
+          const currentMessages = state.currentMessages
+          // Find the last message where role = 'user'
+          const lastUserMessageIndex = currentMessages
+            .map((m) => m.role)
+            .lastIndexOf("user")
+          const chatLastUserMessageIndex = state.chatMessages
+            .map((m) => m.role)
+            .lastIndexOf("user")
+          const secondLastUserMessageIndex = state.chatMessages
+            .map((m) => m.role)
+            .lastIndexOf("user", chatLastUserMessageIndex - 1)
+          const lastUserMessage = currentMessages[lastUserMessageIndex]
+          if (state.chatMessages[secondLastUserMessageIndex]?.content) {
+            lastUserMessage.content =
+              state.chatMessages[secondLastUserMessageIndex]?.content
+          }
+
           return {
-            currentMessages: [...state.currentMessages, message],
+            currentMessages: [...currentMessages, message],
           }
         })
         return get().currentMessages

@@ -15,8 +15,7 @@ export const processAddSubtitleCommand = (
 
   const parser = new DOMParser()
   const document = parser.parseFromString(
-    `<div class="composited subtitles">
-    <span class="composited subtitle">${text.value}</span></div>`,
+    `<span class="subtitle">${text.value}</span>`,
     "text/html"
   )
   const htmlElement = document.body.firstChild as HTMLElement
@@ -28,7 +27,9 @@ export const processAddSubtitleCommand = (
       "Subtitle",
       htmlElement.outerHTML,
       start.value,
-      end.value
+      end.value,
+      "subtitle",
+      "span"
     )
     useStore.getState().setParsedVideostrate(parsedVideostrate)
 
