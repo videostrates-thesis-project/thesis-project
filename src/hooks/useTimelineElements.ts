@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { useStore } from "../store"
 import { VideoClipElement, VideoElement } from "../types/videoElement"
 import { ClipChange, useLatestChanges } from "./useLatestChanges"
+import updateLayers from "../utils/updateLayers"
 
 export interface TimelineElement extends VideoElement {
   width: number
@@ -15,8 +16,12 @@ export interface TimelineElement extends VideoElement {
 export const useTimelineElements = (widthPerSecond: number) => {
   const { parsedVideostrate, availableClips } = useStore()
   const [layers, setLayers] = useState<TimelineElement[][]>([])
-  const { previousVideostrate, movedElements, editedElements } =
-    useLatestChanges()
+  const {
+    previousVideostrate,
+    movedElements,
+    editedElements,
+    removedElements,
+  } = useLatestChanges()
 
   const getElementDetails = useCallback(
     (element: VideoElement) => {
@@ -36,7 +41,7 @@ export const useTimelineElements = (widthPerSecond: number) => {
 
   // Precalculate position of the elements
   const elements = useMemo(() => {
-    return parsedVideostrate.all.map((element) => {
+    let elements = parsedVideostrate.all.map((element) => {
       const elementDetails = getElementDetails(element)
       elementDetails.edits = editedElements.get(element.id)
       if (movedElements.includes(element.id)) {
@@ -51,12 +56,22 @@ export const useTimelineElements = (widthPerSecond: number) => {
       }
       return elementDetails as TimelineElement
     })
+    elements.push(
+      ...removedElements.map((element) => {
+        const elementDetails = getElementDetails(element)
+        elementDetails.edits = editedElements.get(element.id)
+        return elementDetails as TimelineElement
+      })
+    )
+    elements = updateLayers(elements) as TimelineElement[]
+    return elements
   }, [
     editedElements,
     getElementDetails,
     movedElements,
     parsedVideostrate.all,
     previousVideostrate?.all,
+    removedElements,
   ])
 
   // Group elements by layer

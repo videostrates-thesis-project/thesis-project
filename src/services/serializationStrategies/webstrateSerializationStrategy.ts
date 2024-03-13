@@ -41,6 +41,7 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
       }
       htmlElement.setAttribute("id", element.id)
       htmlElement.setAttribute("custom-element-name", element.name)
+      htmlElement.setAttribute("style", `"z-index: ${element.layer};"`)
       htmlElement.setAttribute("data-start", element.start.toString())
       htmlElement.setAttribute("data-end", element.end.toString())
       htmlElement.setAttribute("data-offset", (element.offset ?? 0).toString())

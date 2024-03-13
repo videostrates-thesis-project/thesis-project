@@ -53,10 +53,21 @@ export const useLatestChanges = () => {
           (e) => e.id === element.id
         )
         return (
-          element.start !== oldElement?.start ||
-          element.end !== oldElement?.end ||
-          element.layer !== oldElement?.layer
+          element.start !== oldElement?.start || element.end !== oldElement?.end
         )
+      })
+      .map((element) => element.id)
+    return movedElements
+  }, [parsedVideostrate.all, previousVideostrate])
+
+  const layerChangedElements = useMemo(() => {
+    if (!previousVideostrate) return []
+    const movedElements = parsedVideostrate.all
+      .filter((element) => {
+        const oldElement = previousVideostrate.all.find(
+          (e) => e.id === element.id
+        )
+        return element.layer !== oldElement?.layer
       })
       .map((element) => element.id)
     return movedElements
@@ -89,6 +100,12 @@ export const useLatestChanges = () => {
       addToEdited(element.id, {
         changeType: ChangeType.Removed,
         description: "Removed",
+      })
+    })
+    layerChangedElements.forEach((elementId) => {
+      addToEdited(elementId, {
+        changeType: ChangeType.Edited,
+        description: "Layer changed",
       })
     })
     movedElements.forEach((elementId) => {
@@ -173,6 +190,7 @@ export const useLatestChanges = () => {
     return editedElements
   }, [
     lastExecutedChange,
+    layerChangedElements,
     movedElements,
     newElements,
     parsedVideostrate,

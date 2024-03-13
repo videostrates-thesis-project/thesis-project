@@ -25,6 +25,7 @@ export const availableCommands = [
   "add_subtitle",
   "rename_element",
   "add_clip_to_element",
+  "move_layer",
 ] as const
 
 export type AvailableCommand = (typeof availableCommands)[number]

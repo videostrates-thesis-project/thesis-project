@@ -47,6 +47,7 @@ h1 {
 }
 
 .highlight-clip-removed {
-  @apply border-warning;
-  box-shadow: 0 0 3px 3px theme('colors.warning');
+  @apply border-error;
+  box-shadow: 0 0 3px 3px theme('colors.error');
+  opacity: 30%;
 }
