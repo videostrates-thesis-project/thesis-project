@@ -63,7 +63,7 @@ const Clip = (props: { clip: TimelineElement }) => {
         )}
         <div
           className="absolute m-0 top-0 h-10 z-10"
-          onMouseOver={() => setDetails(clip.edits)}
+          onMouseOver={() => setDetails(clip.edits?.map((e) => e.description))}
           onMouseMove={onMouseOver}
           onMouseLeave={() => {
             setDetails(undefined)

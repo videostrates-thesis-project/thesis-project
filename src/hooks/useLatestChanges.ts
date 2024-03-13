@@ -7,6 +7,17 @@ import {
 } from "../services/command/determineReturnValue"
 import { ReturnValue } from "../services/command/returnValue"
 
+export interface ClipChange {
+  changeType: ChangeType
+  description: string
+}
+
+export enum ChangeType {
+  Removed = "Removed",
+  New = "New",
+  Edited = "Edited",
+}
+
 export const useLatestChanges = () => {
   const { parsedVideostrate, pendingChanges, undoStack } = useStore()
 
@@ -52,24 +63,33 @@ export const useLatestChanges = () => {
   }, [parsedVideostrate.all, previousVideostrate])
 
   const editedElements = useMemo(() => {
-    if (!lastExecutedChange) return new Map()
+    if (!lastExecutedChange) return new Map<string, ClipChange[]>()
     const strategy = new WebstrateSerializationStrategy()
     const html = strategy.serializeHtml(parsedVideostrate)
     const parsedHtml = new DOMParser().parseFromString(html, "text/html")
-    const editedElements = new Map<string, string[]>()
-    const addToEdited = (elementId: string, changeType: string) => {
+    const editedElements = new Map<string, ClipChange[]>()
+    const addToEdited = (elementId: string, change: ClipChange) => {
       const edited = editedElements.get(elementId)
-      if (edited) {
-        editedElements.set(elementId, [...edited, changeType])
+      if (change.changeType === ChangeType.New) {
+        editedElements.set(elementId, [change])
+      } else if (edited) {
+        if (edited.some((e) => e.changeType === ChangeType.New)) return
+        editedElements.set(elementId, [...edited, change])
       } else {
-        editedElements.set(elementId, [changeType])
+        editedElements.set(elementId, [change])
       }
     }
     newElements.forEach((element) => {
-      addToEdited(element.id, "A new element")
+      addToEdited(element.id, {
+        changeType: ChangeType.New,
+        description: "A new element",
+      })
     })
     removedElements.forEach((element) => {
-      addToEdited(element.id, "Removed")
+      addToEdited(element.id, {
+        changeType: ChangeType.Removed,
+        description: "Removed",
+      })
     })
     movedElements.forEach((elementId) => {
       const oldElement = previousVideostrate?.all.find(
@@ -79,7 +99,10 @@ export const useLatestChanges = () => {
       const moveShift = (newElement?.start || 0) - (oldElement?.start || 0)
       const formattedShift =
         moveShift % 1 === 0 ? moveShift.toFixed(0) : moveShift.toFixed(2)
-      addToEdited(elementId, `Moved by ${formattedShift} seconds`)
+      addToEdited(elementId, {
+        changeType: ChangeType.Edited,
+        description: `Moved by ${formattedShift} seconds`,
+      })
     })
     lastExecutedChange.script.forEach((command) => {
       if (["create_style", "delete_style"].includes(command.command)) {
@@ -97,7 +120,10 @@ export const useLatestChanges = () => {
             element = element.parentElement
           }
           if (element) {
-            addToEdited(element.id, "Style changed")
+            addToEdited(element.id, {
+              changeType: ChangeType.Edited,
+              description: "Style changed",
+            })
           }
         })
         console.log("Matching elements: ", matchingElements)
@@ -108,7 +134,10 @@ export const useLatestChanges = () => {
           lastExecutedChange.context
         )
         elementIds.value.forEach((elementId) => {
-          addToEdited(elementId.value, "Style changed")
+          addToEdited(elementId.value, {
+            changeType: ChangeType.Edited,
+            description: "Style changed",
+          })
         })
       } else if (command.command === "rename_element") {
         const elementId = determineReturnValueTyped<string>(
@@ -116,24 +145,40 @@ export const useLatestChanges = () => {
           command.args[0],
           lastExecutedChange.context
         )
-        addToEdited(elementId.value, "The name changed")
+        addToEdited(elementId.value, {
+          changeType: ChangeType.Edited,
+          description: "The name changed",
+        })
       } else if (command.command === "set_speed") {
         const elementId = determineReturnValueTyped<string>(
           "string",
           command.args[0],
           lastExecutedChange.context
         )
-        addToEdited(elementId.value, "Speed Changed")
+        addToEdited(elementId.value, {
+          changeType: ChangeType.Edited,
+          description: "Speed Changed",
+        })
       } else if (["crop"].includes(command.command)) {
         const elementId = determineReturnValue(
           command.args[0],
           lastExecutedChange.context
         )
-        addToEdited(elementId.value, "Crop changed")
+        addToEdited(elementId.value, {
+          changeType: ChangeType.Edited,
+          description: "Crop changed",
+        })
       }
     })
     return editedElements
-  }, [lastExecutedChange, newElements, parsedVideostrate, removedElements])
+  }, [
+    lastExecutedChange,
+    movedElements,
+    newElements,
+    parsedVideostrate,
+    previousVideostrate?.all,
+    removedElements,
+  ])
 
   return {
     previousVideostrate,

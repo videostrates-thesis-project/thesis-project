@@ -37,7 +37,16 @@ h1 {
 }
 
 .highlight-clip {
-  @apply shadow-warning shadow-xl;
-  box-shadow: 0 0 5px 3px theme('colors.warning');
-  ;
+  @apply border-warning;
+  box-shadow: 0 0 3px 3px theme('colors.warning');
+}
+
+.highlight-clip-new {
+  @apply border-success;
+  box-shadow: 0 0 3px 3px theme('colors.success');
+}
+
+.highlight-clip-removed {
+  @apply border-warning;
+  box-shadow: 0 0 3px 3px theme('colors.warning');
 }

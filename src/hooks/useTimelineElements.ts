@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useStore } from "../store"
 import { VideoClipElement, VideoElement } from "../types/videoElement"
-import { useLatestChanges } from "./useLatestChanges"
+import { ClipChange, useLatestChanges } from "./useLatestChanges"
 
 export interface TimelineElement extends VideoElement {
   width: number
   left: number
   clipName: string | undefined
   thumbnail: string | undefined
-  edits: string[] | undefined
+  edits: ClipChange[] | undefined
   oldElement: TimelineElement | undefined
 }
 

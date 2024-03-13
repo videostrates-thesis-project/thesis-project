@@ -50,6 +50,19 @@ const ClipContent = (props: { clip: TimelineElement; isOldClip?: boolean }) => {
     [isSelected, width]
   )
 
+  const clipHighlight = useMemo(() => {
+    if (clip.edits) {
+      if (clip.edits.some((edit) => edit.changeType === "Removed")) {
+        return "highlight-clip-removed"
+      } else if (clip.edits.some((edit) => edit.changeType === "New")) {
+        return "highlight-clip-new"
+      } else {
+        return "highlight-clip"
+      }
+    }
+    return ""
+  }, [clip.edits])
+
   return (
     <div
       ref={ref}
@@ -59,12 +72,12 @@ const ClipContent = (props: { clip: TimelineElement; isOldClip?: boolean }) => {
       }}
       className={clsx(
         "bg-primary rounded-lg text-primary-content border-2 flex items-center px-1 w-full h-full cursor-pointer overflow-clip relative transition-all duration-400",
+        clipHighlight,
         props.isOldClip
           ? "opacity-30 border-transparent"
           : isSelected
-            ? "border-accent"
-            : "border-transparent hover:border-gray-300",
-        clip.edits && "highlight-clip"
+            ? "!border-accent"
+            : "border-transparent hover:border-gray-300"
       )}
       onClick={() => setSelectedClipId(clip.id)}
       style={{

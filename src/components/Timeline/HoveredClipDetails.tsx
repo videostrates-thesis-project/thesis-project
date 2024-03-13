@@ -11,7 +11,7 @@ const HoveredClipDetails = () => {
       }}
     >
       {details.map((d) => {
-        return <p>{d}</p>
+        return <p key={d}>{d}</p>
       })}
     </div>
   ) : null
