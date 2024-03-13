@@ -5,7 +5,6 @@ import Clip from "./Clip"
 
 const Clips = () => {
   const timeline = useContext(TimelineContext)
-
   const layers = useTimelineElements(timeline.widthPerSecond)
 
   useEffect(() => {
@@ -26,7 +25,7 @@ const Clips = () => {
         return (
           <div
             key={layerIndex}
-            className="flex flex-row relative h-10 min-h-10 w-full border border-neutral rounded-lg"
+            className="flex flex-row relative h-fit w-full border border-neutral rounded-lg"
           >
             {clips.map((clip) => {
               return <Clip key={clip.id} clip={clip} />

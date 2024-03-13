@@ -3,7 +3,7 @@ import { TimelineElement } from "../../hooks/useTimelineElements"
 import { useStore } from "../../store"
 import clsx from "clsx"
 
-const ClipContent = (props: { clip: TimelineElement }) => {
+const ClipContent = (props: { clip: TimelineElement; isOldClip?: boolean }) => {
   const { clip } = props
   const { selectedClipId, setSelectedClipId } = useStore()
   const [width, setWidth] = useState(0)
@@ -36,14 +36,32 @@ const ClipContent = (props: { clip: TimelineElement }) => {
   )
 
   const title = useMemo(
-    () => (clip.type === "video" ? "" : `${clip.type} ${clip.nodeType}`),
-    [clip.type, clip.nodeType]
+    () => (clip.type === "video" ? "" : `${clip.name}`),
+    [clip.type, clip.name]
+  )
+
+  const isSelected = useMemo(
+    () => !props.isOldClip && selectedClipId === clip.id,
+    [props.isOldClip, selectedClipId, clip.id]
   )
 
   const hideResizeHandle = useMemo(
-    () => selectedClipId !== clip.id || width < 50,
-    [selectedClipId, clip.id, width]
+    () => !isSelected || width < 50,
+    [isSelected, width]
   )
+
+  const clipHighlight = useMemo(() => {
+    if (clip.edits) {
+      if (clip.edits.some((edit) => edit.changeType === "Removed")) {
+        return "highlight-clip-removed"
+      } else if (clip.edits.some((edit) => edit.changeType === "New")) {
+        return "highlight-clip-new"
+      } else {
+        return "highlight-clip"
+      }
+    }
+    return ""
+  }, [clip.edits])
 
   return (
     <div
@@ -53,10 +71,13 @@ const ClipContent = (props: { clip: TimelineElement }) => {
         e.stopPropagation()
       }}
       className={clsx(
-        "bg-primary rounded-lg text-primary-content border-2 flex items-center px-1 w-full h-full cursor-pointer overflow-clip relative transition-colors duration-400",
-        selectedClipId === clip.id
-          ? "border-accent"
-          : "border-transparent hover:border-gray-300"
+        "bg-primary rounded-lg text-primary-content border-2 flex items-center px-1 w-full h-full cursor-pointer overflow-clip relative transition-all duration-400",
+        clipHighlight,
+        props.isOldClip
+          ? "opacity-30 border-transparent"
+          : isSelected
+            ? "!border-accent"
+            : "border-transparent hover:border-gray-300"
       )}
       onClick={() => setSelectedClipId(clip.id)}
       style={{
@@ -69,8 +90,8 @@ const ClipContent = (props: { clip: TimelineElement }) => {
           hideResizeHandle ? "opacity-0 pointer-events-none" : "opacity-100"
         )}
       >
-        <div className="w-[2px] h-6 rounded bg-primary" />
-        <div className="w-[2px] h-6 rounded bg-primary" />
+        <div className="w-[2px] h-6 rounded bg-secondary-content" />
+        <div className="w-[2px] h-6 rounded bg-secondary-content" />
       </div>
       <span
         className={clsx(
@@ -86,8 +107,8 @@ const ClipContent = (props: { clip: TimelineElement }) => {
           hideResizeHandle ? "opacity-0 pointer-events-none" : "opacity-100"
         )}
       >
-        <div className="w-[2px] h-6 rounded bg-primary" />
-        <div className="w-[2px] h-6 rounded bg-primary" />
+        <div className="w-[2px] h-6 rounded bg-secondary-content" />
+        <div className="w-[2px] h-6 rounded bg-secondary-content" />
       </div>
     </div>
   )

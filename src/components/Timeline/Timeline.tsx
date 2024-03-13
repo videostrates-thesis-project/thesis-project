@@ -8,6 +8,8 @@ import Clips from "./Clips"
 import Playhead from "./Playhead"
 import { useSeek } from "../../hooks/useSeek"
 import { useScrollZoom } from "../../hooks/useScrollZoom"
+import { useLatestChanges } from "../../hooks/useLatestChanges"
+import HoveredClipDetails from "./HoveredClipDetails"
 
 interface TimelineContextProps {
   zoom: number
@@ -32,6 +34,7 @@ const Timeline = () => {
   const [widthPerSecond, setWidthPerSecond] = useState(1)
   const { onSeek, onStartSeeking, onStopSeeking, isSeeking } =
     useSeek(widthPerSecond)
+  const { previousVideostrate } = useLatestChanges()
 
   const updateTimelineWidth = useCallback(() => {
     console.log("updateTimelineWidth")
@@ -41,9 +44,13 @@ const Timeline = () => {
       // Always leave half a screen width of empty space on the right
       Math.max(target.clientWidth * (zoom + 0.5), target.clientWidth)
     )
-    setWidthPerSecond((target.clientWidth * zoom) / parsedVideostrate.length)
+    const length = Math.max(
+      previousVideostrate?.length || 0,
+      parsedVideostrate.length
+    )
+    setWidthPerSecond((target.clientWidth * zoom) / length)
     console.log("updateTimelineWidth", target.clientWidth)
-  }, [parsedVideostrate.length, zoom])
+  }, [parsedVideostrate.length, previousVideostrate?.length, zoom])
 
   useEffect(() => {
     updateTimelineWidth()
@@ -72,6 +79,7 @@ const Timeline = () => {
         width: timelineWidth,
       }}
     >
+      <HoveredClipDetails />
       <TimelineControls {...{ zoomToFit, zoomOut, zoomIn }} />
       <div
         className={clsx(
