@@ -25,7 +25,7 @@ export const processAddClipCommand = (
 
   const startString = args[1]
 
-  const start = parseInt(startString)
+  const start = parseFloat(startString)
   // TODO: look up clip metadata and use that to determine the end time
   const end = start + 25
 

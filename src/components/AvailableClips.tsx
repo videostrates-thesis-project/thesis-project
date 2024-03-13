@@ -4,21 +4,23 @@ import { executeScript } from "../services/command/executeScript"
 import VideoClip from "../types/videoClip"
 
 const AvailableClips = () => {
-  const { availableClips } = useStore()
+  const { availableClips, seek } = useStore()
 
-  const addClip = useCallback((clip: VideoClip) => {
-    if (!clip.title) {
-      console.log("Error: No clip title")
-      return
-    }
-
-    executeScript([
-      {
-        command: "add_clip",
-        args: [`"${clip.title}"`, "0"],
-      },
-    ])
-  }, [])
+  const addClip = useCallback(
+    (clip: VideoClip) => {
+      if (!clip.title) {
+        console.log("Error: No clip title")
+        return
+      }
+      executeScript([
+        {
+          command: "add_clip",
+          args: [`"${clip.title}"`, seek.toString()],
+        },
+      ])
+    },
+    [seek]
+  )
 
   return (
     <div className="w-full flex flex-col gap-3">
