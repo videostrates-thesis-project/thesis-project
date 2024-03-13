@@ -6,7 +6,7 @@ interface CommandProperties {
     args: string[],
     context: ExecutionContext,
     returnVariableName?: string
-  ) => ReturnValue | undefined | void
+  ) => Promise<ReturnValue | undefined | void>
 }
 
 export const availableCommands = [
@@ -26,6 +26,7 @@ export const availableCommands = [
   "rename_element",
   "add_clip_to_element",
   "move_layer",
+  "generate_image",
 ] as const
 
 export type AvailableCommand = (typeof availableCommands)[number]

@@ -3,7 +3,7 @@ import { determineReturnValueTyped } from "../determineReturnValue"
 import { ReturnValue } from "../returnValue"
 import { useStore } from "../../../store"
 
-export const processAssignClassCommand = (
+export const processAssignClassCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {

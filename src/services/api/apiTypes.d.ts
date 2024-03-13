@@ -24,3 +24,11 @@ interface ExecuteChangesFunctionResponse {
   script: string
   explanation: string
 }
+
+interface AzureImageRequest {
+  prompt: string
+}
+
+interface AzureImageResponse {
+  url: string
+}

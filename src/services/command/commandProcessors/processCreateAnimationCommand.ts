@@ -2,7 +2,7 @@ import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { useStore } from "../../../store"
 
-export const processCreateAnimationCommand = (
+export const processCreateAnimationCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {

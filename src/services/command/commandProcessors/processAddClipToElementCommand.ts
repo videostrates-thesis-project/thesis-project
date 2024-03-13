@@ -2,7 +2,7 @@ import { useStore } from "../../../store"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
 
-export const processAddClipToElementCommand = (
+export const processAddClipToElementCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {

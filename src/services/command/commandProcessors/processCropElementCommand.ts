@@ -2,7 +2,7 @@ import { useStore } from "../../../store"
 import { determineReturnValue } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
 
-export const processCropElementCommand = (
+export const processCropElementCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {

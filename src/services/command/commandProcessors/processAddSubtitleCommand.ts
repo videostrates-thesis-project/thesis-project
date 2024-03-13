@@ -2,7 +2,7 @@ import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { useStore } from "../../../store"
 
-export const processAddSubtitleCommand = (
+export const processAddSubtitleCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {

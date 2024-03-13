@@ -2,7 +2,7 @@ import { ExecutionContext } from "../executionContext"
 import { determineReturnValue } from "../determineReturnValue"
 import { useStore } from "../../../store"
 
-export const processDeleteStyleCommand = (
+export const processDeleteStyleCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
