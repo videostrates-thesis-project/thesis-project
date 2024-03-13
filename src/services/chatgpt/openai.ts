@@ -211,7 +211,10 @@ class OpenAIService {
 
     useStore
       .getState()
-      .addReactionToMessage(messages[lastUserMessageIndex].id, reaction ?? "")
+      .addReactionToMessage(
+        messages[lastUserMessageIndex].id,
+        reaction?.slice(0, 2) ?? ""
+      )
   }
 }
 
