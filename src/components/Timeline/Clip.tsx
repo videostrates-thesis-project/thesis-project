@@ -13,14 +13,22 @@ const MIN_ELEMENT_WIDTH = 16
 const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
   const timeline = useContext(TimelineContext)
-  const { selectedClipId, setSelectedClipId } = useStore()
+  const { selectedClipId, setSelectedClipId, availableClips } = useStore()
+
+  const minLeftCrop = useMemo(
+    () =>
+      clip.type === "video"
+        ? -clip.offset * timeline.widthPerSecond
+        : -clip.left,
+    [clip.left, clip.offset, clip.type, timeline.widthPerSecond]
+  )
 
   const {
     onDragStart: onDragLeftStart,
     onDrag: onDragLeft,
     draggedPosition: cropLeft,
     setDraggedPosition: setCropLeft,
-  } = useDraggable(0)
+  } = useDraggable(0, minLeftCrop, clip.width - MIN_ELEMENT_WIDTH)
 
   useEffect(() => {
     // Reset cropLeft after the crop is applied
@@ -28,18 +36,35 @@ const Clip = (props: { clip: TimelineElement }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clip.left])
   const { onDragStart, onDrag, draggedPosition } = useDraggable(
-    clip.left + cropLeft
+    clip.left + cropLeft,
+    0
   )
 
   const widthInitial = useMemo(
     () => Math.max(clip.width - cropLeft, MIN_ELEMENT_WIDTH),
     [clip.width, cropLeft]
   )
+
+  const maxRightCrop = useMemo(() => {
+    if (clip.type !== "video") return undefined
+    else {
+      const clipMetadata = availableClips.find((c) => c.source === clip.source)
+      if (!clipMetadata || !clipMetadata.length) return undefined
+      return (clipMetadata.length - clip.offset) * timeline.widthPerSecond
+    }
+  }, [
+    availableClips,
+    clip.offset,
+    clip.source,
+    clip.type,
+    timeline.widthPerSecond,
+  ])
+
   const {
     onDragStart: onDragRightStart,
     onDrag: onDragRight,
     draggedPosition: width,
-  } = useDraggable(widthInitial)
+  } = useDraggable(widthInitial, MIN_ELEMENT_WIDTH, maxRightCrop)
 
   const { setPosition, setDetails } = useEditedClipDetails()
 
@@ -47,7 +72,6 @@ const Clip = (props: { clip: TimelineElement }) => {
     (e: React.DragEvent) => {
       const clipShift = onDrag(e)
       const clipTimeShift = clipShift / timeline.widthPerSecond
-      console.log("clipTimeShift", clipTimeShift)
       executeScript([
         {
           command: "move_delta",
@@ -83,10 +107,8 @@ const Clip = (props: { clip: TimelineElement }) => {
     ]
   )
 
-  const onCropLeftEnd = useCallback(
-    (e: React.DragEvent) => {
-      const cropShift = onDragLeft(e)
-      const cropTimeShift = cropShift / timeline.widthPerSecond
+  const cropCustomElement = useCallback(
+    (cropTimeShift: number) => {
       executeScript([
         {
           command: "move_delta",
@@ -102,13 +124,46 @@ const Clip = (props: { clip: TimelineElement }) => {
         },
       ])
     },
+    [clip.id, clip.offset, clip.start, clip.end]
+  )
+
+  const cropVideoElement = useCallback(
+    (cropTimeShift: number) => {
+      const newOffset = clip.offset + cropTimeShift
+      executeScript([
+        {
+          command: "crop",
+          args: [
+            `"${clip.id}"`,
+            newOffset.toString(),
+            (clip.end + newOffset - clip.start - cropTimeShift).toString(),
+          ],
+        },
+        {
+          command: "move_delta",
+          args: [`"${clip.id}"`, cropTimeShift.toString()],
+        },
+      ])
+    },
+    [clip.offset, clip.id, clip.end, clip.start]
+  )
+
+  const onCropLeftEnd = useCallback(
+    (e: React.DragEvent) => {
+      const cropShift = onDragLeft(e)
+      const cropTimeShift = cropShift / timeline.widthPerSecond
+      if (clip.type !== "video") {
+        cropCustomElement(cropTimeShift)
+      } else {
+        cropVideoElement(cropTimeShift)
+      }
+    },
     [
       onDragLeft,
       timeline.widthPerSecond,
-      clip.id,
-      clip.offset,
-      clip.start,
-      clip.end,
+      clip.type,
+      cropCustomElement,
+      cropVideoElement,
     ]
   )
 
@@ -152,7 +207,6 @@ const Clip = (props: { clip: TimelineElement }) => {
           onMouseMove={onMouseOver}
           onMouseLeave={() => {
             setDetails(undefined)
-            console.log("mouse leave")
           }}
           style={{
             width: `${width}px`,
@@ -181,9 +235,9 @@ const Clip = (props: { clip: TimelineElement }) => {
               )
             }
             center={
-              <span
+              <div
                 className={clsx(
-                  "overflow-hidden whitespace-nowrap text-ellipsis w-full flex-shrink min-w-0 text-left transition-all px-1"
+                  "w-full flex-shrink min-w-0 text-left transition-all px-1 flex items-center"
                 )}
                 draggable={true}
                 onDrag={onDrag}
@@ -193,8 +247,10 @@ const Clip = (props: { clip: TimelineElement }) => {
                 }}
                 onDragEnd={onDragMoveEnd}
               >
-                {width > 24 && clip.type !== "video" ? `${clip.name}` : ""}
-              </span>
+                <div className="overflow-hidden  whitespace-nowrap text-ellipsis w-full">
+                  {width > 24 && clip.type !== "video" ? `${clip.name}` : ""}
+                </div>
+              </div>
             }
             right={
               isSelected && (

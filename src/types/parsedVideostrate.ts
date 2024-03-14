@@ -132,6 +132,14 @@ export class ParsedVideostrate {
     if (!element) {
       throw new Error(`Element with id ${elementId} not found`)
     }
+    console.log(
+      "Old start ",
+      element.start,
+      " Old offset ",
+      element.offset,
+      "Old end ",
+      element.end
+    )
     const oldLength = element.end - element.start
     element.offset = from
     element.end = to - from + element.start

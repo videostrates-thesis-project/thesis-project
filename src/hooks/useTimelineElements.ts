@@ -7,6 +7,7 @@ import updateLayers from "../utils/updateLayers"
 export interface TimelineElement extends VideoElement {
   width: number
   left: number
+  source: string
   clipName: string | undefined
   thumbnail: string | undefined
   edits: ClipChange[] | undefined
@@ -93,7 +94,6 @@ export const useTimelineElements = (widthPerSecond: number) => {
       .forEach((layerIndex) => {
         newLayers.push(layersMap.get(layerIndex) as TimelineElement[])
       })
-    console.log("newLayers", newLayers)
     setLayers(newLayers.reverse())
   }, [elements])
 

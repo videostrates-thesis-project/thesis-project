@@ -14,20 +14,21 @@ const ClipContent = (props: {
   const { selectedClipId, setSelectedClipId } = useStore()
   const ref = useRef<HTMLDivElement>(null)
 
+  const isSelected = useMemo(
+    () => !props.isOldClip && selectedClipId === clip.id,
+    [props.isOldClip, selectedClipId, clip.id]
+  )
+
   const backgroundStyle = useMemo(
     () =>
       clip.type === "video"
         ? {
             backgroundImage: `url(${clip.thumbnail})`,
             backgroundSize: "auto 100%",
+            backgroundPosition: `${isSelected ? "2" : "0"}px 0px`,
           }
         : {},
-    [clip.thumbnail, clip.type]
-  )
-
-  const isSelected = useMemo(
-    () => !props.isOldClip && selectedClipId === clip.id,
-    [props.isOldClip, selectedClipId, clip.id]
+    [clip.thumbnail, clip.type, isSelected]
   )
 
   const clipHighlight = useMemo(() => {
@@ -51,7 +52,7 @@ const ClipContent = (props: {
         e.stopPropagation()
       }}
       className={clsx(
-        "bg-primary rounded-lg text-primary-content border-2 flex items-center w-full h-full cursor-pointer overflow-clip relative transition-all duration-400",
+        "bg-primary rounded-lg text-primary-content border-2 flex flex-row justify-between w-full h-full cursor-pointer overflow-clip relative duration-400",
         clipHighlight,
         props.isOldClip
           ? "opacity-30 border-transparent"

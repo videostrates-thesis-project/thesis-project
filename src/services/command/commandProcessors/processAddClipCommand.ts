@@ -27,7 +27,7 @@ export const processAddClipCommand = (
 
   const start = parseFloat(startString)
   // TODO: look up clip metadata and use that to determine the end time
-  const end = start + 25
+  const end = start + (availableClip.length ?? 10)
 
   const parsedVideostrate = useStore.getState().parsedVideostrate
 
