@@ -14,7 +14,7 @@ export const processDeleteStyleCommand = async (
     throw new Error("First argument must be a string")
   }
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
     const elementId = parsedVideostrate.removeStyle(selector.value)

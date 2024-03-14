@@ -13,7 +13,7 @@ export const processCreateAnimationCommand = async (
 
   const body = determineReturnValueTyped<string>("string", args[1], context)
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
     parsedVideostrate.addAnimation(name.value, body.value)

@@ -11,7 +11,7 @@ export const processDeleteAnimationCommand = async (
   }
   const name = determineReturnValueTyped<string>("string", args[0], context)
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
     parsedVideostrate.removeAnimation(name.value)

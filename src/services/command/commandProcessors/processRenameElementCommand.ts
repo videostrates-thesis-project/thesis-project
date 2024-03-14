@@ -16,7 +16,7 @@ export const processRenameElement = async (
   )
   const newName = determineReturnValueTyped<string>("string", args[1], context)
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
     parsedVideostrate.renameElement(elementId.value, newName.value)

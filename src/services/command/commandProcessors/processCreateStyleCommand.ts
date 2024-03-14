@@ -18,7 +18,7 @@ export const processCreateStyleCommand = async (
     throw new Error("Second argument must be a string")
   }
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
   try {
     const elementId = parsedVideostrate.addStyle(selector.value, style.value)
     useStore.getState().setParsedVideostrate(parsedVideostrate)
