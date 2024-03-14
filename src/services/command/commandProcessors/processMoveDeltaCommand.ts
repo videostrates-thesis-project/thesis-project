@@ -2,7 +2,7 @@ import { useStore } from "../../../store"
 import { determineReturnValue } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
 
-export const processMoveDeltaCommand = (
+export const processMoveDeltaCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
@@ -22,5 +22,6 @@ export const processMoveDeltaCommand = (
       "[CommandProcessor] Error processing move_delta command: ",
       error
     )
+    throw error
   }
 }

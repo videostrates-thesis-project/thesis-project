@@ -2,7 +2,7 @@ import { useStore } from "../../../store"
 import { determineReturnValue } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
 
-export const processCropElementCommand = (
+export const processCropElementCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
@@ -32,5 +32,6 @@ export const processCropElementCommand = (
     }
   } catch (error) {
     console.error("[CommandProcessor] Error processing crop command: ", error)
+    throw error
   }
 }

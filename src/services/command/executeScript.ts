@@ -11,6 +11,7 @@ import { processCropElementCommand } from "./commandProcessors/processCropElemen
 import { processDeleteAnimationCommand } from "./commandProcessors/processDeleteAnimation"
 import { processDeleteElementCommand } from "./commandProcessors/processDeleteElementCommand"
 import { processDeleteStyleCommand } from "./commandProcessors/processDeleteStyleCommand"
+import { processGenerateImageCommand } from "./commandProcessors/processGenerateImageCommand"
 import { processMoveCommand } from "./commandProcessors/processMoveCommand"
 import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCommand"
 import { processRenameElement } from "./commandProcessors/processRenameElementCommand"
@@ -20,6 +21,7 @@ import { ExecutionContext } from "./executionContext"
 import { executeCommand } from "./processCommand"
 import { ExecutableCommand, RecognizedCommands } from "./recognizedCommands"
 import { tokenizeCommand } from "./tokenizeCommand"
+import { v4 as uuid } from "uuid"
 
 const recognizedCommands: RecognizedCommands = {
   move: {
@@ -70,6 +72,9 @@ const recognizedCommands: RecognizedCommands = {
   move_layer: {
     processFn: processChangeLayerCommand,
   },
+  generate_image: {
+    processFn: processGenerateImageCommand,
+  },
 }
 
 export const parseAndExecuteScript = async (script: string) => {
@@ -83,12 +88,26 @@ export const parseAndExecuteScript = async (script: string) => {
 export const executeScript = async (script: ExecutableCommand[]) => {
   const context: ExecutionContext = {}
   const videoStrateBefore = useStore.getState().parsedVideostrate.clone()
-  script.forEach((line) => executeCommand(line, recognizedCommands, context))
 
-  const executedScript: ExecutedScript = {
-    script,
-    context,
-    parsedVideostrate: videoStrateBefore,
+  try {
+    for (const line of script) {
+      await executeCommand(line, recognizedCommands, context)
+    }
+
+    const executedScript: ExecutedScript = {
+      script,
+      context,
+      parsedVideostrate: videoStrateBefore,
+    }
+    useStore.getState().addToUndoStack(executedScript)
+  } catch (error) {
+    useStore.getState().addToast({
+      id: uuid(),
+      title: "Error processing script",
+      description: (error as Error).message,
+      type: "error",
+      length: 5000,
+    })
+    useStore.getState().setParsedVideostrate(videoStrateBefore)
   }
-  useStore.getState().addToUndoStack(executedScript)
 }

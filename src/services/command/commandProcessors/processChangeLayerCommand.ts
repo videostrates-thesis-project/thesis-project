@@ -2,7 +2,7 @@ import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { useStore } from "../../../store"
 
-export const processChangeLayerCommand = (
+export const processChangeLayerCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
@@ -26,5 +26,6 @@ export const processChangeLayerCommand = (
       "[CommandProcessor] Error processing change_layer command: ",
       error
     )
+    throw error
   }
 }

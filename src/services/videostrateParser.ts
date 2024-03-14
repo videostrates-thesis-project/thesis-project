@@ -66,7 +66,8 @@ const parseElement = (element: ChildNode) => {
     !htmlElement?.classList ||
     !htmlElement.classList.contains("composited") ||
     isRootVideoContainer ||
-    isCustomVideoContainer
+    isCustomVideoContainer ||
+    htmlElement.classList.contains("subtitles")
   )
     return
 

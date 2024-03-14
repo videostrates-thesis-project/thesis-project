@@ -8,6 +8,10 @@ test("can parse style", () => {
       selector: ".test",
       style: "color: red;",
     },
+    {
+      selector: "div video",
+      style: "position: relative !important;",
+    },
   ])
 })
 
@@ -23,6 +27,10 @@ test("can parse multiple styles", () => {
       selector: ".test2",
       style: "color: blue;",
     },
+    {
+      selector: "div video",
+      style: "position: relative !important;",
+    },
   ])
 })
 
@@ -34,6 +42,10 @@ test("can parse complex selectors", () => {
       selector: ".test, .test2",
       style: "color: red;",
     },
+    {
+      selector: "div video",
+      style: "position: relative !important;",
+    },
   ])
 })
 
@@ -44,6 +56,10 @@ test("can parse nested selectors", () => {
     {
       selector: ".test",
       style: "color: red; .test2 { color: blue; }",
+    },
+    {
+      selector: "div video",
+      style: "position: relative !important;",
     },
   ])
 })
@@ -70,6 +86,10 @@ test("can parse both styles and animations", () => {
     {
       selector: ".test",
       style: "color: red;",
+    },
+    {
+      selector: "div video",
+      style: "position: relative !important;",
     },
   ])
   expect(style.animations).toEqual([

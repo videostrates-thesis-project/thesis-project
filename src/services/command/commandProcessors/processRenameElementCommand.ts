@@ -2,7 +2,7 @@ import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { useStore } from "../../../store"
 
-export const processRenameElement = (
+export const processRenameElement = async (
   args: string[],
   context: ExecutionContext
 ) => {
@@ -26,5 +26,6 @@ export const processRenameElement = (
       "[CommandProcessor] Error processing rename_element command: ",
       error
     )
+    throw error
   }
 }

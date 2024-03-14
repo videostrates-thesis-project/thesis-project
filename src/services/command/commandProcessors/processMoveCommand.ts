@@ -2,7 +2,7 @@ import { useStore } from "../../../store"
 import { determineReturnValue } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
 
-export const processMoveCommand = (
+export const processMoveCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
@@ -21,5 +21,6 @@ export const processMoveCommand = (
     useStore.getState().setParsedVideostrate(parsedVideostrate)
   } catch (error) {
     console.error("[CommandProcessor] Error processing move command: ", error)
+    throw error
   }
 }

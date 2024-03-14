@@ -2,7 +2,7 @@ import { ExecutionContext } from "./executionContext"
 import { tokenizeCommand } from "./tokenizeCommand"
 import { ExecutableCommand, RecognizedCommands } from "./recognizedCommands"
 
-export const parseAndExecuteCommand = (
+export const parseAndExecuteCommand = async (
   command: string,
   recognizedCommands: RecognizedCommands,
   context: ExecutionContext = {}
@@ -19,16 +19,16 @@ export const parseAndExecuteCommand = (
 
   const executableCommand = tokenizeCommand(command)
 
-  executeCommand(executableCommand, recognizedCommands, context)
+  await executeCommand(executableCommand, recognizedCommands, context)
 }
 
-export const executeCommand = (
+export const executeCommand = async (
   command: ExecutableCommand,
   recognizedCommands: RecognizedCommands,
   context: ExecutionContext
 ) => {
   const commandProperties = recognizedCommands[command.command]
-  const result = commandProperties.processFn(command.args, context)
+  const result = await commandProperties.processFn(command.args, context)
 
   if (command.variable) {
     context[command.variable] = result

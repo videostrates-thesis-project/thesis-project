@@ -2,7 +2,7 @@ import { useStore } from "../../../store"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
 
-export const processAddClipToElementCommand = (
+export const processAddClipToElementCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
@@ -48,5 +48,6 @@ export const processAddClipToElementCommand = (
       "[CommandProcessor] Error processing add_clip_to_element command: ",
       error
     )
+    throw error
   }
 }

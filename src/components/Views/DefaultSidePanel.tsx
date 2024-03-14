@@ -1,29 +1,54 @@
+import { useMemo } from "react"
 import AvailableClips from "../AvailableClips"
 import Uploader from "../Uploader"
+import clsx from "clsx"
+import Commander from "../Commander"
+import { useStore } from "../../store"
 
 const DefaultSidePanel = () => {
+  const { sideBarTab, setSideBarTab } = useStore()
+
+  const tabs = useMemo(() => {
+    return [
+      {
+        icon: "bi bi-cassette",
+        tab: "clips",
+      },
+      {
+        icon: "bi bi-code-slash",
+        tab: "command",
+      },
+    ] as { icon: string; tab: SideBarTab }[]
+  }, [])
+
   return (
     <div className="flex flex-col w-96 min-w-96 border-r border-neutral bg-base-300">
       <ul className="menu menu-horizontal bg-base-100 p-0">
-        <li>
-          <a className="rounded-none btn-disabled !bg-base-300">
-            <i className="bi bi-cassette text-primary text-lg "></i>
-          </a>
-        </li>
-        <li>
-          <a className="rounded-none">
-            <i className="bi bi-card-text text-lg "></i>
-          </a>
-        </li>
-        <li>
-          <a className="rounded-none">
-            <i className="bi bi-star text-lg "></i>
-          </a>
-        </li>
+        {tabs.map((t) => (
+          <li key={t.tab}>
+            <a
+              className={`rounded-none !bg-base-300 hover:text-indigo-500`}
+              onClick={() => setSideBarTab(t.tab)}
+            >
+              <i
+                className={clsx(
+                  t.icon,
+                  "text-lg",
+                  t.tab === sideBarTab && "text-primary"
+                )}
+              />
+            </a>
+          </li>
+        ))}
       </ul>
-      <div className="flex flex-col gap-4 p-4 w-full min-h-0 overflow-y-auto">
-        <Uploader />
-        <AvailableClips />
+      <div className="flex flex-col gap-4 p-4 w-full min-h-0 h-full overflow-y-auto">
+        {sideBarTab === "clips" && (
+          <>
+            <Uploader />
+            <AvailableClips />
+          </>
+        )}
+        {sideBarTab === "command" && <Commander />}
       </div>
     </div>
   )

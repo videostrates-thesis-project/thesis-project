@@ -57,6 +57,13 @@ export interface AppState {
   redoStack: ExecutedScript[]
   setRedoStack: (stack: ExecutedScript[]) => void
   addToRedoStack: (script: ExecutedScript) => void
+
+  toasts: Toast[]
+  addToast: (toast: Toast) => void
+  removeToast: (id: string) => void
+
+  sideBarTab: SideBarTab
+  setSideBarTab: (tab: SideBarTab) => void
 }
 
 export const useStore = create(
@@ -158,6 +165,28 @@ export const useStore = create(
           }
         })
       },
+      toasts: [],
+      addToast: (toast: Toast) => {
+        console.log("Adding toast", toast)
+        setTimeout(() => {
+          get().removeToast(toast.id)
+        }, toast.length)
+
+        set((state) => {
+          return {
+            toasts: [...state.toasts, toast],
+          }
+        })
+      },
+      removeToast: (id: string) => {
+        set((state) => {
+          return {
+            toasts: state.toasts.filter((t) => t.id !== id),
+          }
+        })
+      },
+      sideBarTab: "clips",
+      setSideBarTab: (tab: SideBarTab) => set({ sideBarTab: tab }),
     }),
     {
       name: "thesis-project-storage",
@@ -172,6 +201,10 @@ export const useStore = create(
               castedValue.animations
             )
           }
+          if ("toasts" === key) {
+            return []
+          }
+
           return value
         },
       }),

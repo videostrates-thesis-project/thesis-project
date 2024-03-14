@@ -6,6 +6,7 @@ import { buildAssistantMessage } from "../services/chatgpt/assistantTemplate"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 import PendingChangesBanner from "./PendingChangesBanner"
 import { v4 as uuid } from "uuid"
+import { Typewriter } from "./TypeWriter"
 
 const Chat = () => {
   const [message, setMessage] = useState("")
@@ -19,6 +20,8 @@ const Chat = () => {
     selectedClipId,
     pendingChanges,
   } = useStore()
+  const [typewriterIndex, setTypewriterIndex] = useState<number | null>(null)
+  const [newMessage, setNewMessage] = useState(false)
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -42,6 +45,8 @@ const Chat = () => {
   }
 
   const onSend = useCallback(() => {
+    setTypewriterIndex(null)
+    setNewMessage(true)
     const html = serializeVideostrate(parsedVideostrate, "chatGPT").html
     const prompt = buildAssistantMessage(
       availableClips,
@@ -72,6 +77,7 @@ const Chat = () => {
     }
     if (chatMessages.at(-1)?.role === "assistant") {
       setLoading(false)
+      setTypewriterIndex(chatMessages.length - 1)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chatMessages.length])
@@ -100,7 +106,13 @@ const Chat = () => {
                 msg.role === "user" && "chat-bubble-primary"
               )}
             >
-              {msg.content}
+              {msg.role === "assistant" &&
+              typewriterIndex === index &&
+              newMessage ? (
+                <Typewriter text={msg.content} minSpeed={5} maxSpeed={70} />
+              ) : (
+                msg.content
+              )}
 
               {msg.reaction && (
                 <div

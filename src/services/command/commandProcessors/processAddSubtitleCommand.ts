@@ -2,7 +2,7 @@ import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { useStore } from "../../../store"
 
-export const processAddSubtitleCommand = (
+export const processAddSubtitleCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
@@ -42,5 +42,6 @@ export const processAddSubtitleCommand = (
       "[CommandProcessor] Error processing add_subtitle command: ",
       error
     )
+    throw error
   }
 }

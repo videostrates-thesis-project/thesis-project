@@ -2,7 +2,7 @@ import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { useStore } from "../../../store"
 
-export const processSetSpeedCommand = (
+export const processSetSpeedCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
@@ -22,5 +22,6 @@ export const processSetSpeedCommand = (
       "[CommandProcessor] Error processing set_speed command: ",
       error
     )
+    throw error
   }
 }

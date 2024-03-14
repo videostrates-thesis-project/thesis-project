@@ -2,7 +2,7 @@ import { useStore } from "../../../store"
 import { determineReturnValue } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
 
-export const processDeleteElementCommand = (
+export const processDeleteElementCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
@@ -21,5 +21,6 @@ export const processDeleteElementCommand = (
       "[CommandProcessor] Error processing delete_element command: ",
       error
     )
+    throw error
   }
 }

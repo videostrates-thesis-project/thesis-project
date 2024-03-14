@@ -2,7 +2,7 @@ import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { useStore } from "../../../store"
 
-export const processDeleteAnimationCommand = (
+export const processDeleteAnimationCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
@@ -21,5 +21,6 @@ export const processDeleteAnimationCommand = (
       "[CommandProcessor] Error processing delete_animation command: ",
       error
     )
+    throw error
   }
 }

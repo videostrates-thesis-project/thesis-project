@@ -2,7 +2,7 @@ import { ExecutionContext } from "../executionContext"
 import { determineReturnValue } from "../determineReturnValue"
 import { useStore } from "../../../store"
 
-export const processCreateStyleCommand = (
+export const processCreateStyleCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
@@ -32,5 +32,6 @@ export const processCreateStyleCommand = (
       "[CommandProcessor] Error processing add_style command: ",
       error
     )
+    throw error
   }
 }
