@@ -2,7 +2,13 @@ const updateLayers = (
   elements: { layer: number; start: number; end: number }[]
 ) => {
   const sorted = elements
-    .toSorted((a, b) => a.layer - b.layer)
+    .toSorted((a, b) => {
+      if (a.layer !== b.layer) {
+        return a.layer - b.layer
+      } else {
+        return a.start - b.start
+      }
+    })
     .map((e) => {
       return { ...e }
     })

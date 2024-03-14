@@ -26,7 +26,17 @@ const useDraggable = (initPosX: number) => {
   }
 
   const onDrag = (e: React.DragEvent) => {
+    // Sometimes the clientX is 0 for unknown reasons - it causes a jump in the dragged position.
+    //It can ignored since the user has no possibility to drag the element to the left edge of the screen.
+    if (e.clientX === 0) return 0
     setDraggedPosition(e.clientX - startDragPosition)
+    if (initPosX === 0)
+      console.log(
+        "setDraggedPosition",
+        e.clientX - startDragPosition,
+        e.clientX,
+        startDragPosition
+      )
     // Returns the shift in position
     return e.clientX - startDragPosition - initPosX
   }
@@ -35,6 +45,7 @@ const useDraggable = (initPosX: number) => {
     onDragStart,
     onDrag,
     draggedPosition,
+    setDraggedPosition,
   }
 }
 
