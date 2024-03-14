@@ -4,6 +4,7 @@ import Uploader from "../Uploader"
 import clsx from "clsx"
 import Commander from "../Commander"
 import { useStore } from "../../store"
+import AvailableImages from "../AvailableImages"
 
 const DefaultSidePanel = () => {
   const { sideBarTab, setSideBarTab } = useStore()
@@ -13,6 +14,10 @@ const DefaultSidePanel = () => {
       {
         icon: "bi bi-cassette",
         tab: "clips",
+      },
+      {
+        icon: "bi bi-image",
+        tab: "images",
       },
       {
         icon: "bi bi-code-slash",
@@ -49,6 +54,7 @@ const DefaultSidePanel = () => {
           </>
         )}
         {sideBarTab === "command" && <Commander />}
+        {sideBarTab === "images" && <AvailableImages />}
       </div>
     </div>
   )

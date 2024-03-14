@@ -1,6 +1,7 @@
 import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { azureImageRequest } from "../../api/api"
+import { useStore } from "../../../store"
 
 export const processGenerateImageCommand = async (
   args: string[],
@@ -13,6 +14,10 @@ export const processGenerateImageCommand = async (
 
   try {
     const { url } = await azureImageRequest({ prompt: prompt.value })
+
+    useStore
+      .getState()
+      .setAvailableImages([...useStore.getState().availableImages, url])
 
     return {
       type: "string" as const,

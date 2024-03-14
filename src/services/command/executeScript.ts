@@ -82,7 +82,7 @@ export const parseAndExecuteScript = async (script: string) => {
   const lines = script.split("\n")
   const parsed = lines.map((line) => tokenizeCommand(line))
 
-  executeScript(parsed)
+  await executeScript(parsed)
 }
 
 export const executeScript = async (script: ExecutableCommand[]) => {

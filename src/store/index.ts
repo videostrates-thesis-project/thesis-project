@@ -35,6 +35,9 @@ export interface AppState {
   availableClips: VideoClip[]
   setAvailableClips: (clips: VideoClip[]) => void
 
+  availableImages: string[]
+  setAvailableImages: (images: string[]) => void
+
   selectedClipId: string | null
   setSelectedClipId: (id: string | null) => void
 
@@ -99,6 +102,9 @@ export const useStore = create(
       setClipsSources: (sources: string[]) => set({ clipsSources: sources }),
       availableClips: [],
       setAvailableClips: (clips: VideoClip[]) => set({ availableClips: clips }),
+      availableImages: [],
+      setAvailableImages: (images: string[]) =>
+        set({ availableImages: images }),
       selectedClipId: null,
       setSelectedClipId: (id: string | null) => set({ selectedClipId: id }),
       chatMessages: [],

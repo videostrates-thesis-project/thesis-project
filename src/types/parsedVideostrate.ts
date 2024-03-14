@@ -79,9 +79,10 @@ export class ParsedVideostrate {
 
   public addClip(source: string, start: number, end: number) {
     const newId = uuid()
-    const layer = Math.max(
-      ...this.all.filter((e) => e.type === "video").map((e) => e.layer)
-    )
+    const layer =
+      Math.max(
+        ...this.all.filter((e) => e.type === "video").map((e) => e.layer)
+      ) + 1
     this.all.push({
       id: newId,
       name: "",
@@ -162,6 +163,7 @@ export class ParsedVideostrate {
     nodeType = "div"
   ) {
     const newId = uuid()
+    const layer = Math.max(...this.all.map((e) => e.layer)) + 1
     this.all.push({
       id: newId,
       name,
@@ -171,7 +173,7 @@ export class ParsedVideostrate {
       type,
       offset: 0,
       outerHtml,
-      layer: 0,
+      layer,
       speed: 1,
     })
     this.all = [...this.all]
