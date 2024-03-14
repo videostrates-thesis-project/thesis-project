@@ -8,10 +8,10 @@ export interface TimelineElement extends VideoElement {
   width: number
   left: number
   source: string
-  clipName: string | undefined
-  thumbnail: string | undefined
-  edits: ClipChange[] | undefined
-  oldElement: TimelineElement | undefined
+  clipName?: string
+  thumbnail?: string
+  edits?: ClipChange[]
+  oldElement?: TimelineElement
 }
 
 export const useTimelineElements = (widthPerSecond: number) => {

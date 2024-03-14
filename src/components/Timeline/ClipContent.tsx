@@ -49,16 +49,16 @@ const ClipContent = (props: {
       ref={ref}
       key={clip.id}
       onMouseDown={(e) => {
-        e.stopPropagation()
+        if (!props.isOldClip) e.stopPropagation()
       }}
       className={clsx(
-        "bg-primary rounded-lg text-primary-content border-2 flex flex-row justify-between w-full h-full cursor-pointer overflow-clip relative duration-400",
+        "bg-primary rounded-lg text-primary-content border-2 flex flex-row justify-between w-full h-full overflow-clip relative duration-400",
         clipHighlight,
         props.isOldClip
           ? "opacity-30 border-transparent"
           : isSelected
-            ? "!border-accent border-x-0"
-            : "border-transparent hover:border-gray-300"
+            ? "!border-accent border-x-0 cursor-pointer"
+            : "border-transparent cursor-pointer hover:border-gray-300"
       )}
       onClick={() => {
         if (selectedClipId === clip.id) setSelectedClipId(null)

@@ -13,7 +13,8 @@ const MIN_ELEMENT_WIDTH = 16
 const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
   const timeline = useContext(TimelineContext)
-  const { selectedClipId, setSelectedClipId, availableClips } = useStore()
+  const { selectedClipId, setSelectedClipId, availableClips, pendingChanges } =
+    useStore()
 
   const minLeftCrop = useMemo(
     () =>
@@ -45,20 +46,18 @@ const Clip = (props: { clip: TimelineElement }) => {
     [clip.width, cropLeft]
   )
 
+  const clipMetadata = useMemo(
+    () => availableClips.find((c) => c.source === clip.source),
+    [availableClips, clip.source]
+  )
+
   const maxRightCrop = useMemo(() => {
     if (clip.type !== "video") return undefined
     else {
-      const clipMetadata = availableClips.find((c) => c.source === clip.source)
       if (!clipMetadata || !clipMetadata.length) return undefined
       return (clipMetadata.length - clip.offset) * timeline.widthPerSecond
     }
-  }, [
-    availableClips,
-    clip.offset,
-    clip.source,
-    clip.type,
-    timeline.widthPerSecond,
-  ])
+  }, [clip.offset, clip.type, clipMetadata, timeline.widthPerSecond])
 
   const {
     onDragStart: onDragRightStart,
@@ -187,6 +186,25 @@ const Clip = (props: { clip: TimelineElement }) => {
     [width]
   )
 
+  const sourceClipLeft = useMemo(
+    () => draggedPosition - cropLeft - clip.offset * timeline.widthPerSecond,
+    [clip.offset, cropLeft, draggedPosition, timeline.widthPerSecond]
+  )
+
+  const sourceClipWidth = useMemo(() => {
+    if (!clipMetadata?.length) return 0
+    const sourceClipWidth = clipMetadata.length * timeline.widthPerSecond
+    if (sourceClipWidth + sourceClipLeft > timeline.width) {
+      return timeline.width - sourceClipLeft - 1
+    }
+    return sourceClipWidth
+  }, [
+    clipMetadata?.length,
+    sourceClipLeft,
+    timeline.width,
+    timeline.widthPerSecond,
+  ])
+
   return (
     <>
       <div className={clsx("w-full", clip.oldElement ? "h-14" : "h-10")}>
@@ -199,6 +217,17 @@ const Clip = (props: { clip: TimelineElement }) => {
             }}
           >
             <ClipContent clip={clip.oldElement} isOldClip={true} />
+          </div>
+        )}
+        {isSelected && !pendingChanges && clipMetadata?.length && (
+          <div
+            className="absolute m-0 top-0 h-10"
+            style={{
+              width: `${sourceClipWidth}px`,
+              left: `${sourceClipLeft}px`,
+            }}
+          >
+            <div className="w-full h-full rounded-lg bg-slate-500 opacity-10 border-2 border-accent"></div>
           </div>
         )}
         <div
