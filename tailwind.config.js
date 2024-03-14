@@ -23,10 +23,16 @@ export default {
             fontSize: "1.2rem",
           },
         },
+        blink: {
+          "50%": {
+            opacity: "0",
+          },
+        },
       },
       animation: {
         "bounce-big": "bounce-big 1s linear infinite",
         shrink: "shrink 0.5s ease-in-out forwards",
+        blink: "blink 1s steps(5, start) infinite",
       },
     },
   },

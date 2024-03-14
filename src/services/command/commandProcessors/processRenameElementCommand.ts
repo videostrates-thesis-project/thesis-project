@@ -26,5 +26,6 @@ export const processRenameElement = async (
       "[CommandProcessor] Error processing rename_element command: ",
       error
     )
+    throw error
   }
 }

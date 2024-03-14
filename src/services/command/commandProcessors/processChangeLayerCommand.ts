@@ -26,5 +26,6 @@ export const processChangeLayerCommand = async (
       "[CommandProcessor] Error processing change_layer command: ",
       error
     )
+    throw error
   }
 }

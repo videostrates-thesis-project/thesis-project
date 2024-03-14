@@ -48,5 +48,6 @@ export const processAddClipToElementCommand = async (
       "[CommandProcessor] Error processing add_clip_to_element command: ",
       error
     )
+    throw error
   }
 }

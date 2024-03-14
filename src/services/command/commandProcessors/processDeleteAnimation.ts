@@ -21,5 +21,6 @@ export const processDeleteAnimationCommand = async (
       "[CommandProcessor] Error processing delete_animation command: ",
       error
     )
+    throw error
   }
 }

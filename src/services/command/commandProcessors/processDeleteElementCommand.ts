@@ -21,5 +21,6 @@ export const processDeleteElementCommand = async (
       "[CommandProcessor] Error processing delete_element command: ",
       error
     )
+    throw error
   }
 }

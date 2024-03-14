@@ -29,5 +29,6 @@ export const processDeleteStyleCommand = async (
       "[CommandProcessor] Error processing add_style command: ",
       error
     )
+    throw error
   }
 }

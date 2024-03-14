@@ -55,6 +55,7 @@ export const processAddCustomElementCommand = async (
       "[CommandProcessor] Error processing add_custom_element command: ",
       error
     )
+    throw error
   }
 }
 

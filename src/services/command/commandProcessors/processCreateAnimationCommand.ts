@@ -23,5 +23,6 @@ export const processCreateAnimationCommand = async (
       "[CommandProcessor] Error processing create_animation command: ",
       error
     )
+    throw error
   }
 }

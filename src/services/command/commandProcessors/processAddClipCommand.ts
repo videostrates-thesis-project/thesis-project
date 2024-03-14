@@ -44,5 +44,6 @@ export const processAddClipCommand = async (
       "[CommandProcessor] Error processing add_clip command: ",
       error
     )
+    throw error
   }
 }

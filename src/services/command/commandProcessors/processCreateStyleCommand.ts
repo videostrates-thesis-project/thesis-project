@@ -32,5 +32,6 @@ export const processCreateStyleCommand = async (
       "[CommandProcessor] Error processing add_style command: ",
       error
     )
+    throw error
   }
 }

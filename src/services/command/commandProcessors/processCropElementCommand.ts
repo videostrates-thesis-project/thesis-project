@@ -32,5 +32,6 @@ export const processCropElementCommand = async (
     }
   } catch (error) {
     console.error("[CommandProcessor] Error processing crop command: ", error)
+    throw error
   }
 }

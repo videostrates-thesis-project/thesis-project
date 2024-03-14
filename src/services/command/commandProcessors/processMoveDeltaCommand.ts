@@ -22,5 +22,6 @@ export const processMoveDeltaCommand = async (
       "[CommandProcessor] Error processing move_delta command: ",
       error
     )
+    throw error
   }
 }

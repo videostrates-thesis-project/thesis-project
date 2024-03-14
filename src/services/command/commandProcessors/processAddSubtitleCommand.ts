@@ -42,5 +42,6 @@ export const processAddSubtitleCommand = async (
       "[CommandProcessor] Error processing add_subtitle command: ",
       error
     )
+    throw error
   }
 }

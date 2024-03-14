@@ -23,5 +23,6 @@ export const processGenerateImageCommand = async (
       "[CommandProcessor] Error processing generate_image command: ",
       error
     )
+    throw error
   }
 }

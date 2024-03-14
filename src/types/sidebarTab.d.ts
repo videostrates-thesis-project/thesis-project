@@ -1,0 +1,1 @@
+type SideBarTab = "clips" | "command"

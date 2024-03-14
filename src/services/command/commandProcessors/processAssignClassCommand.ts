@@ -38,5 +38,6 @@ export const processAssignClassCommand = async (
       "[CommandProcessor] Error processing assign_class command: ",
       error
     )
+    throw error
   }
 }

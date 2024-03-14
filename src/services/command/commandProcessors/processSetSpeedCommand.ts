@@ -22,5 +22,6 @@ export const processSetSpeedCommand = async (
       "[CommandProcessor] Error processing set_speed command: ",
       error
     )
+    throw error
   }
 }

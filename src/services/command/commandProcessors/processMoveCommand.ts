@@ -21,5 +21,6 @@ export const processMoveCommand = async (
     useStore.getState().setParsedVideostrate(parsedVideostrate)
   } catch (error) {
     console.error("[CommandProcessor] Error processing move command: ", error)
+    throw error
   }
 }
