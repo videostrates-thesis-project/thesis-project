@@ -19,8 +19,8 @@ const app = initializeApp(firebaseConfig)
 
 const storage = getStorage(app)
 
-export const uploadVideo = async (file: Blob) => {
-  const ref = storageRef(storage, `videos/${uuid()}.mp4`)
+const uploadFile = async (file: Blob, extension: string) => {
+  const ref = storageRef(storage, `files/${uuid()}.${extension}`)
 
   try {
     const result = await uploadBytes(ref, file)
@@ -29,4 +29,12 @@ export const uploadVideo = async (file: Blob) => {
   } catch (error) {
     console.error("Failed to upload to Firebase", error)
   }
+}
+
+export const uploadVideo = async (file: Blob) => {
+  return uploadFile(file, "mp4")
+}
+
+export const uploadImage = async (file: Blob) => {
+  return uploadFile(file, "png")
 }
