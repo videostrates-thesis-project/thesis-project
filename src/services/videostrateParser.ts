@@ -7,6 +7,7 @@ import {
 } from "../types/videoElement"
 import { v4 as uuid } from "uuid"
 import { parseStyle } from "./parser/parseStyle"
+import { useStore } from "../store"
 
 let allElements: VideoElement[] = []
 
@@ -24,6 +25,15 @@ export const parseVideostrate = (text: string) => {
 
   const styleString = html.getElementById("videostrate-style")?.innerHTML ?? ""
   const { style, animations } = parseStyle(styleString)
+
+  const images = html.body.getElementsByTagName("img")
+  const imageSources = Array.from(images).map((img) => img.src)
+  const allImages = new Set([
+    ...useStore.getState().availableImages,
+    ...imageSources,
+  ])
+
+  useStore.getState().setAvailableImages(Array.from(allImages))
 
   const parsed: ParsedVideostrate = new ParsedVideostrate(
     allElements,

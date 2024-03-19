@@ -74,7 +74,12 @@ export const useStore = create(
     (set, get) => ({
       videostrateUrl: "https://demo.webstrates.net/evil-jellyfish-8/",
       setVideostrateUrl: (url: string) =>
-        set({ videostrateUrl: url, availableClips: [], clipsSources: [] }),
+        set({
+          videostrateUrl: url,
+          availableClips: [],
+          clipsSources: [],
+          availableImages: [],
+        }),
       fileName: "Untitled Videostrate",
       setFileName: (name: string) => set({ fileName: name }),
       parsedVideostrate: new ParsedVideostrate([], []),
