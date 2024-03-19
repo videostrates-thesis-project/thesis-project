@@ -16,6 +16,8 @@ const ImageUploader = () => {
       ) as { url: string; title: string }[]
       console.log(images)
       setAvailableImages([...availableImages, ...images])
+      // Clear input so that the same file can be uploaded again
+      e.target.value = ""
     },
     [availableImages, setAvailableImages]
   )

@@ -13,12 +13,11 @@ const ClipUploader = () => {
       )
       const urls = await Promise.all(uploadClipPromises)
       const newClips = urls
-        .filter((url) => url)
-        .map((url) => ({
-          source: url,
-          status: "UNCACHED",
-        })) as VideoClip[]
+        .filter((url): url is string => !!url)
+        .map((url) => new VideoClip(url, { status: "UNCACHED" }))
       setAvailableClips([...availableClips, ...newClips])
+      // Clear input so that the same file can be uploaded again
+      e.target.value = ""
     },
     [availableClips, setAvailableClips]
   )

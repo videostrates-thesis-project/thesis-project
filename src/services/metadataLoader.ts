@@ -8,10 +8,7 @@ export const getClipsMetadata = async (
     async (url) => await getClipMetadata(url, metamaxRealm)
   )
   let clipsMetadata: VideoClip[] = await Promise.all(clipsMetadataPromises)
-  clipsMetadata = clipsMetadata.map((metadata, index) => {
-    if (!metadata.title) {
-      metadata.title = `Clip ${index + 1}`
-    }
+  clipsMetadata = clipsMetadata.map((metadata) => {
     return metadata
   })
   return clipsMetadata

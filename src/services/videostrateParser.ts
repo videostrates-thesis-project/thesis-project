@@ -82,7 +82,7 @@ const setAvailableClips = (elements: VideoElement[]) => {
     .map((element) => (element as VideoClipElement).source)
   const uniqueSources = Array.from(new Set(sources))
   const clips = uniqueSources.map((source) => {
-    return { source, status: "UNCACHED" } as VideoClip
+    return new VideoClip(source, { status: "UNCACHED" })
   })
 
   useStore
