@@ -25,14 +25,13 @@ export class ParsedVideostrate {
 
   constructor(
     allElements: VideoElement[],
-    images: Image[],
     style: VideostrateStyle[] = [],
     animations: VideostrateStyle[] = []
   ) {
     this.all = allElements
-    this.images = images
     this.style = style
     this.animations = animations
+    this.updateImages()
   }
 
   public get length() {
@@ -56,7 +55,6 @@ export class ParsedVideostrate {
   public clone() {
     return new ParsedVideostrate(
       this.all.map((c) => ({ ...c })),
-      this.images.map((i) => ({ ...i })),
       this.style.map((s) => ({ ...s })),
       this.animations.map((a) => ({ ...a }))
     )
@@ -135,6 +133,7 @@ export class ParsedVideostrate {
       useStore.getState().setSelectedClipId(null)
     }
     this.all = this.all.filter((c) => c.id !== elementId)
+    this.updateImages()
   }
 
   public cropElementById(elementId: string, from: number, to: number) {
@@ -182,7 +181,7 @@ export class ParsedVideostrate {
       speed: 1,
     })
     this.all = [...this.all]
-
+    this.updateImages()
     return newId
   }
 
@@ -277,5 +276,23 @@ export class ParsedVideostrate {
     } else {
       this._length = Math.max(...this._all.map((e) => e.end))
     }
+  }
+
+  private updateImages() {
+    this.images = this.all
+      .filter((e) => e.type !== "video")
+      .map((e) => {
+        const parser = new DOMParser()
+        const document = parser.parseFromString(e.outerHtml ?? "", "text/html")
+        const htmlElement = document.body.firstChild as HTMLElement
+        if (htmlElement) {
+          const images = htmlElement.querySelectorAll("img")
+          return Array.from(images).map((img) => ({
+            url: img.src,
+            title: img.alt,
+          }))
+        }
+      })
+      .reduce((acc: Image[], val) => (val ? acc.concat(val) : acc), [])
   }
 }

@@ -272,7 +272,6 @@ export const useStore = create<AppState>()(
                 const castedValue = value as ParsedVideostrate
                 return new ParsedVideostrate(
                   castedValue._all,
-                  castedValue.images,
                   castedValue.style,
                   castedValue.animations
                 )

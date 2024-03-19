@@ -27,16 +27,10 @@ export const parseVideostrate = (text: string) => {
 
   const parsed: ParsedVideostrate = new ParsedVideostrate(
     allElements,
-    collectImages(html),
     style,
     animations
   )
   return parsed
-}
-
-const collectImages = (html: Document) => {
-  const images = html.body.getElementsByTagName("img")
-  return Array.from(images).map((img) => ({ url: img.src, title: img.alt }))
 }
 
 const parseElement = (element: ChildNode) => {

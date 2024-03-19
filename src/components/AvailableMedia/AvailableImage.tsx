@@ -16,7 +16,7 @@ const AvailableImage = (props: { image: Image }) => {
       {
         command: "add_custom_element",
         args: [
-          '"Image"',
+          `"${props.image.title}"`,
           `"<img src="${props.image.url}" alt="${props.image.title}" />"`,
           seek.toString(),
           (seek + 20).toString(),
