@@ -69,7 +69,7 @@ export interface AppState {
   setSideBarTab: (tab: SideBarTab) => void
 }
 
-export const useStore = create(
+export const useStore = create<AppState>()(
   persist<AppState>(
     (set, get) => ({
       videostrateUrl: "https://demo.webstrates.net/evil-jellyfish-8/",
@@ -79,6 +79,16 @@ export const useStore = create(
           availableClips: [],
           clipsSources: [],
           availableImages: [],
+          seek: 0,
+          playing: false,
+          playbackState: { frame: 0, time: 0 },
+          selectedClipId: null,
+          chatMessages: [],
+          currentMessages: [],
+          pendingChanges: false,
+          undoStack: [],
+          redoStack: [],
+          toasts: [],
         }),
       fileName: "Untitled Videostrate",
       setFileName: (name: string) => set({ fileName: name }),
@@ -203,19 +213,30 @@ export const useStore = create(
       name: "thesis-project-storage",
       storage: createJSONStorage(() => localStorage, {
         reviver: (key, value) => {
-          if ("parsedVideostrate" === key && value) {
-            // Manually parse the parsedVideostrate object to retrieve getters and setters
-            const castedValue = value as ParsedVideostrate
-            return new ParsedVideostrate(
-              castedValue._all,
-              castedValue.style,
-              castedValue.animations
-            )
+          switch (key) {
+            case "parsedVideostrate":
+              if (value) {
+                const castedValue = value as ParsedVideostrate
+                return new ParsedVideostrate(
+                  castedValue._all,
+                  castedValue.style,
+                  castedValue.animations
+                )
+              }
+              break
+            case "toasts":
+              return []
+            case "seek":
+              return 0
+            case "playing":
+              return false
+            case "pendingChanges":
+              return false
+            case "playbackState":
+              return { frame: 0, time: 0 }
+            case "selectedClipId":
+              return null
           }
-          if ("toasts" === key) {
-            return []
-          }
-
           return value
         },
       }),

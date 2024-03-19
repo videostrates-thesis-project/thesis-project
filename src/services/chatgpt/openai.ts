@@ -110,10 +110,8 @@ class OpenAIService {
       id: uuid(),
     })
 
-    if (message.script) {
-      await parseAndExecuteScript(message.script)
-      useStore.getState().setPendingChanges(true)
-    }
+    if (message.script)
+      (await parseAndExecuteScript(message.script))?.asPendingChanges()
   }
 
   /**
@@ -173,10 +171,8 @@ class OpenAIService {
       id: uuid(),
     })
 
-    if (message.script) {
-      await parseAndExecuteScript(message.script)
-      useStore.getState().setPendingChanges(true)
-    }
+    if (message.script)
+      (await parseAndExecuteScript(message.script))?.asPendingChanges()
   }
 
   async sendChatMessageForReaction() {

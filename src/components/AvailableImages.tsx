@@ -25,7 +25,10 @@ const AvailableImages = () => {
   return (
     <div className="flex flex-row flex-wrap gap-4">
       {availableImages.map((image) => (
-        <div className="flex flex-col w-[calc(50%-0.5rem)] items-end gap-1 rounded-lg overflow-clip bg-base-100">
+        <div
+          key={image}
+          className="flex flex-col w-[calc(50%-0.5rem)] items-end gap-1 rounded-lg overflow-clip bg-base-100"
+        >
           <img className="flex-shrink " key={image} src={image} alt={image} />
           <button
             className="btn btn-sm btn-ghost w-fit mr-1 mb-1"
