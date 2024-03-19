@@ -5,7 +5,8 @@ import DeleteMediaButton from "./DeleteMediaButton"
 import { Image } from "../types/image"
 
 const AvailableImage = (props: { image: Image }) => {
-  const { parsedVideostrate, seek } = useStore()
+  const { parsedVideostrate, seek, availableImages, setAvailableImages } =
+    useStore()
 
   const canBeDeleted = useMemo(() => {
     return !parsedVideostrate.images.some((i) => i.url === props.image.url)
@@ -28,6 +29,10 @@ const AvailableImage = (props: { image: Image }) => {
     [seek]
   )
 
+  const deleteImage = useCallback(() => {
+    setAvailableImages(availableImages.filter((i) => i.url !== props.image.url))
+  }, [availableImages, props.image.url, setAvailableImages])
+
   return (
     <div className="available-media relative flex flex-col w-[calc(50%-0.5rem)] items-end gap-1 rounded-lg overflow-clip bg-base-100">
       <img
@@ -45,7 +50,7 @@ const AvailableImage = (props: { image: Image }) => {
       <DeleteMediaButton
         className="btn-neutral"
         disabled={!canBeDeleted}
-        onClick={() => {}}
+        onClick={deleteImage}
       />
     </div>
   )

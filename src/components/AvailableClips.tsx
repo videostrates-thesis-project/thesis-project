@@ -1,5 +1,5 @@
 import { useStore } from "../store"
-import Uploader from "./Uploader"
+import ClipUploader from "./ClipUploader"
 import AvailableClip from "./AvailableClip"
 
 const AvailableClips = () => {
@@ -7,7 +7,7 @@ const AvailableClips = () => {
 
   return (
     <div className="w-full flex flex-col gap-3">
-      <Uploader />
+      <ClipUploader />
       {availableClips.map((clip) => (
         <AvailableClip key={clip.source} clip={clip} />
       ))}

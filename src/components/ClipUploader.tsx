@@ -3,7 +3,7 @@ import { uploadVideo } from "../services/upload"
 import { useStore } from "../store"
 import VideoClip from "../types/videoClip"
 
-const Uploader = () => {
+const ClipUploader = () => {
   const { availableClips, setAvailableClips } = useStore()
   const onUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,10 +19,11 @@ const Uploader = () => {
   return (
     <>
       <label htmlFor="clips-upload" className="btn btn-sm btn-accent w-full">
-        <i className="bi bi-file-earmark-plus text-lg"></i> Import clips{" "}
+        <i className="bi bi-film text-lg"></i> Import clips
       </label>
       <input
         type="file"
+        accept=".mp4"
         id="clips-upload"
         className="hidden"
         onChange={onUpload}
@@ -31,4 +32,4 @@ const Uploader = () => {
   )
 }
 
-export default Uploader
+export default ClipUploader
