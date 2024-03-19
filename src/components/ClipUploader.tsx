@@ -7,12 +7,18 @@ const ClipUploader = () => {
   const { availableClips, setAvailableClips } = useStore()
   const onUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target?.files?.[0]
-      if (!file) return
-      const url = await uploadVideo(file)
-      if (!url) return // TODO: Show error
-      const newClip = { source: url, status: "UNCACHED" } as VideoClip
-      setAvailableClips([...availableClips, newClip])
+      const files = e.target?.files || []
+      const uploadClipPromises = Array.from(files).map(
+        async (file) => await uploadVideo(file)
+      )
+      const urls = await Promise.all(uploadClipPromises)
+      const newClips = urls
+        .filter((url) => url)
+        .map((url) => ({
+          source: url,
+          status: "UNCACHED",
+        })) as VideoClip[]
+      setAvailableClips([...availableClips, ...newClips])
     },
     [availableClips, setAvailableClips]
   )
@@ -24,6 +30,7 @@ const ClipUploader = () => {
       <input
         type="file"
         accept=".mp4"
+        multiple
         id="clips-upload"
         className="hidden"
         onChange={onUpload}

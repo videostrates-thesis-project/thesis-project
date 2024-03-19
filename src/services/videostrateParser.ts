@@ -10,6 +10,7 @@ import { parseStyle } from "./parser/parseStyle"
 import { useStore } from "../store"
 import VideoClip from "../types/videoClip"
 import { Image } from "../types/image"
+import getNextImageIndex from "../utils/getNextImageIndex"
 
 let allElements: VideoElement[] = []
 
@@ -47,13 +48,20 @@ const collectImages = (html: Document) => {
 }
 
 const setAvailableImages = (images: Image[]) => {
+  let imageIndex = getNextImageIndex()
   const oldImages: [string, Image][] = useStore
     .getState()
     .availableImages.map((i) => [i.url, i])
 
   const allImages = new Map<string, Image>([
+    ...images.map((i) => {
+      if (i.title === "") {
+        i.title = `Image ${imageIndex}`
+        imageIndex++
+      }
+      return [i.url, i]
+    }),
     ...oldImages,
-    ...images.map((i) => [i.url, i]),
   ] as [string, Image][])
 
   useStore.getState().setAvailableImages(Array.from(allImages.values()))

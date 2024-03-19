@@ -21,7 +21,6 @@ import { ExecutionContext } from "./executionContext"
 import { executeCommand } from "./processCommand"
 import { ExecutableCommand, RecognizedCommands } from "./recognizedCommands"
 import { tokenizeCommand } from "./tokenizeCommand"
-import { v4 as uuid } from "uuid"
 
 const recognizedCommands: RecognizedCommands = {
   move: {
@@ -96,13 +95,9 @@ export const executeScript = async (script: ExecutableCommand[]) => {
       console.error("Error processing script:\n", script)
       console.error("Line:\n", line)
       console.error(error)
-      useStore.getState().addToast({
-        id: uuid(),
-        title: "Error processing script",
-        description: (error as Error).message,
-        type: "error",
-        length: 5000,
-      })
+      useStore
+        .getState()
+        .addToast("error", "Error processing script", (error as Error).message)
       useStore.getState().setParsedVideostrate(videoStrateBefore)
       return
     }

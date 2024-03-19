@@ -7,6 +7,9 @@ import VideoClip from "../types/videoClip"
 import { ChatMessage } from "../types/chatMessage"
 import { ExecutedScript } from "../services/command/executedScript"
 import { Image } from "../types/image"
+import { v4 as uuid } from "uuid"
+
+const TOAST_LENGTH = 5000
 
 export interface AppState {
   videostrateUrl: string
@@ -60,7 +63,7 @@ export interface AppState {
   addToRedoStack: (script: ExecutedScript) => void
 
   toasts: Toast[]
-  addToast: (toast: Toast) => void
+  addToast: (type: ToastType, title: string, description: string) => void
   removeToast: (id: string) => void
 
   sideBarTab: SideBarTab
@@ -176,15 +179,15 @@ export const useStore = create<AppState>()(
         })
       },
       toasts: [],
-      addToast: (toast: Toast) => {
-        console.log("Adding toast", toast)
+      addToast: (type: ToastType, title: string, description: string) => {
+        const id = uuid()
         setTimeout(() => {
-          get().removeToast(toast.id)
-        }, toast.length)
+          get().removeToast(id)
+        }, TOAST_LENGTH)
 
         set((state) => {
           return {
-            toasts: [...state.toasts, toast],
+            toasts: [...state.toasts, { id, title, description, type }],
           }
         })
       },

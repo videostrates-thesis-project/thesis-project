@@ -6,12 +6,16 @@ const ImageUploader = () => {
   const { availableImages, setAvailableImages } = useStore()
   const onUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target?.files?.[0]
-      if (!file) return
-      const url = await uploadImage(file)
-      if (!url) return // TODO: Show error
-      const newImage = { url, title: "New image" }
-      setAvailableImages([...availableImages, newImage])
+      const files = e.target?.files || []
+      const uploadImagePromises = Array.from(files).map(async (file) => ({
+        url: await uploadImage(file),
+        title: file.name.split(".").slice(0, -1).join("."),
+      }))
+      const images = (await Promise.all(uploadImagePromises)).filter(
+        (image) => image.url !== undefined
+      ) as { url: string; title: string }[]
+      console.log(images)
+      setAvailableImages([...availableImages, ...images])
     },
     [availableImages, setAvailableImages]
   )
@@ -23,6 +27,7 @@ const ImageUploader = () => {
       <input
         type="file"
         accept=".png"
+        multiple
         id="images-upload"
         className="hidden"
         onChange={onUpload}
