@@ -3,7 +3,6 @@ import { determineReturnValueTyped } from "../determineReturnValue"
 import { azureImageRequest } from "../../api/api"
 import { useStore } from "../../../store"
 import { uploadVideo } from "../../upload"
-import getNextImageIndex from "../../../utils/getNextImageIndex"
 
 export const processGenerateImageCommand = async (
   args: string[],
@@ -23,11 +22,8 @@ export const processGenerateImageCommand = async (
     if (!uploadedUrl) {
       throw new Error("Failed to upload image")
     }
-    useStore.getState().setAvailableImages([
-      ...useStore.getState().availableImages,
-      // TODO: Add a generated title
-      { url: uploadedUrl, title: `Image ${getNextImageIndex()}` },
-    ])
+    // TODO: Add a generated title
+    useStore.getState().addAvailableImage({ url: uploadedUrl, title: "" })
 
     return {
       type: "string" as const,

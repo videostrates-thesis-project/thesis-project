@@ -28,23 +28,21 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
   const [iframeTop, setIframeTop] = useState(0)
   const [iframeContainerHeight, setIframeContainerHeight] = useState(720)
 
-  const controlPlayer = useCallback(
-    (command: PlayerCommands, args?: object) => {
-      if (command === PlayerCommands.Play) setPlaying(true)
-      else if (command === PlayerCommands.Pause) setPlaying(false)
+  // The iframeRef doesn't work when wrapped in a useCallback
+  const controlPlayer = (command: PlayerCommands, args?: object) => {
+    if (command === PlayerCommands.Play) setPlaying(true)
+    else if (command === PlayerCommands.Pause) setPlaying(false)
 
-      const iframeWindow = iframeRef.current?.contentWindow
-      iframeWindow?.postMessage(
-        {
-          type: "player-control",
-          command: command.toString(),
-          args: args,
-        },
-        "*"
-      )
-    },
-    [setPlaying, iframeRef]
-  )
+    const iframeWindow = iframeRef.current?.contentWindow
+    iframeWindow?.postMessage(
+      {
+        type: "player-control",
+        command: command.toString(),
+        args: args,
+      },
+      "*"
+    )
+  }
 
   const updateIframeSize = useCallback(() => {
     const target = iframeRef.current?.parentNode as HTMLElement
@@ -103,7 +101,8 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
       width: VIDEO_WIDTH,
       height: VIDEO_HEIGHT,
     })
-  }, [controlPlayer, setPlaybackState, videostrateUrl])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setPlaybackState, videostrateUrl])
 
   useEffect(() => {
     // Listen for messages from the iframe
@@ -132,8 +131,10 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
 
   useEffect(() => {
     const { html, style } = serializeVideostrate(parsedVideostrate, "webstrate")
+    console.log("Updating videostrate", parsedVideostrate.all)
     controlPlayer(PlayerCommands.UpdateVideo, { html, style: style })
-  }, [controlPlayer, parsedVideostrate])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parsedVideostrate])
 
   const onChangeUrl = useCallback(() => {
     setVideostrateUrl(url)
@@ -142,7 +143,8 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
       width: VIDEO_WIDTH,
       height: VIDEO_HEIGHT,
     })
-  }, [controlPlayer, setVideostrateUrl, url])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setVideostrateUrl, url])
 
   return (
     <div className="flex flex-col gap-2 w-full flex-grow p-2 min-h-0 min-w-0">

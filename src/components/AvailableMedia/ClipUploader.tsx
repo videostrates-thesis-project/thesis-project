@@ -1,6 +1,7 @@
 import React, { useCallback } from "react"
 import { uploadVideo } from "../../services/upload"
 import { useStore } from "../../store"
+import removeExtension from "../../utils/removeExtension"
 
 const ClipUploader = () => {
   const { addAvailableClip } = useStore()
@@ -9,9 +10,7 @@ const ClipUploader = () => {
       const files = e.target?.files || []
       const uploadClipPromises = Array.from(files).map(async (file) => {
         const url = await uploadVideo(file)
-        if (!url) return
-        addAvailableClip(url, file.name)
-        console.log("Uploaded clip", file.name, "to", url)
+        if (url) addAvailableClip(url, removeExtension(file.name))
       })
       await Promise.all(uploadClipPromises)
 

@@ -1,25 +1,23 @@
 import React, { useCallback } from "react"
 import { uploadImage } from "../../services/upload"
 import { useStore } from "../../store"
+import removeExtension from "../../utils/removeExtension"
 
 const ImageUploader = () => {
-  const { availableImages, setAvailableImages } = useStore()
+  const { addAvailableImage } = useStore()
+
   const onUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target?.files || []
-      const uploadImagePromises = Array.from(files).map(async (file) => ({
-        url: await uploadImage(file),
-        title: file.name.split(".").slice(0, -1).join("."),
-      }))
-      const images = (await Promise.all(uploadImagePromises)).filter(
-        (image) => image.url !== undefined
-      ) as { url: string; title: string }[]
-      console.log(images)
-      setAvailableImages([...availableImages, ...images])
+      const uploadImagePromises = Array.from(files).map(async (file) => {
+        const url = await uploadImage(file)
+        if (url) addAvailableImage({ url, title: removeExtension(file.name) })
+      })
+      await Promise.all(uploadImagePromises)
       // Clear input so that the same file can be uploaded again
       e.target.value = ""
     },
-    [availableImages, setAvailableImages]
+    [addAvailableImage]
   )
   return (
     <>

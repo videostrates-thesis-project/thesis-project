@@ -7,9 +7,6 @@ import {
 } from "../types/videoElement"
 import { v4 as uuid } from "uuid"
 import { parseStyle } from "./parser/parseStyle"
-import { useStore } from "../store"
-import { Image } from "../types/image"
-import getNextImageIndex from "../utils/getNextImageIndex"
 
 let allElements: VideoElement[] = []
 
@@ -28,13 +25,9 @@ export const parseVideostrate = (text: string) => {
   const styleString = html.getElementById("videostrate-style")?.innerHTML ?? ""
   const { style, animations } = parseStyle(styleString)
 
-  const images = collectImages(html)
-  setAvailableImages(images)
-  setAvailableClips(allElements)
-
   const parsed: ParsedVideostrate = new ParsedVideostrate(
     allElements,
-    images,
+    collectImages(html),
     style,
     animations
   )
@@ -44,34 +37,6 @@ export const parseVideostrate = (text: string) => {
 const collectImages = (html: Document) => {
   const images = html.body.getElementsByTagName("img")
   return Array.from(images).map((img) => ({ url: img.src, title: img.alt }))
-}
-
-const setAvailableImages = (images: Image[]) => {
-  let imageIndex = getNextImageIndex()
-  const oldImages: [string, Image][] = useStore
-    .getState()
-    .availableImages.map((i) => [i.url, i])
-
-  const allImages = new Map<string, Image>([
-    ...images.map((i) => {
-      if (i.title === "") {
-        i.title = `Image ${imageIndex}`
-        imageIndex++
-      }
-      return [i.url, i]
-    }),
-    ...oldImages,
-  ] as [string, Image][])
-
-  useStore.getState().setAvailableImages(Array.from(allImages.values()))
-}
-
-const setAvailableClips = (elements: VideoElement[]) => {
-  elements
-    .filter((element): element is VideoClipElement => element.type === "video")
-    .forEach((element) =>
-      useStore.getState().addAvailableClip(element.source, element.name)
-    )
 }
 
 const parseElement = (element: ChildNode) => {

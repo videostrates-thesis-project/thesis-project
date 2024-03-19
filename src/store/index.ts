@@ -10,6 +10,8 @@ import { Image } from "../types/image"
 import { v4 as uuid } from "uuid"
 
 const TOAST_LENGTH = 5000
+const DEFAULT_IMAGE_TITLE = "Image"
+const DEFAULT_CLIP_TITLE = "Clip"
 
 export interface AppState {
   videostrateUrl: string
@@ -34,12 +36,13 @@ export interface AppState {
   setSeek: (seek: number) => void
 
   availableClips: VideoClip[]
-  addAvailableClip: (source: string, title: string) => void
+  addAvailableClip: (source: string, title?: string) => void
   updateClipMetadata: (source: string, metadata: RawMetadata) => void
   deleteAvailableClip: (source: string) => void
 
   availableImages: Image[]
-  setAvailableImages: (images: Image[]) => void
+  addAvailableImage: (image: Image) => void
+  deleteAvailableImage: (url: string) => void
 
   selectedClipId: string | null
   setSelectedClipId: (id: string | null) => void
@@ -96,9 +99,21 @@ export const useStore = create<AppState>()(
       setFileName: (name: string) => set({ fileName: name }),
       parsedVideostrate: new ParsedVideostrate([], []),
       setParsedVideostrate: async (parsed: ParsedVideostrate) =>
-        set({
-          parsedVideostrate: parsed.clone(),
-          pendingChanges: false,
+        set((state) => {
+          const availableClips = parsed.clips.reduce((acc, element) => {
+            return concatAvailableClips(acc, element.source, element.name)
+          }, state.availableClips)
+
+          const availableImages = parsed.images.reduce((acc, img) => {
+            return concatAvailableImage(acc, img)
+          }, state.availableImages)
+
+          return {
+            parsedVideostrate: parsed.clone(),
+            pendingChanges: false,
+            availableClips,
+            availableImages,
+          }
         }),
       pendingChanges: false,
       setPendingChanges: (pendingChanges: boolean) => set({ pendingChanges }),
@@ -111,21 +126,14 @@ export const useStore = create<AppState>()(
       metamaxRealm: null,
       setMetamaxRealm: (realm: string) => set({ metamaxRealm: realm }),
       availableClips: [],
-      addAvailableClip: (source: string, title: string) => {
+      addAvailableClip: (source: string, title?: string) => {
         set((state) => {
-          if (state.availableClips.some((clip) => clip.source === source)) {
-            return state
-          }
-          if (title === "") title = "Clip"
-          let index = 1
-          while (state.availableClips.some((clip) => clip.title === title)) {
-            title = `${title} ${index++}`
-          }
           return {
-            availableClips: [
-              ...state.availableClips,
-              new VideoClip(source, title),
-            ],
+            availableClips: concatAvailableClips(
+              state.availableClips,
+              source,
+              title
+            ),
           }
         })
       },
@@ -151,7 +159,20 @@ export const useStore = create<AppState>()(
         })
       },
       availableImages: [],
-      setAvailableImages: (images: Image[]) => set({ availableImages: images }),
+      addAvailableImage: (image: Image) => {
+        set((state) => {
+          return {
+            availableImages: concatAvailableImage(state.availableImages, image),
+          }
+        })
+      },
+      deleteAvailableImage: (url: string) => {
+        set((state) => {
+          return {
+            availableImages: state.availableImages.filter((i) => i.url !== url),
+          }
+        })
+      },
       selectedClipId: null,
       setSelectedClipId: (id: string | null) => set({ selectedClipId: id }),
       chatMessages: [],
@@ -276,3 +297,39 @@ export const useStore = create<AppState>()(
     }
   )
 )
+
+const concatAvailableClips = (
+  availableClips: VideoClip[],
+  source: string,
+  title?: string
+) => {
+  if (availableClips.some((clip) => clip.source === source))
+    return availableClips
+
+  title = title || DEFAULT_CLIP_TITLE
+  let newTitle = title
+  let index = 1
+  while (
+    newTitle === DEFAULT_CLIP_TITLE ||
+    availableClips.some((clip) => clip.title === newTitle)
+  ) {
+    newTitle = `${title} ${index++}`
+  }
+  return [...availableClips, new VideoClip(source, newTitle)]
+}
+
+const concatAvailableImage = (availableImages: Image[], image: Image) => {
+  if (availableImages.some((i) => i.url === image.url)) return availableImages
+
+  image.title = image.title || DEFAULT_IMAGE_TITLE
+  let newTitle = image.title
+  let index = 1
+  while (
+    newTitle === DEFAULT_IMAGE_TITLE ||
+    availableImages.some((i) => i.title === newTitle)
+  ) {
+    newTitle = `${image.title} ${index++}`
+  }
+  image.title = newTitle
+  return [...availableImages, image]
+}
