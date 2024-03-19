@@ -1,6 +1,5 @@
 import { useMemo } from "react"
 import AvailableClips from "../AvailableClips"
-import Uploader from "../Uploader"
 import clsx from "clsx"
 import Commander from "../Commander"
 import { useStore } from "../../store"
@@ -46,13 +45,8 @@ const DefaultSidePanel = () => {
           </li>
         ))}
       </ul>
-      <div className="flex flex-col gap-4 p-4 w-full min-h-0 h-full overflow-y-auto">
-        {sideBarTab === "clips" && (
-          <>
-            <Uploader />
-            <AvailableClips />
-          </>
-        )}
+      <div className="flex flex-col p-4 w-full min-h-0 h-full overflow-y-auto">
+        {sideBarTab === "clips" && <AvailableClips />}
         {sideBarTab === "command" && <Commander />}
         {sideBarTab === "images" && <AvailableImages />}
       </div>

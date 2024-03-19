@@ -8,6 +8,8 @@ import {
 import { v4 as uuid } from "uuid"
 import { parseStyle } from "./parser/parseStyle"
 import { useStore } from "../store"
+import VideoClip from "../types/videoClip"
+import { Image } from "../types/image"
 
 let allElements: VideoElement[] = []
 
@@ -26,21 +28,58 @@ export const parseVideostrate = (text: string) => {
   const styleString = html.getElementById("videostrate-style")?.innerHTML ?? ""
   const { style, animations } = parseStyle(styleString)
 
-  const images = html.body.getElementsByTagName("img")
-  const imageSources = Array.from(images).map((img) => img.src)
-  const allImages = new Set([
-    ...useStore.getState().availableImages,
-    ...imageSources,
-  ])
-
-  useStore.getState().setAvailableImages(Array.from(allImages))
+  const images = collectImages(html)
+  setAvailableImages(images)
+  setAvailableClips(allElements)
 
   const parsed: ParsedVideostrate = new ParsedVideostrate(
     allElements,
+    images,
     style,
     animations
   )
   return parsed
+}
+
+const collectImages = (html: Document) => {
+  const images = html.body.getElementsByTagName("img")
+  return Array.from(images).map((img) => ({ url: img.src, title: img.alt }))
+}
+
+const setAvailableImages = (images: Image[]) => {
+  const oldImages: [string, Image][] = useStore
+    .getState()
+    .availableImages.map((i) => [i.url, i])
+
+  const allImages = new Map<string, Image>([
+    ...oldImages,
+    ...images.map((i) => [i.url, i]),
+  ] as [string, Image][])
+
+  useStore.getState().setAvailableImages(Array.from(allImages.values()))
+}
+
+const setAvailableClips = (elements: VideoElement[]) => {
+  const sources = elements
+    .filter((element) => {
+      return (
+        element.type === "video" &&
+        !useStore
+          .getState()
+          .availableClips.some(
+            (clip) => clip.source === (element as VideoClipElement).source
+          )
+      )
+    })
+    .map((element) => (element as VideoClipElement).source)
+  const uniqueSources = Array.from(new Set(sources))
+  const clips = uniqueSources.map((source) => {
+    return { source, status: "UNCACHED" } as VideoClip
+  })
+
+  useStore
+    .getState()
+    .setAvailableClips([...useStore.getState().availableClips, ...clips])
 }
 
 const parseElement = (element: ChildNode) => {

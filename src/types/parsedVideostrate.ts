@@ -1,5 +1,6 @@
 import { useStore } from "../store"
 import updateLayers from "../utils/updateLayers"
+import { Image } from "./image"
 import {
   VideoClipElement,
   VideoElement,
@@ -15,6 +16,7 @@ export interface VideostrateStyle {
 export class ParsedVideostrate {
   clips: VideoClipElement[] = []
   elements: VideoElement[] = []
+  images: Image[] = []
   // Using # doesn't work with the Zustand store
   _all: VideoElement[] = []
   _length = 0
@@ -23,10 +25,12 @@ export class ParsedVideostrate {
 
   constructor(
     allElements: VideoElement[],
+    images: Image[],
     style: VideostrateStyle[] = [],
     animations: VideostrateStyle[] = []
   ) {
     this.all = allElements
+    this.images = images
     this.style = style
     this.animations = animations
   }
@@ -52,6 +56,7 @@ export class ParsedVideostrate {
   public clone() {
     return new ParsedVideostrate(
       this.all.map((c) => ({ ...c })),
+      this.images.map((i) => ({ ...i })),
       this.style.map((s) => ({ ...s })),
       this.animations.map((a) => ({ ...a }))
     )

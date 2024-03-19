@@ -6,6 +6,7 @@ import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 import VideoClip from "../types/videoClip"
 import { ChatMessage } from "../types/chatMessage"
 import { ExecutedScript } from "../services/command/executedScript"
+import { Image } from "../types/image"
 
 export interface AppState {
   videostrateUrl: string
@@ -29,14 +30,11 @@ export interface AppState {
   seek: number
   setSeek: (seek: number) => void
 
-  clipsSources: string[]
-  setClipsSources: (sources: string[]) => void
-
   availableClips: VideoClip[]
   setAvailableClips: (clips: VideoClip[]) => void
 
-  availableImages: string[]
-  setAvailableImages: (images: string[]) => void
+  availableImages: Image[]
+  setAvailableImages: (images: Image[]) => void
 
   selectedClipId: string | null
   setSelectedClipId: (id: string | null) => void
@@ -77,7 +75,6 @@ export const useStore = create<AppState>()(
         set({
           videostrateUrl: url,
           availableClips: [],
-          clipsSources: [],
           availableImages: [],
           seek: 0,
           playing: false,
@@ -93,16 +90,11 @@ export const useStore = create<AppState>()(
       fileName: "Untitled Videostrate",
       setFileName: (name: string) => set({ fileName: name }),
       parsedVideostrate: new ParsedVideostrate([], []),
-      setParsedVideostrate: async (parsed: ParsedVideostrate) => {
-        const uniqueClipSources = [
-          ...new Set(parsed.clips.map((c) => c.source)),
-        ]
+      setParsedVideostrate: async (parsed: ParsedVideostrate) =>
         set({
           parsedVideostrate: parsed.clone(),
-          clipsSources: uniqueClipSources,
           pendingChanges: false,
-        })
-      },
+        }),
       pendingChanges: false,
       setPendingChanges: (pendingChanges: boolean) => set({ pendingChanges }),
       playbackState: { frame: 0, time: 0 },
@@ -113,13 +105,10 @@ export const useStore = create<AppState>()(
       setSeek: (seek: number) => set({ seek: seek }),
       metamaxRealm: null,
       setMetamaxRealm: (realm: string) => set({ metamaxRealm: realm }),
-      clipsSources: [],
-      setClipsSources: (sources: string[]) => set({ clipsSources: sources }),
       availableClips: [],
       setAvailableClips: (clips: VideoClip[]) => set({ availableClips: clips }),
       availableImages: [],
-      setAvailableImages: (images: string[]) =>
-        set({ availableImages: images }),
+      setAvailableImages: (images: Image[]) => set({ availableImages: images }),
       selectedClipId: null,
       setSelectedClipId: (id: string | null) => set({ selectedClipId: id }),
       chatMessages: [],
@@ -219,6 +208,7 @@ export const useStore = create<AppState>()(
                 const castedValue = value as ParsedVideostrate
                 return new ParsedVideostrate(
                   castedValue._all,
+                  castedValue.images,
                   castedValue.style,
                   castedValue.animations
                 )
