@@ -51,11 +51,7 @@ const AvailableClip = (props: { clip: VideoClip }) => {
               </button>
             </div>
           </div>
-          <DeleteMediaButton
-            className="btn-ghost"
-            disabled={!canBeDeleted}
-            onClick={deleteClip}
-          />
+          <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteClip} />
         </div>
       ) : (
         <div className="w-full h-28 flex justify-center items-center rounded-lg bg-base-100">

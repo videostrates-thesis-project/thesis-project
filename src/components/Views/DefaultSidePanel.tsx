@@ -31,7 +31,10 @@ const DefaultSidePanel = () => {
         {tabs.map((t) => (
           <li key={t.tab}>
             <a
-              className={`rounded-none !bg-base-300 hover:text-indigo-500`}
+              className={clsx(
+                "btn btn-ghost rounded-none",
+                t.tab === sideBarTab && "btn-active !bg-base-300"
+              )}
               onClick={() => setSideBarTab(t.tab)}
             >
               <i

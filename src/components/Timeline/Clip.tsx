@@ -19,9 +19,18 @@ const Clip = (props: { clip: TimelineElement }) => {
   const minLeftCrop = useMemo(
     () =>
       clip.type === "video"
-        ? -clip.offset * timeline.widthPerSecond
-        : -clip.left,
-    [clip.left, clip.offset, clip.type, timeline.widthPerSecond]
+        ? Math.max(
+            -clip.offset * timeline.widthPerSecond,
+            -clip.left + (clip.minLeftPosition || 0)
+          )
+        : -clip.left + (clip.minLeftPosition || 0),
+    [
+      clip.left,
+      clip.minLeftPosition,
+      clip.offset,
+      clip.type,
+      timeline.widthPerSecond,
+    ]
   )
 
   const {
@@ -36,9 +45,11 @@ const Clip = (props: { clip: TimelineElement }) => {
     setCropLeft(0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clip.left])
+
   const { onDragStart, onDrag, draggedPosition } = useDraggable(
     clip.left + cropLeft,
-    0
+    clip.minLeftPosition || 0,
+    clip.maxRightPosition
   )
 
   const widthInitial = useMemo(
@@ -52,12 +63,30 @@ const Clip = (props: { clip: TimelineElement }) => {
   )
 
   const maxRightCrop = useMemo(() => {
-    if (clip.type !== "video") return undefined
+    if (clip.type !== "video")
+      return (
+        clip.maxRightPosition && clip.maxRightPosition + -clip.left + clip.width
+      )
     else {
-      if (!clipMetadata || !clipMetadata.length) return undefined
-      return (clipMetadata.length - clip.offset) * timeline.widthPerSecond
+      if (!clipMetadata || !clipMetadata.length)
+        return (
+          clip.maxRightPosition &&
+          clip.maxRightPosition + -clip.left + clip.width
+        )
+      return Math.min(
+        (clipMetadata.length - clip.offset) * timeline.widthPerSecond,
+        (clip.maxRightPosition || Infinity) - clip.left + clip.width
+      )
     }
-  }, [clip.offset, clip.type, clipMetadata, timeline.widthPerSecond])
+  }, [
+    clip.left,
+    clip.maxRightPosition,
+    clip.offset,
+    clip.type,
+    clip.width,
+    clipMetadata,
+    timeline.widthPerSecond,
+  ])
 
   const {
     onDragStart: onDragRightStart,

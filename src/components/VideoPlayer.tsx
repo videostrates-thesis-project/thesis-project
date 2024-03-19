@@ -6,7 +6,7 @@ import PlayerControls from "./PlayerControls"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 
 const VIDEO_WIDTH = 1280
-const VIDEO_HEIGHT = 960
+const VIDEO_HEIGHT = 720
 const VIDEO_ASPECT_RATIO = VIDEO_WIDTH / VIDEO_HEIGHT
 
 function VideoPlayer(props: { videoPlayerUrl: string }) {

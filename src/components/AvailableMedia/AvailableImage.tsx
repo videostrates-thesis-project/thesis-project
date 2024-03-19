@@ -46,11 +46,7 @@ const AvailableImage = (props: { image: Image }) => {
           <i className="bi bi-plus-lg text-lg text-accent"></i>
         </button>
       </div>
-      <DeleteMediaButton
-        className="btn-neutral"
-        disabled={!canBeDeleted}
-        onClick={deleteImage}
-      />
+      <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteImage} />
     </div>
   )
 }
