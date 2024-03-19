@@ -1,4 +1,4 @@
-import { useStore } from "../store"
+import { useStore } from "../../store"
 import ClipUploader from "./ClipUploader"
 import AvailableClip from "./AvailableClip"
 

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react"
-import { uploadImage } from "../services/upload"
-import { useStore } from "../store"
+import { uploadImage } from "../../services/upload"
+import { useStore } from "../../store"
 
 const ImageUploader = () => {
   const { availableImages, setAvailableImages } = useStore()

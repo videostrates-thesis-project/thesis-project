@@ -1,9 +1,9 @@
 import { useMemo } from "react"
-import AvailableClips from "../AvailableClips"
+import AvailableClips from "../AvailableMedia/AvailableClips"
 import clsx from "clsx"
 import Commander from "../Commander"
 import { useStore } from "../../store"
-import AvailableImages from "../AvailableImages"
+import AvailableImages from "../AvailableMedia/AvailableImages"
 
 const DefaultSidePanel = () => {
   const { sideBarTab, setSideBarTab } = useStore()

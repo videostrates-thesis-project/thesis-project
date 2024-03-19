@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react"
-import { useStore } from "../store"
-import { executeScript } from "../services/command/executeScript"
-import VideoClip from "../types/videoClip"
+import { useStore } from "../../store"
+import { executeScript } from "../../services/command/executeScript"
+import VideoClip from "../../types/videoClip"
 import DeleteMediaButton from "./DeleteMediaButton"
 
 const AvailableClip = (props: { clip: VideoClip }) => {

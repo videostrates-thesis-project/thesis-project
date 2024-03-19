@@ -1,8 +1,8 @@
 import { useCallback, useMemo } from "react"
-import { useStore } from "../store"
-import { executeScript } from "../services/command/executeScript"
+import { useStore } from "../../store"
+import { executeScript } from "../../services/command/executeScript"
 import DeleteMediaButton from "./DeleteMediaButton"
-import { Image } from "../types/image"
+import { Image } from "../../types/image"
 
 const AvailableImage = (props: { image: Image }) => {
   const { parsedVideostrate, seek, availableImages, setAvailableImages } =

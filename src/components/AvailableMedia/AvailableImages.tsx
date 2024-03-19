@@ -1,4 +1,4 @@
-import { useStore } from "../store"
+import { useStore } from "../../store"
 import AvailableImage from "./AvailableImage"
 import ImageUploader from "./ImageUploader"
 

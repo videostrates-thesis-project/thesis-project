@@ -1,7 +1,7 @@
 import React, { useCallback } from "react"
-import { uploadVideo } from "../services/upload"
-import { useStore } from "../store"
-import VideoClip from "../types/videoClip"
+import { uploadVideo } from "../../services/upload"
+import { useStore } from "../../store"
+import VideoClip from "../../types/videoClip"
 
 const ClipUploader = () => {
   const { availableClips, setAvailableClips } = useStore()
