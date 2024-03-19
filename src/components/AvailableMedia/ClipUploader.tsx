@@ -1,25 +1,24 @@
 import React, { useCallback } from "react"
 import { uploadVideo } from "../../services/upload"
 import { useStore } from "../../store"
-import VideoClip from "../../types/videoClip"
 
 const ClipUploader = () => {
-  const { availableClips, setAvailableClips } = useStore()
+  const { addAvailableClip } = useStore()
   const onUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const files = e.target?.files || []
-      const uploadClipPromises = Array.from(files).map(
-        async (file) => await uploadVideo(file)
-      )
-      const urls = await Promise.all(uploadClipPromises)
-      const newClips = urls
-        .filter((url): url is string => !!url)
-        .map((url) => new VideoClip(url, { status: "UNCACHED" }))
-      setAvailableClips([...availableClips, ...newClips])
+      const uploadClipPromises = Array.from(files).map(async (file) => {
+        const url = await uploadVideo(file)
+        if (!url) return
+        addAvailableClip(url, file.name)
+        console.log("Uploaded clip", file.name, "to", url)
+      })
+      await Promise.all(uploadClipPromises)
+
       // Clear input so that the same file can be uploaded again
       e.target.value = ""
     },
-    [availableClips, setAvailableClips]
+    [addAvailableClip]
   )
   return (
     <>

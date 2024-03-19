@@ -5,8 +5,7 @@ import VideoClip from "../../types/videoClip"
 import DeleteMediaButton from "./DeleteMediaButton"
 
 const AvailableClip = (props: { clip: VideoClip }) => {
-  const { seek, availableClips, setAvailableClips, parsedVideostrate } =
-    useStore()
+  const { seek, deleteAvailableClip, parsedVideostrate } = useStore()
 
   const canBeDeleted = useMemo(() => {
     return !parsedVideostrate.clips.some((c) => c.source === props.clip.source)
@@ -26,10 +25,8 @@ const AvailableClip = (props: { clip: VideoClip }) => {
   }, [props.clip.title, seek])
 
   const deleteClip = useCallback(() => {
-    setAvailableClips(
-      availableClips.filter((c) => c.source !== props.clip.source)
-    )
-  }, [availableClips, props.clip.source, setAvailableClips])
+    deleteAvailableClip(props.clip.source)
+  }, [props.clip.source, deleteAvailableClip])
 
   return (
     <>

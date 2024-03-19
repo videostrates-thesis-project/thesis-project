@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware"
 import { ParsedVideostrate } from "../types/parsedVideostrate"
 import { PlaybackState } from "../types/playbackState"
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
-import VideoClip from "../types/videoClip"
+import VideoClip, { RawMetadata } from "../types/videoClip"
 import { ChatMessage } from "../types/chatMessage"
 import { ExecutedScript } from "../services/command/executedScript"
 import { Image } from "../types/image"
@@ -34,7 +34,9 @@ export interface AppState {
   setSeek: (seek: number) => void
 
   availableClips: VideoClip[]
-  setAvailableClips: (clips: VideoClip[]) => void
+  addAvailableClip: (source: string, title: string) => void
+  updateClipMetadata: (source: string, metadata: RawMetadata) => void
+  deleteAvailableClip: (source: string) => void
 
   availableImages: Image[]
   setAvailableImages: (images: Image[]) => void
@@ -109,7 +111,45 @@ export const useStore = create<AppState>()(
       metamaxRealm: null,
       setMetamaxRealm: (realm: string) => set({ metamaxRealm: realm }),
       availableClips: [],
-      setAvailableClips: (clips: VideoClip[]) => set({ availableClips: clips }),
+      addAvailableClip: (source: string, title: string) => {
+        set((state) => {
+          if (state.availableClips.some((clip) => clip.source === source)) {
+            return state
+          }
+          if (title === "") title = "Clip"
+          let index = 1
+          while (state.availableClips.some((clip) => clip.title === title)) {
+            title = `${title} ${index++}`
+          }
+          return {
+            availableClips: [
+              ...state.availableClips,
+              new VideoClip(source, title),
+            ],
+          }
+        })
+      },
+      updateClipMetadata: (source: string, metadata: RawMetadata) => {
+        set((state) => {
+          if (metadata.status === "UNCACHED") return state
+          const clips = state.availableClips.map((clip) => {
+            if (clip.source === source) {
+              return clip.updateMetadata(metadata)
+            }
+            return clip
+          })
+          return { availableClips: clips }
+        })
+      },
+      deleteAvailableClip: (source: string) => {
+        set((state) => {
+          return {
+            availableClips: state.availableClips.filter(
+              (clip) => clip.source !== source
+            ),
+          }
+        })
+      },
       availableImages: [],
       setAvailableImages: (images: Image[]) => set({ availableImages: images }),
       selectedClipId: null,

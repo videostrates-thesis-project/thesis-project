@@ -1,5 +1,3 @@
-import getNextClipIndex from "../utils/getNextClipIndex"
-
 export interface RawMetadata {
   status: "CACHED" | "UNCACHED"
   meta?: {
@@ -19,15 +17,24 @@ export default class VideoClip {
   length: number | undefined
   thumbnailUrl: string | undefined
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(source: string, rawMetadata: RawMetadata) {
-    this.source = source
-    this.status = rawMetadata?.status || "UNCACHED"
-    if (this.status === "CACHED") {
-      this.title = rawMetadata?.meta?.title || `Clip ${getNextClipIndex()}`
-    }
+  updateMetadata(rawMetadata: RawMetadata) {
+    const clip = new VideoClip(this.source, this.title)
+    clip._updateMetadata(rawMetadata)
+    return clip
+  }
 
-    this.length = rawMetadata?.meta?.duration
-    this.thumbnailUrl = rawMetadata?.thumbnail?.small?.url
+  protected _updateMetadata(rawMetadata: RawMetadata) {
+    this.status = rawMetadata.status
+    if (rawMetadata.status === "CACHED") {
+      this.title = rawMetadata?.meta?.title || this.title
+      this.length = rawMetadata?.meta?.duration
+      this.thumbnailUrl = rawMetadata?.thumbnail?.small?.url
+    }
+  }
+
+  constructor(source: string, title: string) {
+    this.source = source
+    this.title = title
+    this.status = "UNCACHED"
   }
 }

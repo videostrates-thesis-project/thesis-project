@@ -8,7 +8,6 @@ import {
 import { v4 as uuid } from "uuid"
 import { parseStyle } from "./parser/parseStyle"
 import { useStore } from "../store"
-import VideoClip from "../types/videoClip"
 import { Image } from "../types/image"
 import getNextImageIndex from "../utils/getNextImageIndex"
 
@@ -68,26 +67,11 @@ const setAvailableImages = (images: Image[]) => {
 }
 
 const setAvailableClips = (elements: VideoElement[]) => {
-  const sources = elements
-    .filter((element) => {
-      return (
-        element.type === "video" &&
-        !useStore
-          .getState()
-          .availableClips.some(
-            (clip) => clip.source === (element as VideoClipElement).source
-          )
-      )
-    })
-    .map((element) => (element as VideoClipElement).source)
-  const uniqueSources = Array.from(new Set(sources))
-  const clips = uniqueSources.map((source) => {
-    return new VideoClip(source, { status: "UNCACHED" })
-  })
-
-  useStore
-    .getState()
-    .setAvailableClips([...useStore.getState().availableClips, ...clips])
+  elements
+    .filter((element): element is VideoClipElement => element.type === "video")
+    .forEach((element) =>
+      useStore.getState().addAvailableClip(element.source, element.name)
+    )
 }
 
 const parseElement = (element: ChildNode) => {
