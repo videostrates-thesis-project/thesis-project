@@ -55,16 +55,16 @@ function move_layer(element_id: string, layer: number)
  * Crops the clip. Can also be used on custom elements to change their duration with relative_start=0 and relative_end={length}.
  *    This function affects relative-start, relative-end directly, and also affects absolute-end if the length changes.
  * @param {element_id} id of the element in the html
- * @param {from} the second of the clip when it should start, relative to the clip,
+ * @param {relative_start} the second of the clip when it should start, relative to the clip,
  *    represented by the relative-start attribute
- * @param {to} the second of the clip when it should end, relative to the clip,
+ * @param {relative_end} the second of the clip when it should end, relative to the clip,
  *    represented by the relative-end attribute
  * @returns {number} the change in the length of the clip
  */
 function crop(element_id: string, relative_start: number, relative_end: number): number
 
 /**
- * Sets the speed of the clip. Can only be used on clips, not on other elements.
+ * Sets the speed of the clip. This cannot be used on custom elements. Use the crop function to change the duration of custom elements.
  *    Aside from the playback-speed attribute, this function also affects the absolute-end attribute.
  *    If the speed is set from 1 to 2, the clip will be half the length, and if the speed
  *    is set from 2 to 1, the clip will be double the length on the video timeline.
@@ -148,10 +148,11 @@ function delete_animation(name: string)
 
 /**
  * Generates an image based on a prompt. The returned link can be used as the src attribute of an img tag. The generated image size is 1024x1024 pixels.
+ * @param {name} the name of the image, e.g. "A nice cat", short, max 20 characters
  * @param {prompt} the prompt to generate the image from, e.g. "A cat with a hat sitting on a chair, cartoon style"
  * @returns {string} link to the generated image
  */
-function generate_image(prompt: string): string
+function generate_image(name: string, prompt: string): string
 
 
 A custom element can include any valid html code, but it should newer include a video div. For styling use the create_style, delete_style, and assignd_class functions. Do not use inline styling.
@@ -180,7 +181,7 @@ assign_class([clip_1_id, clip_2_id, clip_3_id, clip_4_id], "round-corners");
 For image generation the returned url can be used in the custom element.
 For example:
 image_src = generate_image("A nice cat");
-image_id = add_custom_element("Nice cat", "<div><img src='" + image_src + "' /><div class='image-title'>This is a nice cat</div></div>", 2.3, 3.0);
+image_id = add_custom_element("Nice cat", "<div><img src='" + image_src + "' /></div>", 2.3, 3.0);
 create_style(".image-title", "position: absolute; bottom: 10px; width: 100%; text-align: center; color: white; font-size: 24px; background-color: rgba(0, 0, 0, 0.5); padding: 5px;");
 
 The script can be executed by calling the execute_changes function.

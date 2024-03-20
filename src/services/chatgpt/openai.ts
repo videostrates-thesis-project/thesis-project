@@ -199,6 +199,7 @@ class OpenAIService {
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      // messages: [messages.map((m) => ({ role: m.role, content: m.content }))[lastUserMessageIndex]],
     })
 
     const reaction = response.choices[0].message.content?.trim()

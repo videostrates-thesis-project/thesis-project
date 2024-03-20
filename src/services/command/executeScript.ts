@@ -78,13 +78,14 @@ const recognizedCommands: RecognizedCommands = {
 
 export const parseAndExecuteScript = async (script: string) => {
   console.log("Executing script: \n", script)
-  const lines = script.split("\n")
+  const lines = script.trim().split("\n")
   const parsed = lines.map((line) => tokenizeCommand(line))
 
   return await executeScript(parsed)
 }
 
 export const executeScript = async (script: ExecutableCommand[]) => {
+  console.log("Executing script\n", script)
   const context: ExecutionContext = {}
   const videoStrateBefore = useStore.getState().parsedVideostrate.clone()
 

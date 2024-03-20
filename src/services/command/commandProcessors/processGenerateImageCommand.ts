@@ -8,10 +8,11 @@ export const processGenerateImageCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
-  if (args.length !== 1) {
+  if (args.length !== 2) {
     throw new Error("Invalid number of arguments")
   }
-  const prompt = determineReturnValueTyped<string>("string", args[0], context)
+  const image_name = determineReturnValueTyped<string>("string", args[0], context)
+  const prompt = determineReturnValueTyped<string>("string", args[1], context)
 
   try {
     const { url } = await azureImageRequest({ prompt: prompt.value })
@@ -22,8 +23,7 @@ export const processGenerateImageCommand = async (
     if (!uploadedUrl) {
       throw new Error("Failed to upload image")
     }
-    // TODO: Add a generated title
-    useStore.getState().addAvailableImage({ url: uploadedUrl, title: "" })
+    useStore.getState().addAvailableImage({ url: uploadedUrl, title: image_name.value })
 
     return {
       type: "string" as const,

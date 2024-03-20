@@ -19,6 +19,7 @@ const Chat = () => {
     addChatMessage,
     selectedClipId,
     pendingChanges,
+    seek,
   } = useStore()
   const [typewriterIndex, setTypewriterIndex] = useState<number | null>(null)
   const [newMessage, setNewMessage] = useState(false)
@@ -52,6 +53,7 @@ const Chat = () => {
       availableClips,
       html,
       selectedClipId,
+      seek,
       message
     )
     openAIService.sendChatMessageToAzure(prompt)
