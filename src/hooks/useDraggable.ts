@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-const useDraggable = (initPosX: number) => {
+const useDraggable = (initPosX: number, minPosX?: number, maxPosX?: number) => {
   const [startDragPosition, setStartDragPosition] = useState(0)
   const [draggedPosition, setDraggedPosition] = useState(initPosX)
   const [emptyDragImage, setEmptyDragImage] = useState<HTMLImageElement | null>(
@@ -26,15 +26,26 @@ const useDraggable = (initPosX: number) => {
   }
 
   const onDrag = (e: React.DragEvent) => {
-    setDraggedPosition(e.clientX - startDragPosition)
+    // Sometimes the clientX is 0 for unknown reasons - it causes a jump in the dragged position.
+    //It can ignored since the user has no possibility to drag the element to the left edge of the screen.
+    if (e.clientX === 0) return 0
+    let newPosX = e.clientX - startDragPosition
+    if (minPosX !== undefined) {
+      newPosX = Math.max(minPosX, newPosX)
+    }
+    if (maxPosX !== undefined) {
+      newPosX = Math.min(maxPosX, newPosX)
+    }
+    setDraggedPosition(newPosX)
     // Returns the shift in position
-    return e.clientX - startDragPosition - initPosX
+    return newPosX - initPosX
   }
 
   return {
     onDragStart,
     onDrag,
     draggedPosition,
+    setDraggedPosition,
   }
 }
 

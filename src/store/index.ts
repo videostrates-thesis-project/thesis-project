@@ -3,9 +3,15 @@ import { createJSONStorage, persist } from "zustand/middleware"
 import { ParsedVideostrate } from "../types/parsedVideostrate"
 import { PlaybackState } from "../types/playbackState"
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
-import VideoClip from "../types/videoClip"
+import VideoClip, { RawMetadata } from "../types/videoClip"
 import { ChatMessage } from "../types/chatMessage"
 import { ExecutedScript } from "../services/command/executedScript"
+import { Image } from "../types/image"
+import { v4 as uuid } from "uuid"
+
+const TOAST_LENGTH = 5000
+const DEFAULT_IMAGE_TITLE = "Image"
+const DEFAULT_CLIP_TITLE = "Clip"
 
 export interface AppState {
   videostrateUrl: string
@@ -29,11 +35,14 @@ export interface AppState {
   seek: number
   setSeek: (seek: number) => void
 
-  clipsSources: string[]
-  setClipsSources: (sources: string[]) => void
-
   availableClips: VideoClip[]
-  setAvailableClips: (clips: VideoClip[]) => void
+  addAvailableClip: (source: string, title?: string) => void
+  updateClipMetadata: (source: string, metadata: RawMetadata) => void
+  deleteAvailableClip: (source: string) => void
+
+  availableImages: Image[]
+  addAvailableImage: (image: Image) => void
+  deleteAvailableImage: (url: string) => void
 
   selectedClipId: string | null
   setSelectedClipId: (id: string | null) => void
@@ -59,32 +68,53 @@ export interface AppState {
   addToRedoStack: (script: ExecutedScript) => void
 
   toasts: Toast[]
-  addToast: (toast: Toast) => void
+  addToast: (type: ToastType, title: string, description: string) => void
   removeToast: (id: string) => void
 
   sideBarTab: SideBarTab
   setSideBarTab: (tab: SideBarTab) => void
 }
 
-export const useStore = create(
+export const useStore = create<AppState>()(
   persist<AppState>(
     (set, get) => ({
       videostrateUrl: "https://demo.webstrates.net/evil-jellyfish-8/",
       setVideostrateUrl: (url: string) =>
-        set({ videostrateUrl: url, availableClips: [], clipsSources: [] }),
+        set({
+          videostrateUrl: url,
+          availableClips: [],
+          availableImages: [],
+          seek: 0,
+          playing: false,
+          playbackState: { frame: 0, time: 0 },
+          selectedClipId: null,
+          chatMessages: [],
+          currentMessages: [],
+          pendingChanges: false,
+          undoStack: [],
+          redoStack: [],
+          toasts: [],
+        }),
       fileName: "Untitled Videostrate",
       setFileName: (name: string) => set({ fileName: name }),
       parsedVideostrate: new ParsedVideostrate([], []),
-      setParsedVideostrate: async (parsed: ParsedVideostrate) => {
-        const uniqueClipSources = [
-          ...new Set(parsed.clips.map((c) => c.source)),
-        ]
-        set({
-          parsedVideostrate: parsed.clone(),
-          clipsSources: uniqueClipSources,
-          pendingChanges: false,
-        })
-      },
+      setParsedVideostrate: async (parsed: ParsedVideostrate) =>
+        set((state) => {
+          const availableClips = parsed.clips.reduce((acc, element) => {
+            return concatAvailableClips(acc, element.source, element.name)
+          }, state.availableClips)
+
+          const availableImages = parsed.images.reduce((acc, img) => {
+            return concatAvailableImage(acc, img)
+          }, state.availableImages)
+
+          return {
+            parsedVideostrate: parsed.clone(),
+            pendingChanges: false,
+            availableClips,
+            availableImages,
+          }
+        }),
       pendingChanges: false,
       setPendingChanges: (pendingChanges: boolean) => set({ pendingChanges }),
       playbackState: { frame: 0, time: 0 },
@@ -95,10 +125,54 @@ export const useStore = create(
       setSeek: (seek: number) => set({ seek: seek }),
       metamaxRealm: null,
       setMetamaxRealm: (realm: string) => set({ metamaxRealm: realm }),
-      clipsSources: [],
-      setClipsSources: (sources: string[]) => set({ clipsSources: sources }),
       availableClips: [],
-      setAvailableClips: (clips: VideoClip[]) => set({ availableClips: clips }),
+      addAvailableClip: (source: string, title?: string) => {
+        set((state) => {
+          return {
+            availableClips: concatAvailableClips(
+              state.availableClips,
+              source,
+              title
+            ),
+          }
+        })
+      },
+      updateClipMetadata: (source: string, metadata: RawMetadata) => {
+        set((state) => {
+          if (metadata.status === "UNCACHED") return state
+          const clips = state.availableClips.map((clip) => {
+            if (clip.source === source) {
+              return clip.updateMetadata(metadata)
+            }
+            return clip
+          })
+          return { availableClips: clips }
+        })
+      },
+      deleteAvailableClip: (source: string) => {
+        set((state) => {
+          return {
+            availableClips: state.availableClips.filter(
+              (clip) => clip.source !== source
+            ),
+          }
+        })
+      },
+      availableImages: [],
+      addAvailableImage: (image: Image) => {
+        set((state) => {
+          return {
+            availableImages: concatAvailableImage(state.availableImages, image),
+          }
+        })
+      },
+      deleteAvailableImage: (url: string) => {
+        set((state) => {
+          return {
+            availableImages: state.availableImages.filter((i) => i.url !== url),
+          }
+        })
+      },
       selectedClipId: null,
       setSelectedClipId: (id: string | null) => set({ selectedClipId: id }),
       chatMessages: [],
@@ -166,15 +240,15 @@ export const useStore = create(
         })
       },
       toasts: [],
-      addToast: (toast: Toast) => {
-        console.log("Adding toast", toast)
+      addToast: (type: ToastType, title: string, description: string) => {
+        const id = uuid()
         setTimeout(() => {
-          get().removeToast(toast.id)
-        }, toast.length)
+          get().removeToast(id)
+        }, TOAST_LENGTH)
 
         set((state) => {
           return {
-            toasts: [...state.toasts, toast],
+            toasts: [...state.toasts, { id, title, description, type }],
           }
         })
       },
@@ -192,22 +266,69 @@ export const useStore = create(
       name: "thesis-project-storage",
       storage: createJSONStorage(() => localStorage, {
         reviver: (key, value) => {
-          if ("parsedVideostrate" === key && value) {
-            // Manually parse the parsedVideostrate object to retrieve getters and setters
-            const castedValue = value as ParsedVideostrate
-            return new ParsedVideostrate(
-              castedValue._all,
-              castedValue.style,
-              castedValue.animations
-            )
+          switch (key) {
+            case "parsedVideostrate":
+              if (value) {
+                const castedValue = value as ParsedVideostrate
+                return new ParsedVideostrate(
+                  castedValue._all,
+                  castedValue.style,
+                  castedValue.animations
+                )
+              }
+              break
+            case "toasts":
+              return []
+            case "seek":
+              return 0
+            case "playing":
+              return false
+            case "pendingChanges":
+              return false
+            case "playbackState":
+              return { frame: 0, time: 0 }
+            case "selectedClipId":
+              return null
           }
-          if ("toasts" === key) {
-            return []
-          }
-
           return value
         },
       }),
     }
   )
 )
+
+const concatAvailableClips = (
+  availableClips: VideoClip[],
+  source: string,
+  title?: string
+) => {
+  if (availableClips.some((clip) => clip.source === source))
+    return availableClips
+
+  title = title || DEFAULT_CLIP_TITLE
+  let newTitle = title
+  let index = 1
+  while (
+    newTitle === DEFAULT_CLIP_TITLE ||
+    availableClips.some((clip) => clip.title === newTitle)
+  ) {
+    newTitle = `${title} ${index++}`
+  }
+  return [...availableClips, new VideoClip(source, newTitle)]
+}
+
+const concatAvailableImage = (availableImages: Image[], image: Image) => {
+  if (availableImages.some((i) => i.url === image.url)) return availableImages
+
+  image.title = image.title || DEFAULT_IMAGE_TITLE
+  let newTitle = image.title
+  let index = 1
+  while (
+    newTitle === DEFAULT_IMAGE_TITLE ||
+    availableImages.some((i) => i.title === newTitle)
+  ) {
+    newTitle = `${image.title} ${index++}`
+  }
+  image.title = newTitle
+  return [...availableImages, image]
+}

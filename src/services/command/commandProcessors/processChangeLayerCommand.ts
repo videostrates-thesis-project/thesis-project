@@ -16,8 +16,7 @@ export const processChangeLayerCommand = async (
   )
   const layer = determineReturnValueTyped<number>("number", args[1], context)
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
-
+  const parsedVideostrate = useStore.getState().parsedVideostrate
   try {
     parsedVideostrate.changeLayer(elementId.value, layer.value)
     useStore.getState().setParsedVideostrate(parsedVideostrate)

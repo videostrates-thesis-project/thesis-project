@@ -25,11 +25,11 @@ export const processAddClipCommand = async (
 
   const startString = args[1]
 
-  const start = parseInt(startString)
+  const start = parseFloat(startString)
   // TODO: look up clip metadata and use that to determine the end time
-  const end = start + 25
+  const end = start + (availableClip.length ?? 10)
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
     const clipId = parsedVideostrate.addClip(availableClip.source, start, end)

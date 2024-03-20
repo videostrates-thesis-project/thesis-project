@@ -11,6 +11,8 @@ import { useScrollZoom } from "../../hooks/useScrollZoom"
 import { useLatestChanges } from "../../hooks/useLatestChanges"
 import HoveredClipDetails from "./HoveredClipDetails"
 
+const TIMELINE_MIN_LENGTH = 10
+
 interface TimelineContextProps {
   zoom: number
   widthPerSecond: number
@@ -45,7 +47,7 @@ const Timeline = () => {
       Math.max(target.clientWidth * (zoom + 0.5), target.clientWidth)
     )
     const length = Math.max(
-      previousVideostrate?.length || 0,
+      previousVideostrate?.length || TIMELINE_MIN_LENGTH,
       parsedVideostrate.length
     )
     setWidthPerSecond((target.clientWidth * zoom) / length)
@@ -72,37 +74,39 @@ const Timeline = () => {
   }, [resetZoom])
 
   return (
-    <TimelineContext.Provider
-      value={{
-        zoom,
-        widthPerSecond,
-        width: timelineWidth,
-      }}
-    >
-      <HoveredClipDetails />
-      <TimelineControls {...{ zoomToFit, zoomOut, zoomIn }} />
-      <div
-        className={clsx(
-          "w-full overflow-x-auto overflow-y-hidden flex-grow select-none max-h-[40%]",
-          isSeeking && "cursor-grabbing"
-        )}
-        ref={timelineContainerRef}
-        onMouseMove={onSeek}
-        onMouseUp={onStopSeeking}
-        onMouseLeave={onStopSeeking}
-        onMouseDown={onStartSeeking}
+    <div className="h-2/5 flex flex-col">
+      <TimelineContext.Provider
+        value={{
+          zoom,
+          widthPerSecond,
+          width: timelineWidth,
+        }}
       >
+        <HoveredClipDetails />
+        <TimelineControls {...{ zoomToFit, zoomOut, zoomIn }} />
         <div
-          className="flex flex-col relative h-full"
-          style={{ width: timelineWidth }}
-          ref={timelineRef}
+          className={clsx(
+            "w-full overflow-x-auto overflow-y-hidden flex-grow select-none",
+            isSeeking && "cursor-grabbing"
+          )}
+          ref={timelineContainerRef}
+          onMouseMove={onSeek}
+          onMouseUp={onStopSeeking}
+          onMouseLeave={onStopSeeking}
+          onMouseDown={onStartSeeking}
         >
-          <Markers />
-          <Clips />
-          <Playhead onMouseDown={onStartSeeking} isSeeking={isSeeking} />
+          <div
+            className="flex flex-col relative h-full"
+            style={{ width: timelineWidth }}
+            ref={timelineRef}
+          >
+            <Markers />
+            <Clips />
+            <Playhead onMouseDown={onStartSeeking} isSeeking={isSeeking} />
+          </div>
         </div>
-      </div>
-    </TimelineContext.Provider>
+      </TimelineContext.Provider>
+    </div>
   )
 }
 

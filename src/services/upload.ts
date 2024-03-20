@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app"
 import { getStorage, ref as storageRef, uploadBytes } from "firebase/storage"
 import { v4 as uuid } from "uuid"
+import { useStore } from "../store"
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -19,8 +20,8 @@ const app = initializeApp(firebaseConfig)
 
 const storage = getStorage(app)
 
-export const uploadVideo = async (file: Blob) => {
-  const ref = storageRef(storage, `videos/${uuid()}.mp4`)
+const uploadFile = async (file: Blob, extension: string) => {
+  const ref = storageRef(storage, `files/${uuid()}.${extension}`)
 
   try {
     const result = await uploadBytes(ref, file)
@@ -28,5 +29,16 @@ export const uploadVideo = async (file: Blob) => {
     return url
   } catch (error) {
     console.error("Failed to upload to Firebase", error)
+    useStore
+      .getState()
+      .addToast("error", "Error uploading a file", (error as Error).message)
   }
+}
+
+export const uploadVideo = async (file: Blob) => {
+  return uploadFile(file, "mp4")
+}
+
+export const uploadImage = async (file: Blob) => {
+  return uploadFile(file, "png")
 }

@@ -24,7 +24,7 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
 
       return `<div clip-name="${clip.name}" id="${clip.id}" style="z-index: ${clip.layer};" class="composited" data-start="${clip.start}" data-end="${clip.end}">
         <div class="${clip.className?.replace("composited", "") ?? ""}">
-         <video class="composited" data-offset="${clip.offset ?? 0}" data-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>
+         <video class="composited" data-start="${clip.start}" data-end="${clip.end}" data-offset="${clip.offset ?? 0}" data-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>
         </div>
       </div>`
     } else {
@@ -41,7 +41,7 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
       }
       htmlElement.setAttribute("id", element.id)
       htmlElement.setAttribute("custom-element-name", element.name)
-      htmlElement.setAttribute("style", `"z-index: ${element.layer};"`)
+      htmlElement.setAttribute("style", `z-index: ${element.layer};`)
       htmlElement.setAttribute("data-start", element.start.toString())
       htmlElement.setAttribute("data-end", element.end.toString())
       htmlElement.setAttribute("data-offset", (element.offset ?? 0).toString())

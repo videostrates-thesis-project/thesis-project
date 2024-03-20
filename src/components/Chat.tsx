@@ -6,7 +6,7 @@ import { buildAssistantMessage } from "../services/chatgpt/assistantTemplate"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 import PendingChangesBanner from "./PendingChangesBanner"
 import { v4 as uuid } from "uuid"
-import { Typewriter } from "./TypeWriter"
+import { Typewriter } from "./Typewriter"
 
 const Chat = () => {
   const [message, setMessage] = useState("")
@@ -111,7 +111,7 @@ const Chat = () => {
               {msg.role === "assistant" &&
               typewriterIndex === index &&
               newMessage ? (
-                <Typewriter text={msg.content} minSpeed={5} maxSpeed={70} />
+                <Typewriter text={msg.content} minSpeed={5} maxSpeed={40} />
               ) : (
                 msg.content
               )}
@@ -132,7 +132,7 @@ const Chat = () => {
         ))}
         {loading && (
           <div className="chat chat-start">
-            <div className="chat-bubble text-left break-normal text-sm relative pb-4 flex justify-center items-center">
+            <div className="chat-bubble text-left break-normal text-sm relative pb-2 flex justify-center items-center">
               <div className="flex flex-row gap-1 -mb-2">
                 <div className="w-2 h-2 bg-neutral-content rounded-full animate-bounce-big" />
                 <div
