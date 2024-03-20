@@ -127,8 +127,6 @@ export const useTimelineElements = (widthPerSecond: number) => {
       prevElement = element
     })
 
-    console.log("Elements", elements)
-
     elements.push(
       ...removedElements.map((element) => {
         const elementDetails = getElementDetails(element)

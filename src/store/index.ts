@@ -8,6 +8,7 @@ import { ChatMessage } from "../types/chatMessage"
 import { ExecutedScript } from "../services/command/executedScript"
 import { Image } from "../types/image"
 import { v4 as uuid } from "uuid"
+import { CustomElement, VideoClipElement } from "../types/videoElement"
 
 const TOAST_LENGTH = 5000
 const DEFAULT_IMAGE_TITLE = "Image"
@@ -271,7 +272,22 @@ export const useStore = create<AppState>()(
               if (value) {
                 const castedValue = value as ParsedVideostrate
                 return new ParsedVideostrate(
-                  castedValue._all,
+                  castedValue._all.map((c) => {
+                    if (c.type === "video")
+                      return new VideoClipElement({
+                        ...(c as VideoClipElement),
+                        start: c._start,
+                        end: c._end,
+                        offset: c._offset,
+                      })
+                    else
+                      return new CustomElement({
+                        ...(c as CustomElement),
+                        start: c._start,
+                        end: c._end,
+                        offset: c._offset,
+                      })
+                  }),
                   castedValue.style,
                   castedValue.animations
                 )

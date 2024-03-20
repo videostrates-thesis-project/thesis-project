@@ -21,7 +21,6 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     setPlaying,
     seek,
   } = useStore()
-  console.log("VideoPlayer url", videostrateUrl)
   const [url, setUrl] = useState(videostrateUrl)
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const [iframeScale, setIframeScale] = useState(1)
@@ -97,7 +96,6 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
   const loadVideo = useCallback(() => {
     if (!videostrateUrl) return
     setPlaybackState({ frame: 0, time: 0 })
-    console.log("Loading video url", videostrateUrl)
     controlPlayer(PlayerCommands.Load, {
       url: videostrateUrl,
       width: VIDEO_WIDTH,
@@ -133,13 +131,11 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
 
   useEffect(() => {
     const { html, style } = serializeVideostrate(parsedVideostrate, "webstrate")
-    console.log("Updating videostrate", parsedVideostrate.all)
     controlPlayer(PlayerCommands.UpdateVideo, { html, style: style })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedVideostrate])
 
   const onChangeUrl = useCallback(() => {
-    console.log("Changing URL", url)
     setVideostrateUrl(url)
     controlPlayer(PlayerCommands.Load, {
       url: url,
