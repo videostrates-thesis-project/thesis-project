@@ -1,6 +1,8 @@
 import { ExecutionContext } from "../executionContext"
 import { determineReturnValueTyped } from "../determineReturnValue"
 import { azureImageRequest } from "../../api/api"
+import { useStore } from "../../../store"
+import { uploadVideo } from "../../upload"
 
 export const processGenerateImageCommand = async (
   args: string[],
@@ -13,10 +15,19 @@ export const processGenerateImageCommand = async (
 
   try {
     const { url } = await azureImageRequest({ prompt: prompt.value })
+    // Download the image and upload it to Firebase
+    const response = await fetch(url)
+    const blob = await response.blob()
+    const uploadedUrl = await uploadVideo(blob)
+    if (!uploadedUrl) {
+      throw new Error("Failed to upload image")
+    }
+    // TODO: Add a generated title
+    useStore.getState().addAvailableImage({ url: uploadedUrl, title: "" })
 
     return {
       type: "string" as const,
-      value: url,
+      value: uploadedUrl,
     }
   } catch (error) {
     console.error(

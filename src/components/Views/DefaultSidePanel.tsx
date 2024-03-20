@@ -1,9 +1,9 @@
 import { useMemo } from "react"
-import AvailableClips from "../AvailableClips"
-import Uploader from "../Uploader"
+import AvailableClips from "../AvailableMedia/AvailableClips"
 import clsx from "clsx"
 import Commander from "../Commander"
 import { useStore } from "../../store"
+import AvailableImages from "../AvailableMedia/AvailableImages"
 
 const DefaultSidePanel = () => {
   const { sideBarTab, setSideBarTab } = useStore()
@@ -13,6 +13,10 @@ const DefaultSidePanel = () => {
       {
         icon: "bi bi-cassette",
         tab: "clips",
+      },
+      {
+        icon: "bi bi-image",
+        tab: "images",
       },
       {
         icon: "bi bi-code-slash",
@@ -27,7 +31,10 @@ const DefaultSidePanel = () => {
         {tabs.map((t) => (
           <li key={t.tab}>
             <a
-              className={`rounded-none !bg-base-300 hover:text-indigo-500`}
+              className={clsx(
+                "btn btn-ghost rounded-none",
+                t.tab === sideBarTab && "btn-active !bg-base-300"
+              )}
               onClick={() => setSideBarTab(t.tab)}
             >
               <i
@@ -41,14 +48,10 @@ const DefaultSidePanel = () => {
           </li>
         ))}
       </ul>
-      <div className="flex flex-col gap-4 p-4 w-full min-h-0 h-full overflow-y-auto">
-        {sideBarTab === "clips" && (
-          <>
-            <Uploader />
-            <AvailableClips />
-          </>
-        )}
+      <div className="flex flex-col p-4 w-full min-h-0 h-full overflow-y-auto">
+        {sideBarTab === "clips" && <AvailableClips />}
         {sideBarTab === "command" && <Commander />}
+        {sideBarTab === "images" && <AvailableImages />}
       </div>
     </div>
   )

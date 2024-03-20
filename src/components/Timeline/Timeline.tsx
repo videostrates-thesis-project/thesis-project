@@ -11,6 +11,8 @@ import { useScrollZoom } from "../../hooks/useScrollZoom"
 import { useLatestChanges } from "../../hooks/useLatestChanges"
 import HoveredClipDetails from "./HoveredClipDetails"
 
+const TIMELINE_MIN_LENGTH = 10
+
 interface TimelineContextProps {
   zoom: number
   widthPerSecond: number
@@ -45,7 +47,7 @@ const Timeline = () => {
       Math.max(target.clientWidth * (zoom + 0.5), target.clientWidth)
     )
     const length = Math.max(
-      previousVideostrate?.length || 0,
+      previousVideostrate?.length || TIMELINE_MIN_LENGTH,
       parsedVideostrate.length
     )
     setWidthPerSecond((target.clientWidth * zoom) / length)

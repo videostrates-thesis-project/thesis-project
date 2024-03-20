@@ -7,11 +7,13 @@ import updateLayers from "../utils/updateLayers"
 export interface TimelineElement extends VideoElement {
   width: number
   left: number
+  minLeftPosition?: number
+  maxRightPosition?: number
   source: string
-  clipName: string | undefined
-  thumbnail: string | undefined
-  edits: ClipChange[] | undefined
-  oldElement: TimelineElement | undefined
+  clipName?: string
+  thumbnail?: string
+  edits?: ClipChange[]
+  oldElement?: TimelineElement
 }
 
 export const useTimelineElements = (widthPerSecond: number) => {
@@ -42,21 +44,33 @@ export const useTimelineElements = (widthPerSecond: number) => {
 
   // Precalculate position of the elements
   const elements = useMemo(() => {
-    let elements = parsedVideostrate.all.map((element) => {
-      const elementDetails = getElementDetails(element)
-      elementDetails.edits = editedElements.get(element.id)
-      if (movedElements.includes(element.id)) {
-        const oldElement = previousVideostrate?.all.find(
-          (e) => e.id === element.id
-        )
-        const oldElementDetails = oldElement
-          ? getElementDetails(oldElement)
-          : undefined
+    let elements = parsedVideostrate.all
+      .map((element) => {
+        const elementDetails = getElementDetails(element)
+        elementDetails.edits = editedElements.get(element.id)
+        if (movedElements.includes(element.id)) {
+          const oldElement = previousVideostrate?.all.find(
+            (e) => e.id === element.id
+          )
+          const oldElementDetails = oldElement
+            ? getElementDetails(oldElement)
+            : undefined
 
-        elementDetails.oldElement = oldElementDetails
+          elementDetails.oldElement = oldElementDetails
+        }
+        return elementDetails as TimelineElement
+      })
+      .sort((a, b) => a.layer - b.layer || a.start - b.start)
+
+    let prevElement: TimelineElement | null = null
+    elements.forEach((element) => {
+      if (prevElement?.layer === element.layer) {
+        element.minLeftPosition = prevElement.left + prevElement.width
+        prevElement.maxRightPosition = element.left - prevElement.width
       }
-      return elementDetails as TimelineElement
+      prevElement = element
     })
+
     elements.push(
       ...removedElements.map((element) => {
         const elementDetails = getElementDetails(element)

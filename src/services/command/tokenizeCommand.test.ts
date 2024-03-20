@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 import { tokenizeCommand } from "./tokenizeCommand"
 import "@testing-library/jest-dom"
 
