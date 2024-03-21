@@ -21,7 +21,7 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
     parent.innerHTML += html
   }
 
-  protected serializeElement(element: VideoElement): string {
+  public serializeElement(element: VideoElement): string {
     console.log("Serializing element", element)
     if (element.nodeType === "video") {
       const clip = element as VideoClipElement

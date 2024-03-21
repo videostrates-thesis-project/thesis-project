@@ -1,1 +1,1 @@
-type SideBarTab = "clips" | "command" | "images"
+type SideBarTab = "clips" | "command" | "images" | "custom-elements"

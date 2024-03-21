@@ -9,6 +9,7 @@ import { ExecutedScript } from "../services/command/executedScript"
 import { Image } from "../types/image"
 import { v4 as uuid } from "uuid"
 import { CustomElement, VideoClipElement } from "../types/videoElement"
+import { serializeVideostrate } from "../services/parser/serializationExecutor"
 
 const TOAST_LENGTH = 5000
 const DEFAULT_IMAGE_TITLE = "Image"
@@ -20,6 +21,8 @@ export interface AppState {
 
   parsedVideostrate: ParsedVideostrate
   setParsedVideostrate: (parsed: ParsedVideostrate) => Promise<void>
+
+  serializedVideostrate: { html: string; css: string }
 
   fileName: string
   setFileName: (name: string) => void
@@ -44,6 +47,10 @@ export interface AppState {
   availableImages: Image[]
   addAvailableImage: (image: Image) => void
   deleteAvailableImage: (url: string) => void
+
+  availableCustomElements: CustomElement[]
+  addAvailableCustomElement: (element: CustomElement) => void
+  deleteAvailableCustomElement: (id: string) => void
 
   selectedClipId: string | null
   setSelectedClipId: (id: string | null) => void
@@ -99,8 +106,11 @@ export const useStore = create<AppState>()(
       fileName: "Untitled Videostrate",
       setFileName: (name: string) => set({ fileName: name }),
       parsedVideostrate: new ParsedVideostrate([], []),
+      serializedVideostrate: { html: "", css: "" },
       setParsedVideostrate: async (parsed: ParsedVideostrate) =>
         set((state) => {
+          const { html, style } = serializeVideostrate(parsed, "webstrate")
+
           const availableClips = parsed.clips.reduce((acc, element) => {
             return concatAvailableClips(acc, element.source, element.name)
           }, state.availableClips)
@@ -111,6 +121,7 @@ export const useStore = create<AppState>()(
 
           return {
             parsedVideostrate: parsed.clone(),
+            serializedVideostrate: { html, css: style },
             pendingChanges: false,
             availableClips,
             availableImages,
@@ -171,6 +182,28 @@ export const useStore = create<AppState>()(
         set((state) => {
           return {
             availableImages: state.availableImages.filter((i) => i.url !== url),
+          }
+        })
+      },
+      availableCustomElements: [],
+      addAvailableCustomElement: (element: CustomElement) => {
+        const newElement = element.clone()
+        newElement.id = uuid()
+        set((state) => {
+          return {
+            availableCustomElements: [
+              ...state.availableCustomElements,
+              newElement,
+            ],
+          }
+        })
+      },
+      deleteAvailableCustomElement: (id: string) => {
+        set((state) => {
+          return {
+            availableCustomElements: state.availableCustomElements.filter(
+              (e) => e.id !== id
+            ),
           }
         })
       },
@@ -293,6 +326,15 @@ export const useStore = create<AppState>()(
                 )
               }
               break
+            case "availableCustomElements":
+              return (value as CustomElement[]).map((c) => {
+                return new CustomElement({
+                  ...(c as CustomElement),
+                  start: c._start,
+                  end: c._end,
+                  offset: c._offset,
+                })
+              })
             case "toasts":
               return []
             case "seek":
