@@ -48,10 +48,11 @@ const Chat = () => {
   const onSend = useCallback(() => {
     setTypewriterIndex(null)
     setNewMessage(true)
-    const html = serializeVideostrate(parsedVideostrate, "chatGPT").html
+    const serialized = serializeVideostrate(parsedVideostrate, "chatGPT")
     const prompt = buildAssistantMessage(
       availableClips,
-      html,
+      serialized.style,
+      serialized.html,
       selectedClipId,
       seek,
       message
