@@ -71,6 +71,16 @@ export class ParsedVideostrate {
     this.all = [...this.all]
   }
 
+  public repositionClipById(clipId: string, start: number, end: number) {
+    const clip = this.all.find((c) => c.id === clipId)
+    if (!clip) {
+      throw new Error(`Clip with id ${clipId} not found`)
+    }
+    clip.start = start
+    clip.end = end
+    this.all = [...this.all]
+  }
+
   public moveClipDeltaById(clipId: string, delta: number) {
     const clip = this.all.find((c) => c.id === clipId)
     if (!clip) {
@@ -158,6 +168,14 @@ export class ParsedVideostrate {
     element.offset = from
     element.end = to - from + element.start
 
+    if (element.type === "custom") {
+      if (element.offset != 0) {
+        element.start += element.offset
+        element.end += element.offset
+        element.offset = 0
+      }
+    }
+
     const newLength = element.end - element.start
     this.all = [...this.all]
     return newLength - oldLength
@@ -225,10 +243,10 @@ export class ParsedVideostrate {
       if (elementIds.includes(e.id)) {
         const parser = new DOMParser()
         const document = parser.parseFromString(e.outerHtml ?? "", "text/html")
-        const htmlElement = document.body.firstChild as HTMLElement
+        const htmlElement = document.body.firstChild?.firstChild as HTMLElement
         if (htmlElement) {
           htmlElement.classList.add(className)
-          e.outerHtml = htmlElement.outerHTML
+          e.outerHtml = htmlElement.parentElement?.outerHTML
         }
       }
       return e
@@ -251,7 +269,15 @@ export class ParsedVideostrate {
   public setSpeed(elementId: string, speed: number) {
     const element = this.all.find((e) => e.id === elementId)
     if (element) {
-      element.speed = speed
+      let length = (element.end - element.start)
+      let relativeSpeed = speed / element.speed
+      element.end = element.start + length / relativeSpeed
+
+      if (element.type === "video") {
+        element.speed = speed
+      } else {
+        element.speed = 1
+      }
     } else {
       throw new Error(`Element with id ${elementId} not found`)
     }

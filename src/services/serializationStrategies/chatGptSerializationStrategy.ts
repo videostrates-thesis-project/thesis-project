@@ -9,7 +9,7 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
     const availableClip = useStore
       .getState()
       .availableClips.find((c) => c.source === clip.source)
-    const html = `<video id="${clip.id}" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "")}" style="z-index: ${clip.layer};" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>`
+    const html = `<video id="${clip.id}" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "")}" layer="${clip.layer}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>`
 
     // Find the parent element
     const parent = document.getElementById(clip.parentId ?? "root")
@@ -20,13 +20,13 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
   }
 
   public serializeElement(element: VideoElement): string {
-    if (element.nodeType === "video") {
+    if (element.type === "video") {
       const clip = element as VideoClipElement
 
       const availableClip = useStore
         .getState()
         .availableClips.find((c) => c.source === clip.source)
-      return `<video id="${clip.id}" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "")}" style="z-index: ${clip.layer};" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>`
+      return `<video id="${clip.id}" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "")}" layer="${clip.layer}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>`
     } else {
       if (!element.outerHtml) throw new Error("Missing outerHtml")
 
@@ -38,22 +38,29 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
       if (htmlElement.classList.contains("composited")) {
         htmlElement.classList.remove("composited")
       }
+
+      let attributesToRemove = ["data-offset", "data-speed", "data-start", "data-end", "style", "relative-start", "relative-end"]
+      attributesToRemove.forEach((attr) => {
+        htmlElement.removeAttribute(attr)
+      })
+
       htmlElement.setAttribute("id", element.id)
       htmlElement.setAttribute("custom-element-name", element.name)
       htmlElement.setAttribute("absolute-start", element.start.toString())
       htmlElement.setAttribute("absolute-end", element.end.toString())
       htmlElement.setAttribute(
         "relative-start",
-        (element.offset ?? 0).toString()
+        "0"
       )
       htmlElement.setAttribute(
-        "clip-end",
-        (element.end - element.start + element.offset).toString()
+        "relative-start",
+        (element.end - element.start).toString()
       )
-      htmlElement.setAttribute(
-        "data-speed",
-        (isNaN(element.speed) ? 1 : element.speed).toString()
-      )
+      htmlElement.setAttribute("layer", element.layer.toString())
+      // htmlElement.setAttribute(
+      //   "data-speed",
+      //   (isNaN(element.speed) ? 1 : element.speed).toString()
+      // )
       return htmlElement.outerHTML
     }
   }

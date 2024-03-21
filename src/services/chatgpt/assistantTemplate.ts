@@ -2,6 +2,7 @@ import VideoClip from "../../types/videoClip"
 
 export const buildAssistantMessage = (
   clips: VideoClip[],
+  style: string,
   html: string,
   clip_id: string | null,
   seek: number,
@@ -22,6 +23,10 @@ export const buildAssistantMessage = (
     
     HTML code:
     ${html}
+
+    CSS code:
+    ${style}
+
     ${selectedClipMessage}
     The user input is: "${prompt}"`
 }
