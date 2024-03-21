@@ -5,6 +5,10 @@ import PlayerCommands from "../types/playerCommands"
 import PlayerControls from "./PlayerControls"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 
+const VIDEO_WIDTH = 1280
+const VIDEO_HEIGHT = 720
+const VIDEO_ASPECT_RATIO = VIDEO_WIDTH / VIDEO_HEIGHT
+
 function VideoPlayer(props: { videoPlayerUrl: string }) {
   const {
     videostrateUrl,
@@ -24,6 +28,22 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
   const [iframeTop, setIframeTop] = useState(0)
   const [iframeContainerHeight, setIframeContainerHeight] = useState(720)
 
+  // The iframeRef doesn't work when wrapped in a useCallback
+  const controlPlayer = (command: PlayerCommands, args?: object) => {
+    if (command === PlayerCommands.Play) setPlaying(true)
+    else if (command === PlayerCommands.Pause) setPlaying(false)
+
+    const iframeWindow = iframeRef.current?.contentWindow
+    iframeWindow?.postMessage(
+      {
+        type: "player-control",
+        command: command.toString(),
+        args: args,
+      },
+      "*"
+    )
+  }
+
   const updateIframeSize = useCallback(() => {
     const target = iframeRef.current?.parentNode as HTMLElement
     if (!target) return
@@ -31,16 +51,16 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     const maxContainerHeight =
       (target.parentNode as HTMLElement).clientHeight - 48
     const newContainerHeight = Math.min(
-      target.clientWidth * (9 / 16),
+      target.clientWidth / VIDEO_ASPECT_RATIO,
       maxContainerHeight
     )
     const newIframeScale = Math.min(
-      target.clientWidth / 1280,
-      newContainerHeight / 720
+      target.clientWidth / VIDEO_WIDTH,
+      newContainerHeight / VIDEO_HEIGHT
     )
     setIframeScale(newIframeScale)
-    setIframeLeft((target.clientWidth - 1280) / 2)
-    setIframeTop((newContainerHeight - 720) / 2)
+    setIframeLeft((target.clientWidth - VIDEO_WIDTH) / 2)
+    setIframeTop((newContainerHeight - VIDEO_HEIGHT) / 2)
     setIframeContainerHeight(newContainerHeight)
   }, [iframeRef])
 
@@ -78,9 +98,10 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     setPlaybackState({ frame: 0, time: 0 })
     controlPlayer(PlayerCommands.Load, {
       url: videostrateUrl,
-      width: 1280,
-      height: 720,
+      width: VIDEO_WIDTH,
+      height: VIDEO_HEIGHT,
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setPlaybackState, videostrateUrl])
 
   useEffect(() => {
@@ -110,31 +131,19 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
 
   useEffect(() => {
     const { html, style } = serializeVideostrate(parsedVideostrate, "webstrate")
+    console.log("Updating videostrate", parsedVideostrate.all)
     controlPlayer(PlayerCommands.UpdateVideo, { html, style: style })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedVideostrate])
-
-  function controlPlayer(command: PlayerCommands, args?: object) {
-    if (command === PlayerCommands.Play) setPlaying(true)
-    else if (command === PlayerCommands.Pause) setPlaying(false)
-
-    const iframeWindow = iframeRef.current?.contentWindow
-    iframeWindow?.postMessage(
-      {
-        type: "player-control",
-        command: command.toString(),
-        args: args,
-      },
-      "*"
-    )
-  }
 
   const onChangeUrl = useCallback(() => {
     setVideostrateUrl(url)
     controlPlayer(PlayerCommands.Load, {
       url: url,
-      width: 1280,
-      height: 720,
+      width: VIDEO_WIDTH,
+      height: VIDEO_HEIGHT,
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setVideostrateUrl, url])
 
   return (
@@ -158,8 +167,10 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
         >
           <iframe
             ref={iframeRef}
-            className="w-[1280px] h-[720px] relative"
+            className="relative"
             style={{
+              width: `${VIDEO_WIDTH}px`,
+              height: `${VIDEO_HEIGHT}px`,
               scale: `${iframeScale}`,
               left: `${iframeLeft}px`,
               top: `${iframeTop}px`,

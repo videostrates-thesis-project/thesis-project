@@ -14,7 +14,6 @@ export const determineReturnValueTyped = <T = any>(
   return returnValue as ReturnValue<T>
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const determineReturnValue = (
   value: string,
   context: ExecutionContext

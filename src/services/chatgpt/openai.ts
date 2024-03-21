@@ -60,7 +60,7 @@ class OpenAIService {
             (q) => q.type === "text"
           ) as OpenAI.Beta.Threads.Messages.MessageContentText
         ).text.value
-        parseAndExecuteScript(text)
+        await parseAndExecuteScript(text)
       } else if (run.status === "requires_action") {
         console.log("Requires action", run)
         clearInterval(interval)
@@ -110,10 +110,8 @@ class OpenAIService {
       id: uuid(),
     })
 
-    if (message.script) {
-      parseAndExecuteScript(message.script)
-      useStore.getState().setPendingChanges(true)
-    }
+    if (message.script)
+      (await parseAndExecuteScript(message.script))?.asPendingChanges()
   }
 
   /**
@@ -173,10 +171,8 @@ class OpenAIService {
       id: uuid(),
     })
 
-    if (message.script) {
-      parseAndExecuteScript(message.script)
-      useStore.getState().setPendingChanges(true)
-    }
+    if (message.script)
+      (await parseAndExecuteScript(message.script))?.asPendingChanges()
   }
 
   async sendChatMessageForReaction() {
@@ -203,6 +199,7 @@ class OpenAIService {
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      // messages: [messages.map((m) => ({ role: m.role, content: m.content }))[lastUserMessageIndex]],
     })
 
     const reaction = response.choices[0].message.content?.trim()

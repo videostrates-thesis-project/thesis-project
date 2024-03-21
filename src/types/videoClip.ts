@@ -1,16 +1,40 @@
+export interface RawMetadata {
+  status: "CACHED" | "UNCACHED"
+  meta?: {
+    title?: string
+    duration?: number
+  }
+  thumbnail?: {
+    small?: {
+      url?: string
+    }
+  }
+}
 export default class VideoClip {
   source: string
-  status: string | undefined
-  title: string | undefined
+  status: "CACHED" | "UNCACHED"
+  title: string = "Loading..."
   length: number | undefined
   thumbnailUrl: string | undefined
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  constructor(source: string, rawMetadata: any) {
+  updateMetadata(rawMetadata: RawMetadata) {
+    const clip = new VideoClip(this.source, this.title)
+    clip._updateMetadata(rawMetadata)
+    return clip
+  }
+
+  protected _updateMetadata(rawMetadata: RawMetadata) {
+    this.status = rawMetadata.status
+    if (rawMetadata.status === "CACHED") {
+      this.title = rawMetadata?.meta?.title || this.title
+      this.length = rawMetadata?.meta?.duration
+      this.thumbnailUrl = rawMetadata?.thumbnail?.small?.url
+    }
+  }
+
+  constructor(source: string, title: string) {
     this.source = source
-    this.status = rawMetadata?.status
-    this.title = rawMetadata?.meta?.title
-    this.length = rawMetadata?.meta?.duration
-    this.thumbnailUrl = rawMetadata?.thumbnail?.small?.url
+    this.title = title
+    this.status = "UNCACHED"
   }
 }

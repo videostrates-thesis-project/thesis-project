@@ -22,7 +22,7 @@ export const processAssignClassCommand = async (
     context
   )
 
-  const parsedVideostrate = useStore.getState().parsedVideostrate.clone()
+  const parsedVideostrate = useStore.getState().parsedVideostrate
   const elements = (elementIds.value as ReturnValue[]).map((value) => {
     if (value.type !== "string") {
       throw new Error("Array elements must be strings")

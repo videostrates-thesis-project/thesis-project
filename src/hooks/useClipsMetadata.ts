@@ -1,26 +1,23 @@
 import { useCallback, useEffect } from "react"
 import { useStore } from "../store"
-import { getClipsMetadata } from "../services/metadataLoader"
+import { getClipMetadata } from "../services/metadataLoader"
 
 export const useClipsMetadata = () => {
-  const { metamaxRealm, clipsSources, setAvailableClips, availableClips } =
-    useStore()
+  const { metamaxRealm, updateClipMetadata, availableClips } = useStore()
 
   const updateAvailableClips = useCallback(async () => {
     if (metamaxRealm) {
-      const uncashedSources = clipsSources.filter(
-        (source) => !availableClips.some((clip) => clip.source === source)
-      )
-      if (uncashedSources.length) {
-        console.log("fetchMetadata; uncashedSources:", uncashedSources)
-        const metadata = await getClipsMetadata(uncashedSources, metamaxRealm)
-        console.log("fetchMetadata; metadata:", metadata)
-        setAvailableClips([...availableClips, ...metadata])
-      }
+      const metadataPromises = availableClips
+        .filter((clip) => clip.status === "UNCACHED")
+        .map(async (clip) => {
+          const metadata = await getClipMetadata(clip.source, metamaxRealm)
+          updateClipMetadata(clip.source, metadata)
+        })
+      await Promise.all(metadataPromises)
     } else {
       console.log("fetchMetadata; no realm")
     }
-  }, [metamaxRealm, clipsSources, setAvailableClips, availableClips])
+  }, [availableClips, metamaxRealm, updateClipMetadata])
 
   useEffect(() => {
     // Periodically fetch metadata for clips that haven't been fetched yet
@@ -35,5 +32,5 @@ export const useClipsMetadata = () => {
     // Update available clips when the list of clips sources changes
     updateAvailableClips()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clipsSources])
+  }, [availableClips])
 }

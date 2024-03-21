@@ -5,6 +5,10 @@ import {
 } from "./recognizedCommands"
 
 export const tokenizeCommand = (input: string): ExecutableCommand => {
+  if (input.startsWith("var ") || input.startsWith("let ")) {
+    input = input.slice(4)
+  }
+
   const assignmentParts = input.split("=")
   let variable: string | null = null
   if (assignmentParts.length > 1 && input.indexOf("=") < input.indexOf("(")) {

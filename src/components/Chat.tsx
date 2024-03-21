@@ -86,7 +86,7 @@ const Chat = ({ onSend, messages, pendingChanges }: ChatProps) => {
               {msg.role === "assistant" &&
               typewriterIndex === index &&
               newMessage ? (
-                <Typewriter text={msg.content} minSpeed={5} maxSpeed={70} />
+                <Typewriter text={msg.content} minSpeed={5} maxSpeed={40} />
               ) : (
                 msg.content
               )}
@@ -107,7 +107,7 @@ const Chat = ({ onSend, messages, pendingChanges }: ChatProps) => {
         ))}
         {loading && (
           <div className="chat chat-start">
-            <div className="chat-bubble text-left break-normal text-sm relative pb-4 flex justify-center items-center">
+            <div className="chat-bubble text-left break-normal text-sm relative pb-2 flex justify-center items-center">
               <div className="flex flex-row gap-1 -mb-2">
                 <div className="w-2 h-2 bg-neutral-content rounded-full animate-bounce-big" />
                 <div

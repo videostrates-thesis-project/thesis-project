@@ -1,4 +1,6 @@
+import { useStore } from "../store"
 import updateLayers from "../utils/updateLayers"
+import { Image } from "./image"
 import {
   CustomElement,
   VideoClipElement,
@@ -15,6 +17,7 @@ export interface VideostrateStyle {
 export class ParsedVideostrate {
   clips: VideoClipElement[] = []
   elements: VideoElement[] = []
+  images: Image[] = []
   // Using # doesn't work with the Zustand store
   _all: VideoElement[] = []
   _length = 0
@@ -29,6 +32,7 @@ export class ParsedVideostrate {
     this.all = allElements
     this.style = style
     this.animations = animations
+    this.updateImages()
   }
 
   public get length() {
@@ -43,6 +47,10 @@ export class ParsedVideostrate {
     this._all = elements
     this.updateLayers()
     this.updateComputedProperties()
+  }
+
+  public getElementById(id: string) {
+    return this.all.find((e) => e.id === id)
   }
 
   public clone() {
@@ -75,6 +83,10 @@ export class ParsedVideostrate {
 
   public addClip(source: string, start: number, end: number) {
     const newId = uuid()
+    const layer =
+      Math.max(
+        ...this.all.filter((e) => e.type === "video").map((e) => e.layer)
+      ) + 1
     this.all.push({
       id: newId,
       name: "",
@@ -85,7 +97,7 @@ export class ParsedVideostrate {
       type: "video",
       offset: 0,
       speed: 1,
-      layer: 0,
+      layer,
     } as VideoClipElement)
     this.all = [...this.all]
 
@@ -118,7 +130,11 @@ export class ParsedVideostrate {
   }
 
   public deleteElementById(elementId: string) {
+    if (useStore.getState().selectedClipId === elementId) {
+      useStore.getState().setSelectedClipId(null)
+    }
     this.all = this.all.filter((c) => c.id !== elementId)
+    this.updateImages()
   }
 
   public cropElementById(elementId: string, from: number, to: number) {
@@ -126,6 +142,14 @@ export class ParsedVideostrate {
     if (!element) {
       throw new Error(`Element with id ${elementId} not found`)
     }
+    console.log(
+      "Old start ",
+      element.start,
+      " Old offset ",
+      element.offset,
+      "Old end ",
+      element.end
+    )
     const oldLength = element.end - element.start
     element.offset = from
     element.end = to - from + element.start
@@ -144,6 +168,7 @@ export class ParsedVideostrate {
     nodeType = "div"
   ) {
     const newId = uuid()
+    const layer = Math.max(...this.all.map((e) => e.layer)) + 1
     this.all.push({
       id: newId,
       name,
@@ -153,11 +178,11 @@ export class ParsedVideostrate {
       type,
       offset: 0,
       outerHtml,
-      layer: 0,
+      layer,
       speed: 1,
     })
     this.all = [...this.all]
-
+    this.updateImages()
     return newId
   }
 
@@ -247,6 +272,7 @@ export class ParsedVideostrate {
   }
 
   private updateLayers() {
+    console.log("updateLayers", this._all)
     this._all = updateLayers(this._all) as VideoElement[]
   }
 
@@ -264,5 +290,23 @@ export class ParsedVideostrate {
     } else {
       this._length = Math.max(...this._all.map((e) => e.end))
     }
+  }
+
+  private updateImages() {
+    this.images = this.all
+      .filter((e) => e.type !== "video")
+      .map((e) => {
+        const parser = new DOMParser()
+        const document = parser.parseFromString(e.outerHtml ?? "", "text/html")
+        const htmlElement = document.body.firstChild as HTMLElement
+        if (htmlElement) {
+          const images = htmlElement.querySelectorAll("img")
+          return Array.from(images).map((img) => ({
+            url: img.src,
+            title: img.alt,
+          }))
+        }
+      })
+      .reduce((acc: Image[], val) => (val ? acc.concat(val) : acc), [])
   }
 }

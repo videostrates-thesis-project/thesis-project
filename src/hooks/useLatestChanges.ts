@@ -129,7 +129,6 @@ export const useLatestChanges = () => {
           command.args[0],
           lastExecutedChange.context
         )
-        console.log("Selector: ", selector)
         const matchingElements = parsedHtml.querySelectorAll(selector.value)
         matchingElements.forEach((element) => {
           // Find the first composited parent
@@ -143,7 +142,6 @@ export const useLatestChanges = () => {
             })
           }
         })
-        console.log("Matching elements: ", matchingElements)
       } else if (command.command === "assign_class") {
         const elementIds = determineReturnValueTyped<ReturnValue<string>[]>(
           "array",

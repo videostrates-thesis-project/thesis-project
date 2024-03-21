@@ -22,7 +22,6 @@ import { ExecutionContext } from "./executionContext"
 import { executeCommand } from "./processCommand"
 import { ExecutableCommand, RecognizedCommands } from "./recognizedCommands"
 import { tokenizeCommand } from "./tokenizeCommand"
-import { v4 as uuid } from "uuid"
 
 const recognizedCommands: RecognizedCommands = {
   move: {
@@ -83,35 +82,38 @@ const recognizedCommands: RecognizedCommands = {
 
 export const parseAndExecuteScript = async (script: string) => {
   console.log("Executing script: \n", script)
-  const lines = script.split("\n")
+  const lines = script.trim().split("\n")
   const parsed = lines.map((line) => tokenizeCommand(line))
 
-  executeScript(parsed)
+  return await executeScript(parsed)
 }
 
 export const executeScript = async (script: ExecutableCommand[]) => {
+  console.log("Executing script\n", script)
   const context: ExecutionContext = {}
   const videoStrateBefore = useStore.getState().parsedVideostrate.clone()
 
-  try {
-    for (const line of script) {
+  for (const line of script) {
+    try {
       await executeCommand(line, recognizedCommands, context)
+    } catch (error) {
+      console.error("Error processing script:\n", script)
+      console.error("Line:\n", line)
+      console.error(error)
+      useStore
+        .getState()
+        .addToast("error", "Error processing script", (error as Error).message)
+      useStore.getState().setParsedVideostrate(videoStrateBefore)
+      return
     }
-
-    const executedScript: ExecutedScript = {
-      script,
-      context,
-      parsedVideostrate: videoStrateBefore,
-    }
-    useStore.getState().addToUndoStack(executedScript)
-  } catch (error) {
-    useStore.getState().addToast({
-      id: uuid(),
-      title: "Error processing script",
-      description: (error as Error).message,
-      type: "error",
-      length: 5000,
-    })
-    useStore.getState().setParsedVideostrate(videoStrateBefore)
+  }
+  const executedScript: ExecutedScript = {
+    script,
+    context,
+    parsedVideostrate: videoStrateBefore,
+  }
+  useStore.getState().addToUndoStack(executedScript)
+  return {
+    asPendingChanges: () => useStore.getState().setPendingChanges(true),
   }
 }
