@@ -19,7 +19,7 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
     parent.innerHTML += html
   }
 
-  protected serializeElement(element: VideoElement): string {
+  public serializeElement(element: VideoElement): string {
     if (element.type === "video") {
       const clip = element as VideoClipElement
 

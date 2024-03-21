@@ -2,6 +2,7 @@ import { useStore } from "../store"
 import updateLayers from "../utils/updateLayers"
 import { Image } from "./image"
 import {
+  CustomElement,
   VideoClipElement,
   VideoElement,
   VideoElementType,
@@ -54,7 +55,7 @@ export class ParsedVideostrate {
 
   public clone() {
     return new ParsedVideostrate(
-      this.all.map((c) => ({ ...c })),
+      this.all.map((c) => c.clone()),
       this.style.map((s) => ({ ...s })),
       this.animations.map((a) => ({ ...a }))
     )
@@ -86,18 +87,20 @@ export class ParsedVideostrate {
       Math.max(
         ...this.all.filter((e) => e.type === "video").map((e) => e.layer)
       ) + 1
-    this.all.push({
-      id: newId,
-      name: "",
-      start,
-      end,
-      nodeType: "video",
-      source,
-      type: "video",
-      offset: 0,
-      speed: 1,
-      layer,
-    } as VideoClipElement)
+    this.all.push(
+      new VideoClipElement({
+        id: newId,
+        name: "",
+        start,
+        end,
+        nodeType: "video",
+        source,
+        type: "video",
+        offset: 0,
+        speed: 1,
+        layer,
+      })
+    )
     this.all = [...this.all]
 
     return newId
@@ -110,19 +113,21 @@ export class ParsedVideostrate {
     end: number
   ) {
     const newId = uuid()
-    this.all.push({
-      id: newId,
-      name: "",
-      start,
-      end,
-      nodeType: "video",
-      source,
-      type: "video",
-      offset: 0,
-      speed: 1,
-      layer: 0,
-      parentId: elementId,
-    } as VideoClipElement)
+    this.all.push(
+      new VideoClipElement({
+        id: newId,
+        name: "",
+        start,
+        end,
+        nodeType: "video",
+        source,
+        type: "video",
+        offset: 0,
+        speed: 1,
+        layer: 0,
+        parentId: elementId,
+      })
+    )
     this.all = [...this.all]
 
     return newId
@@ -176,21 +181,36 @@ export class ParsedVideostrate {
   ) {
     const newId = uuid()
     const layer = Math.max(...this.all.map((e) => e.layer)) + 1
-    this.all.push({
-      id: newId,
-      name,
-      start,
-      end,
-      nodeType,
-      type,
-      offset: 0,
-      outerHtml,
-      layer,
-      speed: 1,
-    })
+    this.all.push(
+      new VideoElement({
+        id: newId,
+        name,
+        start,
+        end,
+        nodeType,
+        type,
+        offset: 0,
+        outerHtml,
+        layer,
+        speed: 1,
+      })
+    )
     this.all = [...this.all]
     this.updateImages()
     return newId
+  }
+
+  public updateCustomElement(id: string, content: string) {
+    const element = this.all.find((e) => e.id === id)
+    if (element) {
+      const customElement = element as CustomElement
+      customElement.content = content
+    } else {
+      throw new Error(`Element with id ${id} not found`)
+    }
+    this.all = [...this.all]
+
+    return id
   }
 
   public addStyle(selector: string, style: string) {
@@ -275,17 +295,15 @@ export class ParsedVideostrate {
 
   private updateLayers() {
     console.log("updateLayers", this._all)
-    this._all = updateLayers(this._all) as VideoElement[]
+    this._all = updateLayers(this._all)
   }
 
   private updateComputedProperties() {
     // Calculate clips, elements and length
     this.clips = this._all.filter(
-      (e) => e.type === "video"
-    ) as VideoClipElement[]
-    this.elements = this._all.filter(
-      (e) => e.type !== "video"
-    ) as VideoElement[]
+      (e): e is VideoClipElement => e.type === "video"
+    )
+    this.elements = this._all.filter((e) => e.type !== "video")
 
     if (this._all.length === 0) {
       this._length = 0
