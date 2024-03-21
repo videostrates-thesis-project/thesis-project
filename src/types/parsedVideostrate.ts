@@ -153,6 +153,14 @@ export class ParsedVideostrate {
     element.offset = from
     element.end = to - from + element.start
 
+    if (element.type === "custom") {
+      if (element.offset != 0) {
+        element.start += element.offset
+        element.end += element.offset
+        element.offset = 0
+      }
+    }
+
     const newLength = element.end - element.start
     this.all = [...this.all]
     return newLength - oldLength
@@ -204,10 +212,10 @@ export class ParsedVideostrate {
       if (elementIds.includes(e.id)) {
         const parser = new DOMParser()
         const document = parser.parseFromString(e.outerHtml ?? "", "text/html")
-        const htmlElement = document.body.firstChild as HTMLElement
+        const htmlElement = document.body.firstChild?.firstChild as HTMLElement
         if (htmlElement) {
           htmlElement.classList.add(className)
-          e.outerHtml = htmlElement.outerHTML
+          e.outerHtml = htmlElement.parentElement?.outerHTML
         }
       }
       return e
@@ -230,6 +238,10 @@ export class ParsedVideostrate {
   public setSpeed(elementId: string, speed: number) {
     const element = this.all.find((e) => e.id === elementId)
     if (element) {
+      if (element.nodeType !== "video") {
+        throw new Error("Speed can only be set on video elements")
+      }
+
       element.speed = speed
     } else {
       throw new Error(`Element with id ${elementId} not found`)
