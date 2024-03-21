@@ -10,14 +10,20 @@ import { useEditedClipDetails } from "../../store/editedClipDetails"
 import useContextMenu from "../../hooks/useContextMenu"
 import ContextMenu from "../ContextMenu"
 import { useNavigate } from "react-router-dom"
+import { CustomElement } from "../../types/videoElement"
 
 const MIN_ELEMENT_WIDTH = 16
 
 const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
   const timeline = useContext(TimelineContext)
-  const { selectedClipId, setSelectedClipId, availableClips, pendingChanges } =
-    useStore()
+  const {
+    selectedClipId,
+    setSelectedClipId,
+    availableClips,
+    pendingChanges,
+    addAvailableCustomElement,
+  } = useStore()
 
   const minLeftCrop = useMemo(
     () =>
@@ -103,8 +109,23 @@ const Clip = (props: { clip: TimelineElement }) => {
   const navigate = useNavigate()
   const menuItems = useMemo(() => {
     if (clip.type !== "custom") return []
-    return [{ label: "Edit code", action: () => navigate(`/code/${clip.id}`) }]
-  }, [clip.id, navigate])
+    return [
+      { label: "Edit code", action: () => navigate(`/code/${clip.id}`) },
+      {
+        label: "Add to the library",
+        action: () =>
+          addAvailableCustomElement(
+            new CustomElement({
+              ...clip,
+              start: 0,
+              end: 0,
+              offset: 0,
+              content: clip.content!,
+            })
+          ),
+      },
+    ]
+  }, [addAvailableCustomElement, clip, navigate])
   const { showMenu, hideMenu, menuPosition, isVisible } = useContextMenu(
     menuItems.length
   )
@@ -297,15 +318,9 @@ const Clip = (props: { clip: TimelineElement }) => {
             setDetails(undefined)
           }}
           onContextMenu={showMenu}
-          draggable={true}
-          onDrag={onDrag}
           style={{
             width: `${width}px`,
             left: `${draggedPosition}px`,
-          }}
-          onDragStart={(e) => {
-            onDragStart(e)
-            setSelectedClipId(clip.id)
           }}
         >
           <ClipContent
