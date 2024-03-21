@@ -58,7 +58,7 @@ const ClipContent = (props: {
           ? "opacity-30 border-transparent"
           : isSelected
             ? "!border-accent border-x-0 cursor-pointer"
-            : "border-transparent cursor-pointer hover:border-gray-300"
+            : "border-base-100 cursor-pointer hover:border-gray-300"
       )}
       onClick={() => {
         if (selectedClipId === clip.id) setSelectedClipId(null)

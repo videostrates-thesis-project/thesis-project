@@ -131,7 +131,6 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
 
   useEffect(() => {
     const { html, style } = serializeVideostrate(parsedVideostrate, "webstrate")
-    console.log("Updating videostrate", parsedVideostrate.all)
     controlPlayer(PlayerCommands.UpdateVideo, { html, style: style })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parsedVideostrate])

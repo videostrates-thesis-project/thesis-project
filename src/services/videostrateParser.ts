@@ -75,7 +75,7 @@ const parseElement = (element: ChildNode) => {
     // Is this in the root?
     if (htmlElement.parentElement?.parentElement?.hasAttribute("clip-name")) {
       const grandParent = htmlElement.parentElement.parentElement
-      const clip: VideoClipElement = {
+      const clip = new VideoClipElement({
         name: grandParent.getAttribute("clip-name") ?? "",
         id: grandParent.id,
         layer: parseInt(grandParent.style.zIndex || "0"),
@@ -90,14 +90,14 @@ const parseElement = (element: ChildNode) => {
         offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
         speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
         className: htmlElement.parentElement?.className ?? "",
-      }
+      })
 
       allElements.push(clip)
       return
     }
     // Is this attached to a custom element?
     else if (htmlElement.parentElement?.hasAttribute("clip-name")) {
-      const clip: VideoClipElement = {
+      const clip = new VideoClipElement({
         name: htmlElement.parentElement.getAttribute("clip-name") ?? "",
         id: htmlElement.parentElement.id,
         layer: parseInt(htmlElement.parentElement.style.zIndex || "0"),
@@ -113,14 +113,14 @@ const parseElement = (element: ChildNode) => {
         speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
         className: htmlElement.parentElement?.className ?? "",
         parentId: htmlElement.parentElement?.parentElement?.id ?? "",
-      }
+      })
 
       allElements.push(clip)
       return
     }
 
     // Legacy
-    const clip: VideoClipElement = {
+    const clip = new VideoClipElement({
       name: htmlElement.getAttribute("clip-name") ?? "",
       start: parseFloat(htmlElement.getAttribute("data-start") ?? "0"),
       end: parseFloat(htmlElement.getAttribute("data-end") ?? "0"),
@@ -134,11 +134,11 @@ const parseElement = (element: ChildNode) => {
       layer: parseInt(htmlElement.style.zIndex || "0"),
       speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
       className: htmlElement.className,
-    }
+    })
     allElements.push(clip)
   } else {
     console.log(htmlElement.innerHTML)
-    const videoElement: CustomElement = {
+    const videoElement = new CustomElement({
       name: htmlElement.getAttribute("custom-element-name") ?? "",
       start: parseFloat(htmlElement.getAttribute("data-start") ?? "0"),
       end: parseFloat(htmlElement.getAttribute("data-end") ?? "0"),
@@ -150,7 +150,7 @@ const parseElement = (element: ChildNode) => {
       outerHtml: htmlElement.outerHTML,
       layer: parseInt(htmlElement.style.zIndex || "0"),
       speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
-    }
+    })
     allElements.push(videoElement)
   }
 }
