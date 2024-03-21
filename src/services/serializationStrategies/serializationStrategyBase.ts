@@ -51,7 +51,7 @@ export abstract class SerializationStrategyBase {
       .join("\n")
   }
 
-  protected abstract serializeElement(element: VideoElement): string
+  abstract serializeElement(element: VideoElement): string
 
   protected abstract addElementToHtml(
     element: VideoElement,
