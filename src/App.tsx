@@ -1,12 +1,31 @@
+import {
+  BrowserRouter,
+  Route,
+  RouterProvider,
+  Routes,
+  createBrowserRouter,
+  useLocation,
+} from "react-router-dom"
 import "./App.css"
-import Chat from "./components/Chat"
 import Navbar from "./components/Navbar"
 import Toasts from "./components/Toasts"
 import DefaultView from "./components/Views/DefaultView"
 import { useClipsMetadata } from "./hooks/useClipsMetadata"
 import openAIService from "./services/chatgpt/openai"
+import CodeView from "./components/Views/CodeView"
 
 openAIService.init()
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <></>,
+  },
+  {
+    path: "/code/:elementId",
+    element: <CodeView />,
+  },
+])
 
 function App() {
   useClipsMetadata()
@@ -15,10 +34,11 @@ function App() {
       <Toasts />
       <div className="flex flex-col h-full max-h-full">
         <Navbar />
-        <div className="flex flex-row flex-grow w-full min-h-0">
-          <DefaultView />
-          <Chat />
-        </div>
+        <Routes>
+          <Route path="/" element={<></>} />
+          <Route path="/code/:elementId" element={<CodeView />} />
+        </Routes>
+        <DefaultView />
       </div>
     </>
   )

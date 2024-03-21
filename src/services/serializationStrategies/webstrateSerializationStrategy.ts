@@ -1,4 +1,8 @@
-import { VideoClipElement, VideoElement } from "../../types/videoElement"
+import {
+  CustomElement,
+  VideoClipElement,
+  VideoElement,
+} from "../../types/videoElement"
 import { SerializationStrategyBase } from "./serializationStrategyBase"
 
 export class WebstrateSerializationStrategy extends SerializationStrategyBase {
@@ -31,26 +35,35 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
       if (!element.outerHtml) throw new Error("Missing  outerHtml")
 
       const parser = new DOMParser()
-      const document = parser.parseFromString(element.outerHtml, "text/html")
+      const document = parser.parseFromString(
+        (element as CustomElement).content,
+        "text/html"
+      )
       const htmlElement = document.body.firstChild as HTMLElement
       if (!htmlElement) throw new Error("Invalid outerHtml")
 
       console.log("Serializing html element", htmlElement)
-      if (!htmlElement.classList.contains("composited")) {
-        htmlElement.classList.add("composited")
+
+      const parent = htmlElement.parentNode
+      const wrapper = document.createElement("div")
+      parent?.replaceChild(wrapper, htmlElement)
+      wrapper.appendChild(htmlElement)
+
+      if (!wrapper.classList.contains("composited")) {
+        wrapper.classList.add("composited")
       }
-      htmlElement.setAttribute("id", element.id)
-      htmlElement.setAttribute("custom-element-name", element.name)
-      htmlElement.setAttribute("style", `"z-index: ${element.layer};"`)
-      htmlElement.setAttribute("data-start", element.start.toString())
-      htmlElement.setAttribute("data-end", element.end.toString())
-      htmlElement.setAttribute("data-offset", (element.offset ?? 0).toString())
-      htmlElement.setAttribute("clip-start", (element.offset ?? 0).toString())
-      htmlElement.setAttribute(
+      wrapper.setAttribute("id", element.id)
+      wrapper.setAttribute("custom-element-name", element.name)
+      wrapper.setAttribute("style", `"z-index: ${element.layer};"`)
+      wrapper.setAttribute("data-start", element.start.toString())
+      wrapper.setAttribute("data-end", element.end.toString())
+      wrapper.setAttribute("data-offset", (element.offset ?? 0).toString())
+      wrapper.setAttribute("clip-start", (element.offset ?? 0).toString())
+      wrapper.setAttribute(
         "clip-end",
         (element.end - element.start + element.offset).toString()
       )
-      htmlElement.setAttribute(
+      wrapper.setAttribute(
         "data-speed",
         (isNaN(element.speed) ? 1 : element.speed).toString()
       )
@@ -67,9 +80,9 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
           }
         })
       }
-      removeElementsWithClipNameAttribute(htmlElement)
+      removeElementsWithClipNameAttribute(wrapper)
 
-      return htmlElement.outerHTML
+      return wrapper.outerHTML
     }
   }
 }

@@ -216,6 +216,25 @@ class OpenAIService {
         reaction?.slice(0, 2) ?? ""
       )
   }
+
+  public async githubCopilotAtHome(
+    input: string,
+    lineNumber: number,
+    column: number
+  ) {
+    const prompt = `Continue the following code at line number ${lineNumber}, column ${column}, reply only with the next part of the code:\n\n${input}`
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    })
+
+    return response.choices[0].message.content
+  }
 }
 
 const openAIService = new OpenAIService()

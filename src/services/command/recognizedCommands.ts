@@ -27,6 +27,7 @@ export const availableCommands = [
   "add_clip_to_element",
   "move_layer",
   "generate_image",
+  "edit_custom_element",
 ] as const
 
 export type AvailableCommand = (typeof availableCommands)[number]

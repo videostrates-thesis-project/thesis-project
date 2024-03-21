@@ -1,4 +1,4 @@
-import { useCallback, useContext } from "react"
+import { useCallback, useContext, useMemo } from "react"
 import { TimelineElement } from "../../hooks/useTimelineElements"
 import ClipContent from "./ClipContent"
 import { useStore } from "../../store"
@@ -7,6 +7,9 @@ import { executeScript } from "../../services/command/executeScript"
 import useDraggable from "../../hooks/useDraggable"
 import clsx from "clsx"
 import { useEditedClipDetails } from "../../store/editedClipDetails"
+import useContextMenu from "../../hooks/useContextMenu"
+import ContextMenu from "../ContextMenu"
+import { useNavigate } from "react-router-dom"
 
 const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
@@ -14,6 +17,14 @@ const Clip = (props: { clip: TimelineElement }) => {
   const { setSelectedClipId } = useStore()
   const { onDragStart, onDrag, draggedPosition } = useDraggable(clip.left)
   const { setPosition, setDetails } = useEditedClipDetails()
+  const navigate = useNavigate()
+  const menuItems = useMemo(() => {
+    if (clip.type !== "custom") return []
+    return [{ label: "Edit code", action: () => navigate(`/code/${clip.id}`) }]
+  }, [clip.id, navigate])
+  const { showMenu, hideMenu, menuPosition, isVisible } = useContextMenu(
+    menuItems.length
+  )
 
   const onDragEnd = useCallback(
     (e: React.DragEvent) => {
@@ -69,6 +80,7 @@ const Clip = (props: { clip: TimelineElement }) => {
             setDetails(undefined)
             console.log("mouse leave")
           }}
+          onContextMenu={showMenu}
           draggable={true}
           onDrag={onDrag}
           onDragStart={(e) => {
@@ -80,6 +92,12 @@ const Clip = (props: { clip: TimelineElement }) => {
         >
           <ClipContent clip={clip} />
         </div>
+        <ContextMenu
+          items={menuItems}
+          position={menuPosition}
+          visible={isVisible}
+          onClose={hideMenu}
+        />
       </div>
     </>
   )

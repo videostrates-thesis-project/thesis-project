@@ -1,5 +1,6 @@
 import updateLayers from "../utils/updateLayers"
 import {
+  CustomElement,
   VideoClipElement,
   VideoElement,
   VideoElementType,
@@ -158,6 +159,19 @@ export class ParsedVideostrate {
     this.all = [...this.all]
 
     return newId
+  }
+
+  public updateCustomElement(id: string, content: string) {
+    const element = this.all.find((e) => e.id === id)
+    if (element) {
+      const customElement = element as CustomElement
+      customElement.content = content
+    } else {
+      throw new Error(`Element with id ${id} not found`)
+    }
+    this.all = [...this.all]
+
+    return id
   }
 
   public addStyle(selector: string, style: string) {
