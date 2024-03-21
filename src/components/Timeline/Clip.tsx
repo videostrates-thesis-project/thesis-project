@@ -318,15 +318,9 @@ const Clip = (props: { clip: TimelineElement }) => {
             setDetails(undefined)
           }}
           onContextMenu={showMenu}
-          draggable={true}
-          onDrag={onDrag}
           style={{
             width: `${width}px`,
             left: `${draggedPosition}px`,
-          }}
-          onDragStart={(e) => {
-            onDragStart(e)
-            setSelectedClipId(clip.id)
           }}
         >
           <ClipContent
