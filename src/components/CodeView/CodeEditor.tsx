@@ -112,7 +112,7 @@ const CodeEditor = ({
   useEffect(() => {
     if (!editor) return
 
-    const { dispose } = editor.onDidChangeCursorPosition((e) => {
+    const { dispose } = editor.onDidChangeModelContent(() => {
       suggestionText.current = ""
 
       if (positionChangeTimerRef.current) {
@@ -120,15 +120,14 @@ const CodeEditor = ({
       }
 
       positionChangeTimerRef.current = setTimeout(() => {
-        getCompletion(e.position)
-      }, 1000)
+        getCompletion(editor.getPosition() ?? { lineNumber: 0, column: 0 })
+      }, 500)
     })
 
     return () => {
       dispose()
     }
   }, [editor, getCompletion])
-
   return (
     <div className="flex flex-col flex-1">
       <div className="flex flex-row items-center">
@@ -136,8 +135,10 @@ const CodeEditor = ({
           <div
             key={index}
             className={clsx(
-              "px-4 py-2 bg-neutral min-w-24 flex flex-row items-center text-sm border-b-2 border-transparent hover:border-primary cursor-pointer",
-              currentFileName === tab.name && "border-primary"
+              "px-4 py-2 bg-neutral min-w-24 flex flex-row items-center text-sm border-b-2 hover:border-primary cursor-pointer",
+              currentFileName === tab.name
+                ? "border-primary"
+                : "border-transparent"
             )}
             onClick={() => onChangeTab(tab.name)}
           >
