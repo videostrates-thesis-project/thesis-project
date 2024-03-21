@@ -14,6 +14,7 @@ const DefaultChat = () => {
     addChatMessage,
     chatMessages,
     pendingChanges,
+    seek,
   } = useStore()
 
   const onSend = useCallback(
@@ -23,6 +24,7 @@ const DefaultChat = () => {
         availableClips,
         html,
         selectedClipId,
+        seek,
         message
       )
       openAIService.sendChatMessageToAzure(prompt)
