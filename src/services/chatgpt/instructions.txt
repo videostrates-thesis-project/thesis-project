@@ -4,16 +4,16 @@ Videostrates is a video editing tool that uses html to define how the video is a
 Videostrate html tags applicable to all displayed elements:
 - absolute-start: when the clip/element starts on the timeline of the whole video, absolute to the cut video
 - absolute-end: when the clip/element ends on the timeline of the whole video, absolute to the cut video
+- relative-start: the timestamp of the clip/element when it starts playing, relative to the clip/element. For custom elements, this is always 0.
+- relative-end: the timestamp of the clip/element when it ends playing, relative to the clip/element
+- layer: the layer of the custom element, 0 is the bottom layer, 1 is the layer above 0, and so on
 
 Videostrate html tags applicable to clips:
 - clip-name: the name of the clip
-- relative-start: the timestamp of the clip when it starts playing, relative to the clip
-- relative-end: the timestamp of the clip when it ends playing, relative to the clip
 - playback-speed: the playback speed of the clip, 1 is normal speed, 2 is double speed, 0.5 is half speed
 
 Videostrate html tags applicable to custom elements:
 - custom-element-name: the name of the custom element
-- layer: the layer of the custom element, 0 is the bottom layer, 1 is the layer above 0, and so on
 
 The script should always be a set of commands. The possible commands are the following:
 

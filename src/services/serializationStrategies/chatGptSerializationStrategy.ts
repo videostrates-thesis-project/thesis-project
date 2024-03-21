@@ -39,7 +39,7 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
         htmlElement.classList.remove("composited")
       }
 
-      let attributesToRemove = ["data-offset", "data-speed", "data-start", "data-end", "style"]
+      let attributesToRemove = ["data-offset", "data-speed", "data-start", "data-end", "style", "relative-start", "relative-end"]
       attributesToRemove.forEach((attr) => {
         htmlElement.removeAttribute(attr)
       })
@@ -50,11 +50,11 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
       htmlElement.setAttribute("absolute-end", element.end.toString())
       htmlElement.setAttribute(
         "relative-start",
-        (element.offset ?? 0).toString()
+        "0"
       )
       htmlElement.setAttribute(
-        "clip-end",
-        (element.end - element.start + element.offset).toString()
+        "relative-start",
+        (element.end - element.start).toString()
       )
       htmlElement.setAttribute("layer", element.layer.toString())
       // htmlElement.setAttribute(
