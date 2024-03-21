@@ -238,11 +238,15 @@ export class ParsedVideostrate {
   public setSpeed(elementId: string, speed: number) {
     const element = this.all.find((e) => e.id === elementId)
     if (element) {
-      if (element.nodeType !== "video") {
-        throw new Error("Speed can only be set on video elements")
-      }
+      let length = (element.end - element.start)
+      let relativeSpeed = speed / element.speed
+      element.end = element.start + length / relativeSpeed
 
-      element.speed = speed
+      if (element.type === "video") {
+        element.speed = speed
+      } else {
+        element.speed = 1
+      }
     } else {
       throw new Error(`Element with id ${elementId} not found`)
     }

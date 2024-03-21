@@ -64,15 +64,15 @@ function move_layer(element_id: string, layer: number)
 function crop(element_id: string, relative_start: number, relative_end: number): number
 
 /**
- * Sets the speed of the clip. This cannot be used on custom elements. Use the crop function to change the duration of custom elements.
+ * Sets the playback speed of a clip or element.
  *    Aside from the playback-speed attribute, this function also affects the absolute-end attribute.
- *    If the speed is set from 1 to 2, the clip will be half the length, and if the speed
- *    is set from 2 to 1, the clip will be double the length on the video timeline.
- * @param {clip_id} id of the clip
- * @param {speed} the speed of the clip, 1 is normal speed, 2 is double speed, 0.5 is half speed
- * @returns {number} the change in the length of the clip
+ *    If the speed is set from 1 to 2, the element will be half the length, and if the speed
+ *    is set from 2 to 1, the element will be double the length on the video timeline.
+ * @param {element_id} id of the element
+ * @param {speed} the speed of the element
+ * @returns {number} the change in the length of the element
  */
-function set_speed(clip_id: string, speed: number): number
+function set_speed(element_id: string, speed: number): number
 
 /**
  * Adds a piece of subtitle to the video.
