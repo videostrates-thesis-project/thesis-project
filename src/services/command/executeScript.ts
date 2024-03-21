@@ -11,6 +11,7 @@ import { processCropElementCommand } from "./commandProcessors/processCropElemen
 import { processDeleteAnimationCommand } from "./commandProcessors/processDeleteAnimation"
 import { processDeleteElementCommand } from "./commandProcessors/processDeleteElementCommand"
 import { processDeleteStyleCommand } from "./commandProcessors/processDeleteStyleCommand"
+import { processEditElementCommand } from "./commandProcessors/processEditElementCommand"
 import { processGenerateImageCommand } from "./commandProcessors/processGenerateImageCommand"
 import { processMoveCommand } from "./commandProcessors/processMoveCommand"
 import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCommand"
@@ -74,17 +75,21 @@ const recognizedCommands: RecognizedCommands = {
   generate_image: {
     processFn: processGenerateImageCommand,
   },
+  edit_custom_element: {
+    processFn: processEditElementCommand,
+  },
 }
 
 export const parseAndExecuteScript = async (script: string) => {
   console.log("Executing script: \n", script)
-  const lines = script.split("\n")
+  const lines = script.trim().split("\n")
   const parsed = lines.map((line) => tokenizeCommand(line))
 
   return await executeScript(parsed)
 }
 
 export const executeScript = async (script: ExecutableCommand[]) => {
+  console.log("Executing script\n", script)
   const context: ExecutionContext = {}
   const videoStrateBefore = useStore.getState().parsedVideostrate.clone()
 

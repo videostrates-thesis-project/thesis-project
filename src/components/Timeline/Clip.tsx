@@ -7,6 +7,9 @@ import { executeScript } from "../../services/command/executeScript"
 import useDraggable from "../../hooks/useDraggable"
 import clsx from "clsx"
 import { useEditedClipDetails } from "../../store/editedClipDetails"
+import useContextMenu from "../../hooks/useContextMenu"
+import ContextMenu from "../ContextMenu"
+import { useNavigate } from "react-router-dom"
 
 const MIN_ELEMENT_WIDTH = 16
 
@@ -97,6 +100,14 @@ const Clip = (props: { clip: TimelineElement }) => {
   } = useDraggable(widthInitial, MIN_ELEMENT_WIDTH, maxRightCrop)
 
   const { setPosition, setDetails } = useEditedClipDetails()
+  const navigate = useNavigate()
+  const menuItems = useMemo(() => {
+    if (clip.type !== "custom") return []
+    return [{ label: "Edit code", action: () => navigate(`/code/${clip.id}`) }]
+  }, [clip.id, navigate])
+  const { showMenu, hideMenu, menuPosition, isVisible } = useContextMenu(
+    menuItems.length
+  )
 
   const onDragMoveEnd = useCallback(
     (e: React.DragEvent) => {
@@ -285,9 +296,16 @@ const Clip = (props: { clip: TimelineElement }) => {
           onMouseLeave={() => {
             setDetails(undefined)
           }}
+          onContextMenu={showMenu}
+          draggable={true}
+          onDrag={onDrag}
           style={{
             width: `${width}px`,
             left: `${draggedPosition}px`,
+          }}
+          onDragStart={(e) => {
+            onDragStart(e)
+            setSelectedClipId(clip.id)
           }}
         >
           <ClipContent
@@ -350,6 +368,12 @@ const Clip = (props: { clip: TimelineElement }) => {
             }
           />
         </div>
+        <ContextMenu
+          items={menuItems}
+          position={menuPosition}
+          visible={isVisible}
+          onClose={hideMenu}
+        />
       </div>
     </>
   )
