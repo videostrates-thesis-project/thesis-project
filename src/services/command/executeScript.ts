@@ -11,6 +11,7 @@ import { processCropElementCommand } from "./commandProcessors/processCropElemen
 import { processDeleteAnimationCommand } from "./commandProcessors/processDeleteAnimation"
 import { processDeleteElementCommand } from "./commandProcessors/processDeleteElementCommand"
 import { processDeleteStyleCommand } from "./commandProcessors/processDeleteStyleCommand"
+import { processEditElementCommand } from "./commandProcessors/processEditElementCommand"
 import { processGenerateImageCommand } from "./commandProcessors/processGenerateImageCommand"
 import { processMoveCommand } from "./commandProcessors/processMoveCommand"
 import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCommand"
@@ -73,6 +74,9 @@ const recognizedCommands: RecognizedCommands = {
   },
   generate_image: {
     processFn: processGenerateImageCommand,
+  },
+  edit_custom_element: {
+    processFn: processEditElementCommand,
   },
 }
 

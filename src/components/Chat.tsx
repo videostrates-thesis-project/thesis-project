@@ -1,26 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import clsx from "clsx"
-import openAIService from "../services/chatgpt/openai"
-import { useStore } from "../store"
-import { buildAssistantMessage } from "../services/chatgpt/assistantTemplate"
-import { serializeVideostrate } from "../services/parser/serializationExecutor"
 import PendingChangesBanner from "./PendingChangesBanner"
-import { v4 as uuid } from "uuid"
 import { Typewriter } from "./Typewriter"
+import { ChatMessage } from "../types/chatMessage"
 
-const Chat = () => {
+type ChatProps = {
+  onSend: (message: string) => void
+  messages: ChatMessage[]
+  pendingChanges?: boolean
+}
+
+const Chat = ({ onSend, messages, pendingChanges }: ChatProps) => {
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
   const endRef = useRef<HTMLDivElement>(null)
-  const {
-    parsedVideostrate,
-    availableClips,
-    chatMessages,
-    addChatMessage,
-    selectedClipId,
-    pendingChanges,
-    seek,
-  } = useStore()
   const [typewriterIndex, setTypewriterIndex] = useState<number | null>(null)
   const [newMessage, setNewMessage] = useState(false)
 
@@ -41,48 +34,30 @@ const Chat = () => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault() // Prevents adding a new line on Enter
-      onSend()
+      onTrySend()
     }
   }
 
-  const onSend = useCallback(() => {
+  const onTrySend = useCallback(() => {
     setTypewriterIndex(null)
     setNewMessage(true)
-    const html = serializeVideostrate(parsedVideostrate, "chatGPT").html
-    const prompt = buildAssistantMessage(
-      availableClips,
-      html,
-      selectedClipId,
-      seek,
-      message
-    )
-    openAIService.sendChatMessageToAzure(prompt)
-    addChatMessage({
-      role: "user",
-      content: message,
-      id: uuid(),
-    })
-    openAIService.sendChatMessageForReaction()
+
+    onSend(message)
+
     setMessage("")
     setLoading(true)
-  }, [
-    addChatMessage,
-    availableClips,
-    message,
-    parsedVideostrate,
-    selectedClipId,
-  ])
+  }, [message, onSend])
 
   useEffect(() => {
     if (endRef.current) {
       endRef.current.scrollIntoView({ behavior: "smooth" })
     }
-    if (chatMessages.at(-1)?.role === "assistant") {
+    if (messages.at(-1)?.role === "assistant") {
       setLoading(false)
-      setTypewriterIndex(chatMessages.length - 1)
+      setTypewriterIndex(messages.length - 1)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chatMessages.length])
+  }, [messages.length])
 
   useEffect(() => {
     if (loading && endRef.current) {
@@ -93,7 +68,7 @@ const Chat = () => {
   return (
     <div className="flex flex-col h-full w-96 min-w-96 max-h-full bg-base-300 border-l border-neutral rounded">
       <div className="pt-4 max-h-full overflow-y-auto overflow-x-hidden break-words break-all">
-        {chatMessages.map((msg, index) => (
+        {messages.map((msg, index) => (
           <div
             key={index}
             className={clsx(
@@ -169,7 +144,7 @@ const Chat = () => {
               "btn btn-sm btn-accent join-item px-2 h-full min-w-0",
               !message && "btn-disabled"
             )}
-            onClick={onSend}
+            onClick={onTrySend}
           >
             <i className="bi bi-arrow-right-short text-xl"></i>
           </button>
