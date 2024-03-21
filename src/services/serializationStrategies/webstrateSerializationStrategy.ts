@@ -18,8 +18,8 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
   }
 
   protected serializeElement(element: VideoElement): string {
-    console.log("Serializing element", element)
-    if (element.nodeType === "video") {
+    // console.log("Serializing element", element)
+    if (element.type === "video") {
       const clip = element as VideoClipElement
 
       return `<div clip-name="${clip.name}" id="${clip.id}" style="z-index: ${clip.layer};" class="composited" data-start="${clip.start}" data-end="${clip.end}">
