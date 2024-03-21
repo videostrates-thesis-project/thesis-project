@@ -165,7 +165,7 @@ export class ParsedVideostrate {
 
   public addCustomElement(
     name: string,
-    outerHtml: string,
+    content: string,
     start: number,
     end: number,
     type: VideoElementType = "custom",
@@ -174,7 +174,7 @@ export class ParsedVideostrate {
     const newId = uuid()
     const layer = Math.max(...this.all.map((e) => e.layer)) + 1
     this.all.push(
-      new VideoElement({
+      new CustomElement({
         id: newId,
         name,
         start,
@@ -182,7 +182,8 @@ export class ParsedVideostrate {
         nodeType,
         type,
         offset: 0,
-        outerHtml,
+        content,
+        outerHtml: content,
         layer,
         speed: 1,
       })

@@ -18,6 +18,7 @@ interface TimelineElementProps extends VideoElementProps {
   thumbnail?: string
   edits?: ClipChange[]
   oldElement?: TimelineElement
+  content?: string
 }
 export class TimelineElement extends VideoElement {
   width: number
@@ -29,9 +30,12 @@ export class TimelineElement extends VideoElement {
   thumbnail?: string
   edits?: ClipChange[]
   oldElement?: TimelineElement
+  // The custom element content
+  content?: string
 
   constructor(props: TimelineElementProps) {
     super(props)
+    this.name = props.name
     this.width = props.width
     this.left = props.left
     this.minLeftPosition = props.minLeftPosition
@@ -41,6 +45,7 @@ export class TimelineElement extends VideoElement {
     this.thumbnail = props.thumbnail
     this.edits = props.edits
     this.oldElement = props.oldElement
+    this.content = props.content
   }
   clone() {
     return new TimelineElement({
@@ -63,6 +68,7 @@ export class TimelineElement extends VideoElement {
       thumbnail: this.thumbnail,
       edits: this.edits,
       oldElement: this.oldElement,
+      content: this.content,
     })
   }
 }
@@ -87,7 +93,6 @@ export const useTimelineElements = (widthPerSecond: number) => {
         start: element.start,
         end: element.end,
         offset: (element as VideoClipElement).offset,
-        source: (element as VideoClipElement).source,
         width: (element.end - element.start) * widthPerSecond,
         left: element.start * widthPerSecond,
         thumbnail:

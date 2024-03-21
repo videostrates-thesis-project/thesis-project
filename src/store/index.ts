@@ -8,11 +8,7 @@ import { ChatMessage } from "../types/chatMessage"
 import { ExecutedScript } from "../services/command/executedScript"
 import { Image } from "../types/image"
 import { v4 as uuid } from "uuid"
-import {
-  CustomElement,
-  VideoClipElement,
-  VideoElement,
-} from "../types/videoElement"
+import { CustomElement, VideoClipElement } from "../types/videoElement"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 
 const TOAST_LENGTH = 5000
@@ -52,8 +48,8 @@ export interface AppState {
   addAvailableImage: (image: Image) => void
   deleteAvailableImage: (url: string) => void
 
-  availableCustomElements: VideoElement[]
-  addAvailableCustomElement: (element: VideoElement) => void
+  availableCustomElements: CustomElement[]
+  addAvailableCustomElement: (element: CustomElement) => void
   deleteAvailableCustomElement: (id: string) => void
 
   selectedClipId: string | null
@@ -123,21 +119,12 @@ export const useStore = create<AppState>()(
             return concatAvailableImage(acc, img)
           }, state.availableImages)
 
-          const availableCustomElements = parsed.all
-            .filter((e): e is CustomElement => e.type !== "video")
-            .map((e) => {
-              const element = e.clone()
-              element.id = uuid()
-              return element
-            })
-
           return {
             parsedVideostrate: parsed.clone(),
             serializedVideostrate: { html, css: style },
             pendingChanges: false,
             availableClips,
             availableImages,
-            availableCustomElements,
           }
         }),
       pendingChanges: false,
@@ -199,12 +186,14 @@ export const useStore = create<AppState>()(
         })
       },
       availableCustomElements: [],
-      addAvailableCustomElement: (element: VideoElement) => {
+      addAvailableCustomElement: (element: CustomElement) => {
+        const newElement = element.clone()
+        newElement.id = uuid()
         set((state) => {
           return {
             availableCustomElements: [
               ...state.availableCustomElements,
-              element,
+              newElement,
             ],
           }
         })
@@ -338,21 +327,13 @@ export const useStore = create<AppState>()(
               }
               break
             case "availableCustomElements":
-              return (value as VideoElement[]).map((c) => {
-                if (c.type === "video")
-                  return new VideoClipElement({
-                    ...(c as VideoClipElement),
-                    start: c._start,
-                    end: c._end,
-                    offset: c._offset,
-                  })
-                else
-                  return new CustomElement({
-                    ...(c as CustomElement),
-                    start: c._start,
-                    end: c._end,
-                    offset: c._offset,
-                  })
+              return (value as CustomElement[]).map((c) => {
+                return new CustomElement({
+                  ...(c as CustomElement),
+                  start: c._start,
+                  end: c._end,
+                  offset: c._offset,
+                })
               })
             case "toasts":
               return []

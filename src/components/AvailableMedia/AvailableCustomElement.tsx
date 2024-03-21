@@ -3,9 +3,10 @@ import useScaledIframe from "../../hooks/useScaledIframe"
 import { useCallback, useEffect, useMemo } from "react"
 import { useStore } from "../../store"
 import { WebstrateSerializationStrategy } from "../../services/serializationStrategies/webstrateSerializationStrategy"
-import { VideoElement } from "../../types/videoElement"
+import { CustomElement } from "../../types/videoElement"
+import { executeScript } from "../../services/command/executeScript"
 
-const AvailableCustomElement = (props: { element: VideoElement }) => {
+const AvailableCustomElement = (props: { element: CustomElement }) => {
   const {
     iframeRef,
     iframeScale,
@@ -15,7 +16,8 @@ const AvailableCustomElement = (props: { element: VideoElement }) => {
     iframeHeight,
     iframeContainerHeight,
   } = useScaledIframe()
-  const { serializedVideostrate, deleteAvailableCustomElement } = useStore()
+  const { serializedVideostrate, deleteAvailableCustomElement, seek } =
+    useStore()
 
   const elementHtml = useMemo(() => {
     const serializer = new WebstrateSerializationStrategy()
@@ -40,6 +42,20 @@ const AvailableCustomElement = (props: { element: VideoElement }) => {
       iframeRef.current.onload = updateStyle
     }
   }, [iframeRef, serializedVideostrate.css])
+
+  const addToTimeline = useCallback(() => {
+    executeScript([
+      {
+        command: "add_custom_element",
+        args: [
+          `"${props.element.name}"`,
+          `"${props.element.content}"`,
+          seek.toString(),
+          "10",
+        ],
+      },
+    ])
+  }, [props.element.name, props.element.content, seek])
 
   const deleteElement = useCallback(() => {
     deleteAvailableCustomElement(props.element.id)
@@ -69,7 +85,7 @@ const AvailableCustomElement = (props: { element: VideoElement }) => {
           {props.element.name}
         </span>
 
-        <button className="btn btn-sm btn-ghost w-fit">
+        <button onClick={addToTimeline} className="btn btn-sm btn-ghost w-fit">
           <i className="bi bi-plus-lg text-lg text-accent"></i>
         </button>
       </div>
