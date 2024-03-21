@@ -32,18 +32,19 @@ function add_clip(clip_name: string, absolute_start: number): string
 function delete_element(element_id: string)
 
 /**
- * Moves the clip on the timeline. Affects the absolute-start and absolute-end attributes.
+ * Moves the clip/element on the timeline. The end of the clip/element is also moved. Affects the absolute-start and absolute-end attributes.
  * @param {element_id} id of the element in the html
- * @param {absolute_start} when the clip starts in the timeline, in seconds
+ * @param {absolute_start} when the clip/element starts in the timeline, in seconds
  */
 function move(element_id: string, absolute_start: number)
 
 /**
- * Moves the clip on the timeline relative to where it is. Affects the absolute-start and absolute-end attributes.
+ * Repositions the clip/element on the timeline. Affects the absolute-start and absolute-end attributes.
  * @param {element_id} id of the element in the html
- * @param {delta} the relative time the clip should be moved on the timeline, in seconds
+ * @param {absolute_start} when the clip starts in the timeline, in seconds
+ * @param {absolute_end} when the clip/element ends in the timeline, in seconds
  */
-function move_delta(element_id: string, delta: number)
+function reposition(element_id: string, absolute_start: number, absolute_end: number)
 
 /**
  * Moves the layer of the element. Affects the z-index attribute.

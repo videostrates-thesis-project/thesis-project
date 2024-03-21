@@ -15,7 +15,7 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
 
     // Find the parent element
     const parent = document.getElementById(clip.parentId ?? "root")
-    if (!parent) throw new Error("Parent not found")
+    if (!parent) throw new Error("Parent with id '" + clip.parentId + "' not found")
 
     // Add the element
     parent.innerHTML += html

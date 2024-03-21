@@ -13,6 +13,7 @@ import { processDeleteElementCommand } from "./commandProcessors/processDeleteEl
 import { processDeleteStyleCommand } from "./commandProcessors/processDeleteStyleCommand"
 import { processEditElementCommand } from "./commandProcessors/processEditElementCommand"
 import { processGenerateImageCommand } from "./commandProcessors/processGenerateImageCommand"
+import { processRepositionCommand } from "./commandProcessors/processRepositionCommand"
 import { processMoveCommand } from "./commandProcessors/processMoveCommand"
 import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCommand"
 import { processRenameElement } from "./commandProcessors/processRenameElementCommand"
@@ -38,6 +39,9 @@ const recognizedCommands: RecognizedCommands = {
   },
   move_delta: {
     processFn: processMoveDeltaCommand,
+  },
+  reposition: {
+    processFn: processRepositionCommand,
   },
   add_custom_element: {
     processFn: processAddCustomElementCommand,

@@ -71,6 +71,16 @@ export class ParsedVideostrate {
     this.all = [...this.all]
   }
 
+  public repositionClipById(clipId: string, start: number, end: number) {
+    const clip = this.all.find((c) => c.id === clipId)
+    if (!clip) {
+      throw new Error(`Clip with id ${clipId} not found`)
+    }
+    clip.start = start
+    clip.end = end
+    this.all = [...this.all]
+  }
+
   public moveClipDeltaById(clipId: string, delta: number) {
     const clip = this.all.find((c) => c.id === clipId)
     if (!clip) {

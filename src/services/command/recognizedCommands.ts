@@ -28,6 +28,7 @@ export const availableCommands = [
   "move_layer",
   "generate_image",
   "edit_custom_element",
+  "reposition",
 ] as const
 
 export type AvailableCommand = (typeof availableCommands)[number]
