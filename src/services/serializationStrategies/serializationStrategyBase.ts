@@ -51,6 +51,20 @@ export abstract class SerializationStrategyBase {
       .join("\n")
   }
 
+  protected static removeElementsWithClipNameAttribute = (doc: HTMLElement) => {
+    const elementsToRemove = doc.querySelectorAll("[clip-name]")
+    elementsToRemove.forEach((element) => {
+      element.remove()
+    })
+
+    // Recursively process child nodes
+    doc.childNodes.forEach((childNode) => {
+      if (childNode.nodeType === Node.ELEMENT_NODE) {
+        this.removeElementsWithClipNameAttribute(childNode as HTMLElement)
+      }
+    })
+  }
+
   abstract serializeElement(element: VideoElement): string
 
   protected abstract addElementToHtml(

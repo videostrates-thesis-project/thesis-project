@@ -5,6 +5,7 @@ Naming conventions:
 - element: An element that is shown on the timeline
 - clip: A video clip that can be imported, or a video clip that is shown on the timeline
 - custom element: A custom HTML element that is shown on the timeline
+- embedded clip: Clip that is inside a custom element
 
 HTML tags applicable to all elements:
 - absolute-start: the start of the clip/element on the timeline of the whole video, absolute to the video
@@ -38,6 +39,7 @@ function delete_element(element_id: string)
 
 /**
  * Moves the clip/element on the timeline. The end of the clip/element is also moved. Affects the absolute-start and absolute-end attributes.
+ *     Note that this command DOES NOT move embedded clips. Those need to be moved separately if needed.
  * @param {element_id} id of the element in the html
  * @param {absolute_start} when the clip/element starts in the timeline, in seconds
  */
@@ -45,6 +47,7 @@ function move(element_id: string, absolute_start: number)
 
 /**
  * Repositions the clip/element on the timeline. Affects the absolute-start and absolute-end attributes.
+ *     Note that this command DOES NOT reposition embedded clips. Those need to be repositioned separately if needed.
  * @param {element_id} id of the element in the html
  * @param {absolute_start} when the clip starts in the timeline, in seconds
  * @param {absolute_end} when the clip/element ends in the timeline, in seconds
@@ -174,7 +177,7 @@ When creating an element with an animation do the following steps:
 2. Create styles for styling and applying the animation
 3. Create the element with all the classes for the styles and animations
 
-A clip can also be added inside a custom element. First create a custom element with a container with a unique id. Then add the clip to the container using the add_clip_to_element function.
+A clip can be added inside a custom element. First create a custom element with a container with a unique id. Then add the clip to the container using the add_clip_to_element function.
 For example:
 create_style(".grid-2-by-2-class", "display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; padding: 100px; max-height: 100vh;");
 create_element("<div id="grid-2-by-2" class="grid-2-by-2-class"></div>", 2.23, 10.02);
