@@ -16,6 +16,7 @@ import { processGenerateImageCommand } from "./commandProcessors/processGenerate
 import { processRepositionCommand } from "./commandProcessors/processRepositionCommand"
 import { processMoveCommand } from "./commandProcessors/processMoveCommand"
 import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCommand"
+import { processMoveDeltaEmbeddedCommand } from "./commandProcessors/processMoveDeltaEmbeddedCommand"
 import { processRenameElement } from "./commandProcessors/processRenameElementCommand"
 import { processSetSpeedCommand } from "./commandProcessors/processSetSpeedCommand"
 import { ExecutedScript } from "./executedScript"
@@ -39,6 +40,9 @@ const recognizedCommands: RecognizedCommands = {
   },
   move_delta: {
     processFn: processMoveDeltaCommand,
+  },
+  move_delta_embedded: {
+    processFn: processMoveDeltaEmbeddedCommand,
   },
   reposition: {
     processFn: processRepositionCommand,

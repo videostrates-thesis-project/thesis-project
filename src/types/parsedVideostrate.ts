@@ -91,6 +91,58 @@ export class ParsedVideostrate {
     this.all = [...this.all]
   }
 
+  public moveEmbeddedClips(elementId: string, delta: number) {
+    // TODO: Can this be done nicer?
+
+    const customElement = this.all.find((e) => e.id === elementId && e.type == "custom") as CustomElement
+    if (!customElement) {
+      throw new Error(`Custom element with id ${elementId} not found`)
+    }
+    
+    // Find all the video elements in customElement.outerHTML
+    const parser = new DOMParser()
+    const document = parser.parseFromString(customElement.content, "text/html")
+    const htmlElement = document.body.firstChild as HTMLElement
+    if (!htmlElement) {
+      throw new Error("Invalid outerHtml")
+    }
+
+    const videoElements = htmlElement.querySelectorAll("video")
+
+    // Move all the clips by delta
+    videoElements.forEach((videoElement) => {
+      const id = videoElement.parentElement?.getAttribute("id")
+      const clip = this.all.find((e) => e.id === id)
+      console.log("clip id", id)
+      if (clip) {
+        clip.start += delta
+        clip.end += delta
+      }
+    })
+
+    this.all = [...this.all]
+  }
+
+  /**
+   * Move the clip with the given id by the given delta, and also move all the embedded clips with it.
+   * @param clipId Id of the clip to move
+   * @param delta Time delta to move the clip by in seconds
+   */
+  public moveClipWithEmbeddedDeltaById(clipId: string, delta: number) {
+    const clip = this.all.find((c) => c.id === clipId)
+    if (!clip) {
+      throw new Error(`Clip with id ${clipId} not found`)
+    }
+    clip.start += delta
+    clip.end += delta
+
+    if (clip.type === "custom") {
+      this.moveEmbeddedClips(clipId, delta)
+    }
+
+    this.all = [...this.all]
+  }
+
   public addClip(source: string, start: number, end: number) {
     const newId = uuid()
     const layer =

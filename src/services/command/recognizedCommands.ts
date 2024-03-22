@@ -15,6 +15,7 @@ export const availableCommands = [
   "delete_element",
   "crop",
   "move_delta",
+  "move_delta_embedded",
   "add_custom_element",
   "create_style",
   "delete_style",

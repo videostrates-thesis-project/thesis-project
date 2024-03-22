@@ -136,7 +136,7 @@ const Clip = (props: { clip: TimelineElement }) => {
       const clipTimeShift = clipShift / timeline.widthPerSecond
       executeScript([
         {
-          command: "move_delta",
+          command: "move_delta_embedded",
           args: [`"${clip.id}"`, clipTimeShift.toString()],
         },
       ])
