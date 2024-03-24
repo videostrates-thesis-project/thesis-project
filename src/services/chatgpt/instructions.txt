@@ -98,7 +98,7 @@ function add_subtitle(text: string, absolute_start: number, absolute_end: number
  * Adds a custom html element to the video.
  *      Note that clips with the video tag cannot be added as custom elements. They can be added using the add_clip function, and then styled using the assign_class function.
  * @param {element_name} the name of the element, e.g. "Cat table", short, max 20 characters
- * @param {element} the html code of the custom element
+ * @param {element} the html code of the custom element, must include only one root element
  * @param {absolute_start} when the element starts displaying in the timeline, in seconds
  * @param {absolute_end} when the element stops displaying in the timeline, in seconds
  * @returns {string} the id of the new element
