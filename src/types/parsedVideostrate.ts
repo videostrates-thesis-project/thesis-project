@@ -92,32 +92,14 @@ export class ParsedVideostrate {
   }
 
   public moveEmbeddedClips(elementId: string, delta: number) {
-    // TODO: Can this be done nicer?
+    const clips = this.all.filter((c) => 
+      c.type === "video" && 
+      (c as VideoClipElement).containerElementId === elementId
+    ) as VideoClipElement[]
 
-    const customElement = this.all.find((e) => e.id === elementId && e.type == "custom") as CustomElement
-    if (!customElement) {
-      throw new Error(`Custom element with id ${elementId} not found`)
-    }
-    
-    // Find all the video elements in customElement.outerHTML
-    const parser = new DOMParser()
-    const document = parser.parseFromString(customElement.content, "text/html")
-    const htmlElement = document.body.firstChild as HTMLElement
-    if (!htmlElement) {
-      throw new Error("Invalid outerHtml")
-    }
-
-    const videoElements = htmlElement.querySelectorAll("video")
-
-    // Move all the clips by delta
-    videoElements.forEach((videoElement) => {
-      const id = videoElement.parentElement?.getAttribute("id")
-      const clip = this.all.find((e) => e.id === id)
-      console.log("clip id", id)
-      if (clip) {
-        clip.start += delta
-        clip.end += delta
-      }
+    clips.forEach((c) => {
+      c.start += delta
+      c.end += delta
     })
 
     this.all = [...this.all]
@@ -168,6 +150,28 @@ export class ParsedVideostrate {
     return newId
   }
 
+  public findContainerElement(elementId: string | undefined) {
+    if (!elementId) {
+      return undefined
+    }
+
+    const containerElement = this.all.find((e) => {
+      if (e.type !== "custom") {
+        return false
+      }
+      const customElement = e as CustomElement
+      const parser = new DOMParser()
+      const document = parser.parseFromString(customElement.content, "text/html")
+      const htmlElement = document.body.firstChild as HTMLElement
+      if (!htmlElement) {
+        return false
+      }
+      return htmlElement.querySelector(`#${elementId}`)
+    }) as CustomElement
+
+    return containerElement.id
+  }
+
   public addClipToElement(
     elementId: string,
     source: string,
@@ -175,6 +179,9 @@ export class ParsedVideostrate {
     end: number
   ) {
     const newId = uuid()
+
+    const containerElementId = this.findContainerElement(elementId)
+
     this.all.push(
       new VideoClipElement({
         id: newId,
@@ -188,6 +195,7 @@ export class ParsedVideostrate {
         speed: 1,
         layer: 0,
         parentId: elementId,
+        containerElementId: containerElementId,
       })
     )
     this.all = [...this.all]

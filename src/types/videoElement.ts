@@ -111,18 +111,21 @@ interface VideoClipElementProps extends VideoElementProps {
   source: string
   className?: string
   parentId?: string
+  containerElementId?: string
 }
 
 export class VideoClipElement extends VideoElement {
   source: string
   className?: string
   parentId?: string
+  containerElementId?: string
 
   constructor(props: VideoClipElementProps) {
     super(props)
     this.source = props.source
     this.className = props.className
     this.parentId = props.parentId
+    this.containerElementId = props.containerElementId
   }
 
   clone() {
@@ -140,6 +143,7 @@ export class VideoClipElement extends VideoElement {
       source: this.source,
       className: this.className,
       parentId: this.parentId,
+      containerElementId: this.containerElementId,
     })
   }
 }

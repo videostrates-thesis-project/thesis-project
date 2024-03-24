@@ -33,6 +33,19 @@ export const parseVideostrate = (text: string) => {
   return parsed
 }
 
+export const findContainerElement = (htmlElement: HTMLElement) => {
+  // Walk up the tree until a container element with costum-element-name attribute is found
+  let parent: HTMLElement | null = htmlElement
+  while (parent) {
+    if (parent.hasAttribute("custom-element-name")) {
+      return parent.id
+    }
+    parent = parent.parentElement
+  }
+
+  return undefined
+}
+
 const parseElement = (element: ChildNode) => {
   if (element.nodeValue === "\n") return
   const htmlElement = element as HTMLElement
@@ -113,6 +126,7 @@ const parseElement = (element: ChildNode) => {
         speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
         className: htmlElement.parentElement?.className ?? "",
         parentId: htmlElement.parentElement?.parentElement?.id ?? "",
+        containerElementId: findContainerElement(htmlElement) ?? "",
       })
 
       allElements.push(clip)

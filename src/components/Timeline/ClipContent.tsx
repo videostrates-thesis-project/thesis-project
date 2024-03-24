@@ -2,6 +2,7 @@ import { ReactElement, useMemo, useRef } from "react"
 import { TimelineElement } from "../../hooks/useTimelineElements"
 import { useStore } from "../../store"
 import clsx from "clsx"
+import { VideoClipElement } from "../../types/videoElement"
 
 const ClipContent = (props: {
   clip: TimelineElement
@@ -15,7 +16,14 @@ const ClipContent = (props: {
   const ref = useRef<HTMLDivElement>(null)
 
   const isSelected = useMemo(
-    () => !props.isOldClip && selectedClipId === clip.id,
+    () => (
+      (!props.isOldClip && selectedClipId === clip.id) ||
+      (
+        clip.type == "video" &&
+        (clip as VideoClipElement).containerElementId === selectedClipId
+      
+      )
+    ),
     [props.isOldClip, selectedClipId, clip.id]
   )
 
