@@ -15,8 +15,8 @@ import { processEditElementCommand } from "./commandProcessors/processEditElemen
 import { processGenerateImageCommand } from "./commandProcessors/processGenerateImageCommand"
 import { processRepositionCommand } from "./commandProcessors/processRepositionCommand"
 import { processMoveCommand } from "./commandProcessors/processMoveCommand"
+import { processMoveDeltaWithoutEmbeddedCommand } from "./commandProcessors/processMoveDeltaWithoutEmbeddedCommand"
 import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCommand"
-import { processMoveDeltaEmbeddedCommand } from "./commandProcessors/processMoveDeltaEmbeddedCommand"
 import { processRenameElement } from "./commandProcessors/processRenameElementCommand"
 import { processSetSpeedCommand } from "./commandProcessors/processSetSpeedCommand"
 import { ExecutedScript } from "./executedScript"
@@ -38,11 +38,11 @@ const recognizedCommands: RecognizedCommands = {
   crop: {
     processFn: processCropElementCommand,
   },
+  move_delta_without_embedded: {
+    processFn: processMoveDeltaWithoutEmbeddedCommand,
+  },
   move_delta: {
     processFn: processMoveDeltaCommand,
-  },
-  move_delta_embedded: {
-    processFn: processMoveDeltaEmbeddedCommand,
   },
   reposition: {
     processFn: processRepositionCommand,

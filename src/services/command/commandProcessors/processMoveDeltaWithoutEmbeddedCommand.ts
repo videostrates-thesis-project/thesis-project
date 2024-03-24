@@ -2,7 +2,7 @@ import { useStore } from "../../../store"
 import { determineReturnValue } from "../determineReturnValue"
 import { ExecutionContext } from "../executionContext"
 
-export const processMoveDeltaEmbeddedCommand = async (
+export const processMoveDeltaWithoutEmbeddedCommand = async (
   args: string[],
   context: ExecutionContext
 ) => {
@@ -15,11 +15,11 @@ export const processMoveDeltaEmbeddedCommand = async (
   const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
-    parsedVideostrate.moveClipWithEmbeddedDeltaById(elementId.value, delta.value)
+    parsedVideostrate.moveClipDeltaById(elementId.value, delta.value)
     useStore.getState().setParsedVideostrate(parsedVideostrate)
   } catch (error) {
     console.error(
-      "[CommandProcessor] Error processing move_delta_embedded command: ",
+      "[CommandProcessor] Error processing move_delta_without_embedded command: ",
       error
     )
     throw error

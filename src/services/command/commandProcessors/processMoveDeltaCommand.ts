@@ -15,7 +15,7 @@ export const processMoveDeltaCommand = async (
   const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
-    parsedVideostrate.moveClipDeltaById(elementId.value, delta.value)
+    parsedVideostrate.moveClipWithEmbeddedDeltaById(elementId.value, delta.value)
     useStore.getState().setParsedVideostrate(parsedVideostrate)
   } catch (error) {
     console.error(
