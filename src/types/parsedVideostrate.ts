@@ -207,7 +207,7 @@ export class ParsedVideostrate {
     if (useStore.getState().selectedClipId === elementId) {
       useStore.getState().setSelectedClipId(null)
     }
-    this.all = this.all.filter((c) => c.id !== elementId)
+    this.all = this.all.filter((c) => c.id !== elementId && (c as VideoClipElement).containerElementId !== elementId)
     this.updateImages()
   }
 
