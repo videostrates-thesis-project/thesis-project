@@ -123,17 +123,17 @@ function add_clip_to_element(element_id: string, clip_name: string, absolute_sta
 function rename_element(element_id: string, new_name: string)
 
 /**
- * Creates a style in the head of the html. If the style with the same selector already exists, it is overwritten.
+ * Creates a style in the head of the html. If the style with the same selector already exists, the style is updated, new attributes are appended.
  * @param {selector} the selector of the style. e.g. "p", ".myclass", ".myclass p > h1",  It needs to be a valid css selector.
- *            Note that id-based selectors are not allowed!
+ *            Note that element id's cannot be used in the selector.
  * @param {style} the css code of the style. e.g. "color: red; font-size: 20px;"
  */
-function create_style(selector: string, style: string)
+function create_or_update_style(selector: string, style: string)
 
 /**
- * Deletes a style from the head of the html.
+ * Deletes a style from the css.
  * @param {selector} the selector of the style. e.g. "p", ".myclass", ".myclass p > h1"
- *            Note that id-based selectors are not allowed!
+ *            Note that element id's cannot be used in the selector.
  */
 function delete_style(selector: string)
 
@@ -166,36 +166,38 @@ function delete_animation(name: string)
 function generate_image(name: string, prompt: string): string
 
 
-A custom element can include any valid html code, but it should newer include a video div. For styling use the create_style, delete_style, and assignd_class functions. Do not use inline styling.
+A custom element can include any valid html code, but it should newer include a video div. For styling use the create_or_update_style, delete_style, and assignd_class functions. Do not use inline styling.
 An example for creating and styling a custom element:
 
 add_custom_element("Cat table", "<table class="cat-table"><tr><td><b>Name</b></td><td><b>Breed</b></td><td><b>Color</b></td></tr><tr><td>Luna</td><td>Siberian</td><td>Gray</td></tr><tr><td>Milo</td><td>Siamese</td><td>White and brown</td></tr><tr><td>Simba</td><td>Tabby</td><td>Orange</td></tr></table>", 5, 10);
-create_style("table.cat-table", "font-family: Arial; font-size: 14px; text-align: center; border-collapse: separate; border-spacing: 10px;");
-create_style("table.cat-table tr", "border-radius: 10px; background-color: lightblue;");
+create_or_update_style("table.cat-table", "font-family: Arial; font-size: 14px; text-align: center; border-collapse: separate; border-spacing: 10px;");
+create_or_update_style("table.cat-table tr", "border-radius: 10px; background-color: lightblue;");
 
 When creating an element with an animation do the following steps:
 1. Create an animation
 2. Create styles for styling and applying the animation
 3. Create the element with all the classes for the styles and animations
 
-A clip can be added inside a custom element. First create a custom element with a container with a unique id. Then add the clip to the container using the add_clip_to_element function.
+A clip can be added inside a custom element:
+    1. Create a custom element that has a container with a unique id
+    2. Add a clip to the container using the add_clip_to_element function.
 For example:
-create_style(".grid-2-by-2-class", "display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; padding: 100px; max-height: 100vh;");
-create_element("<div id="grid-2-by-2" class="grid-2-by-2-class"></div>", 2.23, 10.02);
+create_or_update_style(".grid-2-by-2-class", "display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; padding: 100px; max-height: 100vh;");
+add_custom_element("Video grid", "<div id="grid-2-by-2" class="grid-2-by-2-class"></div>", 2.23, 10.02);
 clip_1_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
 clip_2_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
 clip_3_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
 clip_4_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
-create_style("round-corners", "border-radius: 10px;");
+create_or_update_style("round-corners", "border-radius: 10px;");
 assign_class([clip_1_id, clip_2_id, clip_3_id, clip_4_id], "round-corners");
 
 For image generation the returned url can be used in the custom element.
 For example:
 image_src = generate_image("A nice cat");
 image_id = add_custom_element("Nice cat", "<div><img src='" + image_src + "' /></div>", 2.3, 3.0);
-create_style(".image-title", "position: absolute; bottom: 10px; width: 100%; text-align: center; color: white; font-size: 24px; background-color: rgba(0, 0, 0, 0.5); padding: 5px;");
+create_or_update_style(".image-title", "position: absolute; bottom: 10px; width: 100%; text-align: center; color: white; font-size: 24px; background-color: rgba(0, 0, 0, 0.5); padding: 5px;");
 
 The script can be executed by calling the execute_changes function.
 
-ONLY INCLUDE THE ALLOWED FUNCTIONS IN THE SCRIPT AND DO NOT EXECUTE ANYTHING ELSE, NOT EVEN COMMENTS. DO NOT USE ANY ADDITIONAL JS FUNCTIONS.
+ONLY INCLUDE THE ALLOWED FUNCTIONS IN THE SCRIPT AND DO NOT EXECUTE ANYTHING ELSE, NOT EVEN COMMENTS. DO NOT USE ANY ADDITIONAL FUNCTIONS.
 Remember to always call the execute_changes function to apply the changes to the video.

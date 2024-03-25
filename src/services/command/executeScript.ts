@@ -7,6 +7,7 @@ import { processAssignClassCommand } from "./commandProcessors/processAssignClas
 import { processChangeLayerCommand } from "./commandProcessors/processChangeLayerCommand"
 import { processCreateAnimationCommand } from "./commandProcessors/processCreateAnimationCommand"
 import { processCreateStyleCommand } from "./commandProcessors/processCreateStyleCommand"
+import { processCreateOrUpdateStyleCommand } from "./commandProcessors/processCreateOrUpdateStyleCommand"
 import { processCropElementCommand } from "./commandProcessors/processCropElementCommand"
 import { processDeleteAnimationCommand } from "./commandProcessors/processDeleteAnimation"
 import { processDeleteElementCommand } from "./commandProcessors/processDeleteElementCommand"
@@ -52,6 +53,9 @@ const recognizedCommands: RecognizedCommands = {
   },
   create_style: {
     processFn: processCreateStyleCommand,
+  },
+  create_or_update_style: {
+    processFn: processCreateOrUpdateStyleCommand,
   },
   delete_style: {
     processFn: processDeleteStyleCommand,

@@ -321,6 +321,37 @@ export class ParsedVideostrate {
     }
   }
 
+  public parseStyle(style: string): Record<string, string> {
+    let styleArray = style.split(";").map((s) => s.trim()).filter((s) => s.length > 0)
+
+    return styleArray.reduce((acc, val) => {
+      const [key, value] = val.split(":").map((s) => s.trim())
+      acc[key] = value
+      return acc
+    }, {} as Record<string, string>)
+  }
+
+  public updateStyle(selector: string, style: string) {
+    const existing = this.style.find((s) => s.selector === selector)
+    if (existing) {
+      const existingStyleMap = this.parseStyle(existing.style)
+      const newStyleMap = this.parseStyle(style)
+      const mergedStyle = { ...existingStyleMap, ...newStyleMap }
+
+      let mergedStyleString = Object.entries(mergedStyle)
+        .map(([key, value]) => `${key}:${value}`)
+        .join(";")
+
+      if (mergedStyleString.length !== 0) {
+        mergedStyleString += ";"
+      }
+
+      existing.style = mergedStyleString
+    } else {
+      this.style.push({ selector, style })
+    }
+  }
+
   public removeStyle(selector: string) {
     this.style = this.style.filter((s) => s.selector !== selector)
   }

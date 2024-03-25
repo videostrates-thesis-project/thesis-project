@@ -18,6 +18,7 @@ export const availableCommands = [
   "move_delta_without_embedded",
   "add_custom_element",
   "create_style",
+  "create_or_update_style",
   "delete_style",
   "assign_class",
   "create_animation",
