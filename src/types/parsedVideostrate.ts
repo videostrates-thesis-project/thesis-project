@@ -1,6 +1,7 @@
 import { useStore } from "../store"
 import updateLayers from "../utils/updateLayers"
 import { Image } from "./image"
+import VideoClip from "./videoClip"
 import {
   CustomElement,
   VideoClipElement,
@@ -125,7 +126,7 @@ export class ParsedVideostrate {
     this.all = [...this.all]
   }
 
-  public addClip(source: string, start: number, end: number) {
+  public addClip(clip: VideoClip, start: number, end: number) {
     const newId = uuid()
     const layer =
       Math.max(
@@ -134,11 +135,11 @@ export class ParsedVideostrate {
     this.all.push(
       new VideoClipElement({
         id: newId,
-        name: "",
+        name: clip.title,
         start,
         end,
         nodeType: "video",
-        source,
+        source: clip.source,
         type: "video",
         offset: 0,
         speed: 1,
@@ -174,7 +175,7 @@ export class ParsedVideostrate {
 
   public addClipToElement(
     elementId: string,
-    source: string,
+    clip: VideoClip,
     start: number,
     end: number
   ) {
@@ -185,11 +186,11 @@ export class ParsedVideostrate {
     this.all.push(
       new VideoClipElement({
         id: newId,
-        name: "",
+        name: clip.title,
         start,
         end,
         nodeType: "video",
-        source,
+        source: clip.source,
         type: "video",
         offset: 0,
         speed: 1,
@@ -241,6 +242,24 @@ export class ParsedVideostrate {
     return newLength - oldLength
   }
 
+  private static cleanTree = (element: HTMLElement) => {
+    if (element?.childNodes) {
+      element.childNodes.forEach(
+        (childNode) => (childNode = this.cleanTree(childNode as HTMLElement))
+      )
+    }
+
+    if (
+      element.className &&
+      element.className.startsWith('\\"') &&
+      element.className.endsWith('\\"')
+    ) {
+      element.className = element.className.slice(2, -2)
+    }
+
+    return element
+  }
+
   public addCustomElement(
     name: string,
     content: string,
@@ -249,6 +268,15 @@ export class ParsedVideostrate {
     type: VideoElementType = "custom",
     nodeType = "div"
   ) {
+    const parser = new DOMParser()
+    const document = parser.parseFromString(content, "text/html")
+    let htmlElement = document.body.firstChild as HTMLElement
+    htmlElement = ParsedVideostrate.cleanTree(htmlElement)
+    const parent = htmlElement.parentNode
+    const wrapper = document.createElement("div")
+    parent?.replaceChild(wrapper, htmlElement)
+    wrapper.appendChild(htmlElement)
+
     const newId = uuid()
     const layer = Math.max(...this.all.map((e) => e.layer)) + 1
     this.all.push(
@@ -261,7 +289,7 @@ export class ParsedVideostrate {
         type,
         offset: 0,
         content,
-        outerHtml: content,
+        outerHtml: wrapper.outerHTML,
         layer,
         speed: 1,
       })
@@ -297,20 +325,37 @@ export class ParsedVideostrate {
     this.style = this.style.filter((s) => s.selector !== selector)
   }
 
+  private assignClassToElement(element: CustomElement, className: string) {
+    const parser = new DOMParser()
+    const document = parser.parseFromString(element.content ?? "", "text/html")
+    const htmlElement = document.body.firstChild as HTMLElement
+    if (htmlElement) {
+      htmlElement.classList.add(className)
+      element.content = htmlElement.outerHTML
+    }
+  }
+
+  private assignClassToClip(clip: VideoClipElement, className: string) {
+    clip.className = clip.className ? `${clip.className} ${className}` : className
+  }
+
   public assignClass(elementIds: string[], className: string) {
-    console.log("assignClass", elementIds, className)
     this.all = this.all.map((e) => {
       if (elementIds.includes(e.id)) {
-        const parser = new DOMParser()
-        const document = parser.parseFromString(e.outerHtml ?? "", "text/html")
-        const htmlElement = document.body.firstChild?.firstChild as HTMLElement
-        if (htmlElement) {
-          htmlElement.classList.add(className)
-          e.outerHtml = htmlElement.parentElement?.outerHTML
+        if (e.type === "video") {
+          this.assignClassToClip(e as VideoClipElement, className)
+        }
+        else if (e.type === "custom") {
+          this.assignClassToElement(e as CustomElement, className)
+        }
+        else {
+          throw new Error(`Element with id ${e.id} has an invalid type`)
         }
       }
       return e
     })
+
+    this.all = [...this.all]
   }
 
   public addAnimation(name: string, body: string) {

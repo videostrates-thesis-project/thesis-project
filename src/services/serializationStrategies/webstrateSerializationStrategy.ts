@@ -32,7 +32,7 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
         </div>
       </div>`
     } else {
-      if (!element.outerHtml) throw new Error("Missing  outerHtml")
+      if (!(element as CustomElement).content) throw new Error("Missing content")
 
       const parser = new DOMParser()
       const document = parser.parseFromString(
