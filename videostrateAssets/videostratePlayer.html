@@ -49,21 +49,13 @@
               "//libraries.projects.cavi.au.dk/javascript/timetasticplayer/js/Timetastic.js",
             ]
 
-          // console.log("View config:", config)
-
           this.config = config
           this.uri = targetVideostrateURI
 
           this.positionListeners = new Set()
           this.durationListeners = new Set()
           this.viewListeners = new Set()
-          this.renderListeners = new Set()
 
-          this.recording = false
-          this.rendering = false
-          this.broadcasting = false
-
-          this.renderTimeStart = 0
         }
 
         addPositionListener(listener) {
@@ -85,13 +77,6 @@
         }
         removeViewListener(listener) {
           this.viewListeners.delete(listener)
-        }
-
-        addRenderListener(listener) {
-          this.renderListeners.add(listener)
-        }
-        removeRenderListener(listener) {
-          this.renderListeners.delete(listener)
         }
 
         async startStreamView(streamConfig = {}) {
@@ -120,10 +105,6 @@
                       switch (message.cmd) {
                         case "log":
                           console.log("Log from server: ", message.msg)
-                          break
-                        case "renderDone":
-                          console.log("renderDone called.")
-                          self.stopRendering()
                           break
                         case "playerReady":
                           // Register the player signal controller
@@ -158,29 +139,6 @@
 
                                 this.signal("grabber", { mode: mode })
                               })
-                            },
-                            prepareRender: function (options = {}) {
-                              return new Promise((resolve, reject) => {
-                                function onSignal(message, senderId, node) {
-                                  if (message.cmd === "renderPrepared") {
-                                    self.iframe.contentWindow.webstrate.off(
-                                      "signal",
-                                      onSignal
-                                    )
-                                    resolve()
-                                  }
-                                }
-
-                                self.iframe.contentWindow.webstrate.on(
-                                  "signal",
-                                  onSignal
-                                )
-
-                                this.signal("prepareRender")
-                              })
-                            },
-                            render: function (options = {}) {
-                              this.signal("render", options)
                             },
                             play: function (options = {}) {
                               this.signal("play", options)
@@ -219,9 +177,6 @@
                           break
 
                         case "grabber":
-                        case "renderPrepared":
-                          //Used for signalling answers to other cmd's so dont treat them here
-                          break
                         default:
                           console.error("unkown message from player: ", message)
                       }
@@ -319,209 +274,6 @@
 
         isLocal() {
           return !this.element.streamlauncher
-        }
-
-        broadcast(rtmpTarget) {
-          if (this.broadcasting) {
-            console.log("Tried to start broadcasting when already broadcasting")
-            return Promise.reject()
-          }
-
-          if (this.isLocal()) {
-            console.log("Unable to broadcast from a local view")
-            return Promise.reject()
-          }
-
-          let self = this
-
-          this.broadcasting = true
-
-          return new Promise((resolve, reject) => {
-            let listener = {
-              onVideoStateChanged: (event) => {
-                console.log(event)
-                if (event.type === "BROADCAST" && event.state.isConnected) {
-                  self.element.streamlauncher.removeListener(listener)
-                  resolve()
-                }
-              },
-            }
-
-            self.element.streamlauncher.addListener(listener)
-
-            self.element.streamlauncher.startBroadcasting(rtmpTarget)
-          })
-        }
-
-        isBroadcasting() {
-          return this.broadcasting
-        }
-
-        stopBroadcasting() {
-          if (!this.broadcasting) {
-            console.log("Unable to stop rendering, when not rendering..")
-            return Promise.reject()
-          }
-
-          let self = this
-
-          return new Promise((resolve, reject) => {
-            let listener = {
-              onVideoStateChanged: (event) => {
-                console.log(event)
-                if (event.type === "BROADCAST" && !event.state.isRunning) {
-                  self.element.streamlauncher.removeListener(listener)
-                  self.broadcasting = false
-                  resolve()
-                }
-              },
-            }
-
-            self.element.streamlauncher.addListener(listener)
-
-            self.element.streamlauncher.stopBroadcasting()
-          })
-        }
-
-        async render() {
-          if (this.rendering) {
-            console.log("Tried to start rendering when already rendering")
-            return Promise.reject()
-          }
-
-          if (this.isLocal()) {
-            console.log("Unable to render from a local view")
-            return Promise.reject()
-          }
-
-          this.rendering = true
-
-          //Switch to grabber mode
-          await this.controller.grabMode("GRAB")
-
-          //We are now in grab mode, disable vsync
-          this.element.streamlauncher.setVsync(false)
-          console.log("VSYNC disabled")
-
-          //Prepare, this rewinds, and queues the first frame to be downloaded
-          await this.controller.prepareRender()
-
-          this.renderTimeStart = Date.now()
-
-          //Start recording, this starts the recordig pipeline in strict frame mode
-          let url = await this.record(true)
-
-          //Start the rendering, which is playback with frameCallback for each frame
-          this.controller.render()
-
-          return url
-        }
-
-        isRendering() {
-          return this.rendering
-        }
-
-        stopRendering() {
-          let self = this
-
-          if (!this.rendering) {
-            console.log("Unable to stop rendering, when not rendering..")
-            return Promise.reject()
-          }
-
-          if (this.renderingStopping) {
-            //Already stopping rendering, we probabely came from the renderDone signal
-            return Promise.resolve()
-          }
-
-          this.renderingStopping = true
-
-          this.stop()
-
-          return this.stopRecording().then(async (url) => {
-            let diff = Date.now() - self.renderTimeStart
-
-            console.log("Render took: ", diff + "ms")
-
-            //Reenable vsync before we switch to live mode
-            this.element.streamlauncher.setVsync(true)
-            console.log("VSYNC enabled")
-
-            await self.controller.grabMode("LIVE")
-
-            self.renderListeners.forEach((listener) => {
-              listener.onRenderDone(url)
-              self.rendering = false
-              self.renderingStopping = false
-            })
-
-            return url
-          })
-        }
-
-        record(strict = false) {
-          if (this.isRecording()) {
-            console.log("Tried to start recording when already recording")
-            return Promise.reject()
-          }
-
-          if (this.isLocal()) {
-            console.log("Unable to record from a local view")
-            return Promise.reject()
-          }
-
-          this.recording = true
-
-          let self = this
-
-          return new Promise((resolve, reject) => {
-            let listener = {
-              onVideoStateChanged: (event) => {
-                console.log(event)
-                if (event.type === "RECORDING" && event.state.isConnected) {
-                  self.element.streamlauncher.removeListener(listener)
-                  resolve({
-                    url: event.state.url,
-                  })
-                }
-              },
-            }
-
-            self.element.streamlauncher.addListener(listener)
-
-            self.element.streamlauncher.startRecording(strict)
-          })
-        }
-
-        isRecording() {
-          return this.recording
-        }
-
-        stopRecording() {
-          if (!this.isRecording()) {
-            console.log("Tried to stop recording while not recording...")
-            return Promise.reject()
-          }
-
-          let self = this
-
-          return new Promise((resolve, reject) => {
-            let listener = {
-              onVideoStateChanged: (event) => {
-                if (event.type === "RECORDING" && !event.state.isRunning) {
-                  self.element.streamlauncher.removeListener(listener)
-                  this.recording = false
-                  resolve({
-                    url: event.state.url,
-                  })
-                }
-              },
-            }
-
-            self.element.streamlauncher.addListener(listener)
-
-            self.element.streamlauncher.stopRecording()
-          })
         }
 
         play(playbackConfig) {
@@ -738,9 +490,6 @@
         <button id="play">Play</button>
         <button id="stop">Stop</button>
         <button id="rewind">Rewind</button>
-        <button id="record">Record</button>
-        <button id="render">Render</button>
-        <button id="broadcast">Broadcast</button>
         <span id="curtime">0</span> / <span id="duration">0</span>s
       </div>
       <br />
@@ -766,6 +515,7 @@
         useCustomUI = true,
         useWebRender = false
       ) {
+        console.log("Creating videostrate view", url, width, height, fps)
         if (videostrate != null) {
           videostrate.stopStreamView()
           cQuery("#container").empty()
@@ -884,97 +634,6 @@
         new CaviTouch(cQuery("#stop"))
         cQuery("#stop").on("caviTap", () => {
           videostrate.stop()
-        })
-
-        new CaviTouch(cQuery("#rewind"))
-        cQuery("#rewind").on("caviTap", () => {
-          videostrate.seek(0)
-        })
-
-        let recordButton = cQuery("#record")
-        new CaviTouch(recordButton)
-        recordButton.on("caviTap", () => {
-          if (!videostrate.isRecording()) {
-            videostrate.record().then((url) => {
-              cQuery("#render")[0].setAttribute("disabled", "")
-              cQuery("#render")[0].style.pointerEvents = "none"
-              recordButton[0].innerText = "Stop Recording"
-              cQuery("#urls").append(
-                cQuery(
-                  '<li>Recording: <a target="_blank" href="' +
-                    url.url +
-                    '">' +
-                    url.url +
-                    "</a></li>"
-                )
-              )
-              console.log("Recording started:", url)
-            })
-          } else {
-            videostrate.stopRecording().then((url) => {
-              cQuery("#render")[0].removeAttribute("disabled")
-              cQuery("#render")[0].style.pointerEvents = "initial"
-              recordButton[0].innerText = "Record"
-              console.log("Recording stopped:", url)
-            })
-          }
-        })
-
-        let renderButton = cQuery("#render")
-        new CaviTouch(renderButton)
-        renderButton.on("caviTap", () => {
-          if (!videostrate.isRendering()) {
-            videostrate.render().then((url) => {
-              cQuery("#record")[0].setAttribute("disabled", "")
-              cQuery("#record")[0].style.pointerEvents = "none"
-              renderButton[0].innerText = "Stop Rendering"
-              cQuery("#urls").append(
-                cQuery(
-                  '<li>Render: <a target="_blank" href="' +
-                    url.url +
-                    '">' +
-                    url.url +
-                    "</a></li>"
-                )
-              )
-              console.log("Rendering started:", url)
-            })
-          } else {
-            videostrate.stopRendering().then((url) => {
-              cQuery("#record")[0].removeAttribute("disabled")
-              cQuery("#record")[0].style.pointerEvents = "initial"
-              renderButton[0].innerText = "Render"
-              console.log("Rendering stopped:", url)
-            })
-          }
-        })
-
-        let broadcastButton = cQuery("#broadcast")
-        new CaviTouch(broadcastButton)
-        broadcastButton.on("caviTap", () => {
-          if (!videostrate.isBroadcasting()) {
-            let rtmpTarget = window.prompt("Rtmp url?")
-            if (rtmpTarget != null) {
-              videostrate.broadcast(rtmpTarget).then(() => {
-                broadcastButton[0].innerText = "Stop Broadcasting"
-                console.log("Broadcasting started:")
-              })
-            }
-          } else {
-            videostrate.stopBroadcasting().then(() => {
-              broadcastButton[0].innerText = "Broadcast"
-              console.log("Broadcast stopped:")
-            })
-          }
-        })
-
-        videostrate.addRenderListener({
-          onRenderDone: (url) => {
-            console.log("Rendering completed: ", url)
-            cQuery("#record")[0].removeAttribute("disabled")
-            cQuery("#record")[0].style.pointerEvents = "initial"
-            renderButton[0].innerText = "Render"
-          },
         })
 
         return videostrate
@@ -1147,14 +806,11 @@
       }
 
       function onMsg(msg) {
-        if (msg.origin === "https://demo.webstrates.net") {
-          // Forward all messages to parent
-          top.postMessage(msg.data, "*")
-          return
-        }
-
         if (msg.data.type === "player-control") {
           controlPlayer(msg.data.command, msg.data.args)
+        } else if (msg.origin === "https://demo.webstrates.net") {
+          // Forward all messages to parent
+          top.postMessage(msg.data, "*")
         }
       }
 
