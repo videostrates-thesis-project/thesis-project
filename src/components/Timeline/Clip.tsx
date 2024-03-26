@@ -187,7 +187,7 @@ const Clip = (props: { clip: TimelineElement }) => {
     (cropTimeShift: number) => {
       executeScript([
         {
-          command: "move_delta",
+          command: "move_delta_without_embedded",
           args: [`"${clip.id}"`, cropTimeShift.toString()],
         },
         {
@@ -216,7 +216,7 @@ const Clip = (props: { clip: TimelineElement }) => {
           ],
         },
         {
-          command: "move_delta",
+          command: "move_delta_without_embedded",
           args: [`"${clip.id}"`, cropTimeShift.toString()],
         },
       ])

@@ -33,7 +33,7 @@ export const processAddClipToElementCommand = async (
   try {
     const clipId = parsedVideostrate.addClipToElement(
       elementId.value,
-      availableClip.source,
+      availableClip,
       start.value,
       end.value
     )

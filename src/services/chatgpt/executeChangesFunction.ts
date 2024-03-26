@@ -8,7 +8,7 @@ export default {
       "properties": {
         "script": {
           "type": "string",
-          "description": "The script that executes the commands. Start every single command in a new line. Always finish the whole script, never finish with '...'. If the user prompt does not include any instructions that can be executed, this string may be empty. Always use double quotation (\") for strings. E.g. move(\"12964663\", 4);\nclip_id = add_clip(\"Clip #2\", 2);\ncrop(clip_id, 0, 2);"
+          "description": "The script that executes the commands. Start every single command in a new line. Always finish the whole script, never finish with '...'. If the user prompt does not include any instructions that can be executed, this string may be empty. ALWAYS USE double quotation marks (\") for strings. E.g. move(\"12964663\", 4);\nclip_id = add_clip(\"Clip #2\", 2);\ncrop(clip_id, 0, 2);"
         },
         "explanation": {
           "type": "string",

@@ -19,6 +19,7 @@ interface TimelineElementProps extends VideoElementProps {
   edits?: ClipChange[]
   oldElement?: TimelineElement
   content?: string
+  containerElementId?: string
 }
 export class TimelineElement extends VideoElement {
   width: number
@@ -32,6 +33,7 @@ export class TimelineElement extends VideoElement {
   oldElement?: TimelineElement
   // The custom element content
   content?: string
+  containerElementId?: string
 
   constructor(props: TimelineElementProps) {
     super(props)
@@ -46,6 +48,7 @@ export class TimelineElement extends VideoElement {
     this.edits = props.edits
     this.oldElement = props.oldElement
     this.content = props.content
+    this.containerElementId = props.containerElementId
   }
   clone() {
     return new TimelineElement({
@@ -69,6 +72,7 @@ export class TimelineElement extends VideoElement {
       edits: this.edits,
       oldElement: this.oldElement,
       content: this.content,
+      containerElementId: this.containerElementId,
     })
   }
 }
@@ -98,6 +102,7 @@ export const useTimelineElements = (widthPerSecond: number) => {
         thumbnail:
           element.type === "video" ? clipMetadata?.thumbnailUrl : undefined,
         clipName: element.type === "video" ? clipMetadata?.title : undefined,
+        containerElementId: (element as VideoClipElement).containerElementId,
       })
     },
     [availableClips, widthPerSecond]

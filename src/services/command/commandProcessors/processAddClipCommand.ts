@@ -32,7 +32,7 @@ export const processAddClipCommand = async (
   const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
-    const clipId = parsedVideostrate.addClip(availableClip.source, start, end)
+    const clipId = parsedVideostrate.addClip(availableClip, start, end)
     useStore.getState().setParsedVideostrate(parsedVideostrate)
 
     return {
