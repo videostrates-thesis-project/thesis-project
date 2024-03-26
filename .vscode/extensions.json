@@ -3,5 +3,6 @@
         "dbaeumer.vscode-eslint",
         "bradlc.vscode-tailwindcss",
         "stylelint.vscode-stylelint",
+        "streetsidesoftware.code-spell-checker",
     ]
 }
