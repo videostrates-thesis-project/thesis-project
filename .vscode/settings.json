@@ -20,9 +20,11 @@
 		"openai",
 		"partialize",
 		"Playhead",
+		"Stylelint",
 		"videostrate",
 		"Videostrates",
 		"Webstrate",
+		"Webstrates",
 		"zustand"
 	],
 }
