@@ -1,11 +1,4 @@
-import {
-  BrowserRouter,
-  Route,
-  RouterProvider,
-  Routes,
-  createBrowserRouter,
-  useLocation,
-} from "react-router-dom"
+import { Route, Routes, createBrowserRouter } from "react-router-dom"
 import "./App.css"
 import Navbar from "./components/Navbar"
 import Toasts from "./components/Toasts"
@@ -13,6 +6,7 @@ import DefaultView from "./components/Views/DefaultView"
 import { useClipsMetadata } from "./hooks/useClipsMetadata"
 import openAIService from "./services/chatgpt/openai"
 import CodeView from "./components/Views/CodeView"
+import useShortcuts from "./hooks/useShortcuts"
 
 openAIService.init()
 
@@ -29,6 +23,7 @@ const router = createBrowserRouter([
 
 function App() {
   useClipsMetadata()
+  useShortcuts()
   return (
     <>
       <Toasts />

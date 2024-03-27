@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from "react"
 import { useTimeStamp } from "../../hooks/useTimeStamp"
-import { executeScript } from "../../services/command/executeScript"
 import { useStore } from "../../store"
+import useEditCommands from "../../hooks/useEditCommands"
 
 const TimelineControls = (props: {
   zoomIn: (step: number) => void
@@ -9,20 +9,12 @@ const TimelineControls = (props: {
   zoomToFit: () => void
 }) => {
   const { parsedVideostrate, playbackState, selectedClipId } = useStore()
+  const { execute, moveLayer, deleteClip } = useEditCommands()
   const playbackTime = useTimeStamp(playbackState.time)
   const fullTime = useTimeStamp(parsedVideostrate.length)
   const currentLayer = useMemo(() => {
     return parsedVideostrate.getElementById(selectedClipId!)?.layer
   }, [parsedVideostrate, selectedClipId])
-
-  const moveLayer = useCallback((elementId: string, layer: number) => {
-    executeScript([
-      {
-        command: "move_layer",
-        args: [`"${elementId}"`, layer.toString()],
-      },
-    ])
-  }, [])
 
   const isColliding = useCallback(
     (layer: number) => {
@@ -45,23 +37,18 @@ const TimelineControls = (props: {
   const moveUp = useCallback(() => {
     if (currentLayer === undefined) return
     const layerShift = isColliding(currentLayer + 1) ? 2 : 1
-    moveLayer(selectedClipId!, currentLayer + layerShift)
-  }, [currentLayer, isColliding, moveLayer, selectedClipId])
+    execute(moveLayer(selectedClipId!, currentLayer + layerShift))
+  }, [currentLayer, execute, isColliding, moveLayer, selectedClipId])
 
   const moveDown = useCallback(() => {
     if (currentLayer === undefined) return
     const layerShift = isColliding(currentLayer - 1) ? -2 : -1
-    moveLayer(selectedClipId!, currentLayer + layerShift)
-  }, [currentLayer, isColliding, moveLayer, selectedClipId])
+    execute(moveLayer(selectedClipId!, currentLayer + layerShift))
+  }, [currentLayer, execute, isColliding, moveLayer, selectedClipId])
 
   const deleteElement = useCallback(() => {
-    executeScript([
-      {
-        command: "delete_element",
-        args: [`"${selectedClipId}"`],
-      },
-    ])
-  }, [selectedClipId])
+    execute(deleteClip(selectedClipId!))
+  }, [deleteClip, execute, selectedClipId])
 
   return (
     <div className="flex flex-row text-lg bg-base-300 border-y border-neutral p-2 ">
