@@ -5,6 +5,7 @@ import { buildAssistantMessage } from "../../services/chatgpt/assistantTemplate"
 import openAIService from "../../services/chatgpt/openai"
 import { serializeVideostrate } from "../../services/parser/serializationExecutor"
 import { v4 as uuid } from "uuid"
+import { ChatMessage } from "../../types/chatMessage"
 
 const DefaultChat = () => {
   const {
@@ -29,14 +30,25 @@ const DefaultChat = () => {
         message
       )
       openAIService.sendDefaultChatMessageToAzure(prompt)
-      addChatMessage({
+      const latestMessage: ChatMessage = {
         role: "user",
         content: message,
         id: uuid(),
-      })
-      openAIService.sendChatMessageForReaction()
+      }
+      addChatMessage(latestMessage)
+      openAIService.sendChatMessageForReaction(
+        [...chatMessages, latestMessage],
+        useStore.getState().addReactionToMessage
+      )
     },
-    [addChatMessage, availableClips, parsedVideostrate, seek, selectedClipId]
+    [
+      addChatMessage,
+      availableClips,
+      chatMessages,
+      parsedVideostrate,
+      seek,
+      selectedClipId,
+    ]
   )
 
   return (

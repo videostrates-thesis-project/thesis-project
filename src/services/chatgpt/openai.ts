@@ -8,6 +8,7 @@ import { v4 as uuid } from "uuid"
 import { buildReactionMessage } from "./reactionTemplate"
 import { azureFunctionRequest } from "../api/api"
 import { AzureModelType } from "../api/apiTypes"
+import { ChatMessage } from "../../types/chatMessage"
 
 const ASSISTANT_POLL_RATE = 5000
 
@@ -201,10 +202,14 @@ class OpenAIService {
       (await parseAndExecuteScript(message.script))?.asPendingChanges()
   }
 
-  async sendChatMessageForReaction() {
-    const messages = [...useStore.getState().chatMessages]
+  async sendChatMessageForReaction(
+    messages: ChatMessage[],
+    addReactionToMessage: (id: string, reaction: string) => void
+  ) {
+    //const messages = [...useStore.getState().chatMessages]
 
     // Find last user message in list
+    console.log("[ChatGPT] Messages:", messages)
     let lastUserMessageIndex = -1
     for (let i = messages.length - 1; i >= 0; i--) {
       if (messages[i].role === "user") {
@@ -215,6 +220,7 @@ class OpenAIService {
     if (lastUserMessageIndex === -1) {
       throw new Error("No user message found")
     }
+    console.log("[ChatGPT] Last user message:", messages[lastUserMessageIndex])
     messages[lastUserMessageIndex] = {
       ...messages[lastUserMessageIndex],
       content: buildReactionMessage(
@@ -224,7 +230,9 @@ class OpenAIService {
 
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      messages: messages
+        .filter((m) => m.content)
+        .map((m) => ({ role: m.role, content: m.content })),
       // messages: [messages.map((m) => ({ role: m.role, content: m.content }))[lastUserMessageIndex]],
     })
 
@@ -232,12 +240,10 @@ class OpenAIService {
     console.log("[ChatGPT] Reaction:", reaction)
     if (!reaction || reaction.toLowerCase().includes("no reaction")) return
 
-    useStore
-      .getState()
-      .addReactionToMessage(
-        messages[lastUserMessageIndex].id,
-        reaction?.slice(0, 2) ?? ""
-      )
+    addReactionToMessage(
+      messages[lastUserMessageIndex].id,
+      reaction?.slice(0, 2) ?? ""
+    )
   }
 
   public async githubCopilotAtHome(
