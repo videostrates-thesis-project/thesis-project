@@ -7,13 +7,16 @@ import { processAssignClassCommand } from "./commandProcessors/processAssignClas
 import { processChangeLayerCommand } from "./commandProcessors/processChangeLayerCommand"
 import { processCreateAnimationCommand } from "./commandProcessors/processCreateAnimationCommand"
 import { processCreateStyleCommand } from "./commandProcessors/processCreateStyleCommand"
+import { processCreateOrUpdateStyleCommand } from "./commandProcessors/processCreateOrUpdateStyleCommand"
 import { processCropElementCommand } from "./commandProcessors/processCropElementCommand"
 import { processDeleteAnimationCommand } from "./commandProcessors/processDeleteAnimation"
 import { processDeleteElementCommand } from "./commandProcessors/processDeleteElementCommand"
 import { processDeleteStyleCommand } from "./commandProcessors/processDeleteStyleCommand"
 import { processEditElementCommand } from "./commandProcessors/processEditElementCommand"
 import { processGenerateImageCommand } from "./commandProcessors/processGenerateImageCommand"
+import { processRepositionCommand } from "./commandProcessors/processRepositionCommand"
 import { processMoveCommand } from "./commandProcessors/processMoveCommand"
+import { processMoveDeltaWithoutEmbeddedCommand } from "./commandProcessors/processMoveDeltaWithoutEmbeddedCommand"
 import { processMoveDeltaCommand } from "./commandProcessors/processMoveDeltaCommand"
 import { processRenameElement } from "./commandProcessors/processRenameElementCommand"
 import { processSetSpeedCommand } from "./commandProcessors/processSetSpeedCommand"
@@ -36,14 +39,23 @@ const recognizedCommands: RecognizedCommands = {
   crop: {
     processFn: processCropElementCommand,
   },
+  move_delta_without_embedded: {
+    processFn: processMoveDeltaWithoutEmbeddedCommand,
+  },
   move_delta: {
     processFn: processMoveDeltaCommand,
+  },
+  reposition: {
+    processFn: processRepositionCommand,
   },
   add_custom_element: {
     processFn: processAddCustomElementCommand,
   },
   create_style: {
     processFn: processCreateStyleCommand,
+  },
+  create_or_update_style: {
+    processFn: processCreateOrUpdateStyleCommand,
   },
   delete_style: {
     processFn: processDeleteStyleCommand,

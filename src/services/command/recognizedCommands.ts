@@ -15,8 +15,10 @@ export const availableCommands = [
   "delete_element",
   "crop",
   "move_delta",
+  "move_delta_without_embedded",
   "add_custom_element",
   "create_style",
+  "create_or_update_style",
   "delete_style",
   "assign_class",
   "create_animation",
@@ -28,6 +30,7 @@ export const availableCommands = [
   "move_layer",
   "generate_image",
   "edit_custom_element",
+  "reposition",
 ] as const
 
 export type AvailableCommand = (typeof availableCommands)[number]

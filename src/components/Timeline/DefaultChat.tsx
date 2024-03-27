@@ -19,10 +19,11 @@ const DefaultChat = () => {
 
   const onSend = useCallback(
     (message: string) => {
-      const html = serializeVideostrate(parsedVideostrate, "chatGPT").html
+      const serialized = serializeVideostrate(parsedVideostrate, "chatGPT")
       const prompt = buildAssistantMessage(
         availableClips,
-        html,
+        serialized.style,
+        serialized.html,
         selectedClipId,
         seek,
         message

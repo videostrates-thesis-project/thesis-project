@@ -1,19 +1,80 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useStore } from "../store"
-import { VideoClipElement, VideoElement } from "../types/videoElement"
+import {
+  VideoClipElement,
+  VideoElement,
+  VideoElementProps,
+} from "../types/videoElement"
 import { ClipChange, useLatestChanges } from "./useLatestChanges"
 import updateLayers from "../utils/updateLayers"
 
-export interface TimelineElement extends VideoElement {
+interface TimelineElementProps extends VideoElementProps {
   width: number
   left: number
   minLeftPosition?: number
   maxRightPosition?: number
-  source: string
+  source?: string
   clipName?: string
   thumbnail?: string
   edits?: ClipChange[]
   oldElement?: TimelineElement
+  content?: string
+  containerElementId?: string
+}
+export class TimelineElement extends VideoElement {
+  width: number
+  left: number
+  minLeftPosition?: number
+  maxRightPosition?: number
+  source?: string
+  clipName?: string
+  thumbnail?: string
+  edits?: ClipChange[]
+  oldElement?: TimelineElement
+  // The custom element content
+  content?: string
+  containerElementId?: string
+
+  constructor(props: TimelineElementProps) {
+    super(props)
+    this.name = props.name
+    this.width = props.width
+    this.left = props.left
+    this.minLeftPosition = props.minLeftPosition
+    this.maxRightPosition = props.maxRightPosition
+    this.source = props.source
+    this.clipName = props.clipName
+    this.thumbnail = props.thumbnail
+    this.edits = props.edits
+    this.oldElement = props.oldElement
+    this.content = props.content
+    this.containerElementId = props.containerElementId
+  }
+  clone() {
+    return new TimelineElement({
+      id: this.id,
+      name: this.name,
+      start: this.start,
+      end: this.end,
+      nodeType: this.nodeType,
+      offset: this.offset,
+      type: this.type,
+      outerHtml: this.outerHtml,
+      layer: this.layer,
+      speed: this.speed,
+      width: this.width,
+      left: this.left,
+      minLeftPosition: this.minLeftPosition,
+      maxRightPosition: this.maxRightPosition,
+      source: this.source,
+      clipName: this.clipName,
+      thumbnail: this.thumbnail,
+      edits: this.edits,
+      oldElement: this.oldElement,
+      content: this.content,
+      containerElementId: this.containerElementId,
+    })
+  }
 }
 
 export const useTimelineElements = (widthPerSecond: number) => {
@@ -31,13 +92,18 @@ export const useTimelineElements = (widthPerSecond: number) => {
       const clipMetadata = availableClips.find(
         (c) => c.source === (element as VideoClipElement).source
       )
-      return {
+      return new TimelineElement({
         ...element,
+        start: element.start,
+        end: element.end,
+        offset: (element as VideoClipElement).offset,
         width: (element.end - element.start) * widthPerSecond,
         left: element.start * widthPerSecond,
-        thumbnail: element.type === "video" && clipMetadata?.thumbnailUrl,
-        clipName: element.type === "video" && clipMetadata?.title,
-      } as TimelineElement
+        thumbnail:
+          element.type === "video" ? clipMetadata?.thumbnailUrl : undefined,
+        clipName: element.type === "video" ? clipMetadata?.title : undefined,
+        containerElementId: (element as VideoClipElement).containerElementId,
+      })
     },
     [availableClips, widthPerSecond]
   )
@@ -58,7 +124,7 @@ export const useTimelineElements = (widthPerSecond: number) => {
 
           elementDetails.oldElement = oldElementDetails
         }
-        return elementDetails as TimelineElement
+        return elementDetails
       })
       .sort((a, b) => a.layer - b.layer || a.start - b.start)
 
@@ -75,7 +141,7 @@ export const useTimelineElements = (widthPerSecond: number) => {
       ...removedElements.map((element) => {
         const elementDetails = getElementDetails(element)
         elementDetails.edits = editedElements.get(element.id)
-        return elementDetails as TimelineElement
+        return elementDetails
       })
     )
     elements = updateLayers(elements) as TimelineElement[]

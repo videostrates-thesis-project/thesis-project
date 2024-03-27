@@ -1,6 +1,6 @@
-const updateLayers = (
-  elements: { layer: number; start: number; end: number }[]
-) => {
+import { VideoElement } from "../types/videoElement"
+
+const updateLayers = (elements: VideoElement[]) => {
   const sorted = elements
     .toSorted((a, b) => {
       if (a.layer !== b.layer) {
@@ -10,7 +10,7 @@ const updateLayers = (
       }
     })
     .map((e) => {
-      return { ...e }
+      return e.clone()
     })
   let prevElementLayer = 0
   let currentLayer = 0

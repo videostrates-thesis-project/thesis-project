@@ -24,17 +24,12 @@ export const processAddCustomElementCommand = async (
     throw new Error("Third and Fourth arguments must be numbers")
   }
 
-  const parser = new DOMParser()
-  const document = parser.parseFromString(content.value, "text/html")
-  let htmlElement = document.body.firstChild as HTMLElement
-  htmlElement = cleanTree(htmlElement)
-
   const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
     const elementId = parsedVideostrate.addCustomElement(
       name.value,
-      htmlElement.outerHTML,
+      content.value,
       start.value,
       end.value
     )
@@ -51,22 +46,4 @@ export const processAddCustomElementCommand = async (
     )
     throw error
   }
-}
-
-const cleanTree = (element: HTMLElement) => {
-  if (element?.childNodes) {
-    element.childNodes.forEach(
-      (childNode) => (childNode = cleanTree(childNode as HTMLElement))
-    )
-  }
-
-  if (
-    element.className &&
-    element.className.startsWith('\\"') &&
-    element.className.endsWith('\\"')
-  ) {
-    element.className = element.className.slice(2, -2)
-  }
-
-  return element
 }

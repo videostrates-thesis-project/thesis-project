@@ -15,14 +15,14 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
 
     // Find the parent element
     const parent = document.getElementById(clip.parentId ?? "root")
-    if (!parent) throw new Error("Parent not found")
+    if (!parent) throw new Error("Parent with id '" + clip.parentId + "' not found")
 
     // Add the element
     parent.innerHTML += html
   }
 
-  protected serializeElement(element: VideoElement): string {
-    console.log("Serializing element", element)
+  public serializeElement(element: VideoElement): string {
+    // console.log("Serializing element", element)
     if (element.nodeType === "video") {
       const clip = element as VideoClipElement
 
@@ -32,7 +32,7 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
         </div>
       </div>`
     } else {
-      if (!element.outerHtml) throw new Error("Missing  outerHtml")
+      if (!(element as CustomElement).content) throw new Error("Missing content")
 
       const parser = new DOMParser()
       const document = parser.parseFromString(
@@ -54,7 +54,7 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
       }
       wrapper.setAttribute("id", element.id)
       wrapper.setAttribute("custom-element-name", element.name)
-      wrapper.setAttribute("style", `"z-index: ${element.layer};"`)
+      wrapper.setAttribute("style", `z-index: ${element.layer};`)
       wrapper.setAttribute("data-start", element.start.toString())
       wrapper.setAttribute("data-end", element.end.toString())
       wrapper.setAttribute("data-offset", (element.offset ?? 0).toString())
@@ -67,20 +67,8 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
         "data-speed",
         (isNaN(element.speed) ? 1 : element.speed).toString()
       )
-      const removeElementsWithClipNameAttribute = (doc: HTMLElement) => {
-        const elementsToRemove = doc.querySelectorAll("[clip-name]")
-        elementsToRemove.forEach((element) => {
-          element.remove()
-        })
 
-        // Recursively process child nodes
-        doc.childNodes.forEach((childNode) => {
-          if (childNode.nodeType === Node.ELEMENT_NODE) {
-            removeElementsWithClipNameAttribute(childNode as HTMLElement)
-          }
-        })
-      }
-      removeElementsWithClipNameAttribute(wrapper)
+      SerializationStrategyBase.removeElementsWithClipNameAttribute(wrapper)
 
       return wrapper.outerHTML
     }

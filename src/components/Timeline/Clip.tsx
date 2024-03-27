@@ -10,14 +10,20 @@ import { useEditedClipDetails } from "../../store/editedClipDetails"
 import useContextMenu from "../../hooks/useContextMenu"
 import ContextMenu from "../ContextMenu"
 import { useNavigate } from "react-router-dom"
+import { CustomElement } from "../../types/videoElement"
 
 const MIN_ELEMENT_WIDTH = 16
 
 const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
   const timeline = useContext(TimelineContext)
-  const { selectedClipId, setSelectedClipId, availableClips, pendingChanges } =
-    useStore()
+  const {
+    selectedClipId,
+    setSelectedClipId,
+    availableClips,
+    pendingChanges,
+    addAvailableCustomElement,
+  } = useStore()
 
   const minLeftCrop = useMemo(
     () =>
@@ -49,11 +55,12 @@ const Clip = (props: { clip: TimelineElement }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clip.left])
 
-  const { onDragStart, onDrag, draggedPosition } = useDraggable(
-    clip.left + cropLeft,
-    clip.minLeftPosition || 0,
-    clip.maxRightPosition
-  )
+  const { onDragStart, onDrag, draggedPosition, setDraggedPosition } =
+    useDraggable(
+      clip.left + cropLeft,
+      clip.minLeftPosition || 0,
+      clip.maxRightPosition
+    )
 
   const widthInitial = useMemo(
     () => Math.max(clip.width - cropLeft, MIN_ELEMENT_WIDTH),
@@ -95,14 +102,30 @@ const Clip = (props: { clip: TimelineElement }) => {
     onDragStart: onDragRightStart,
     onDrag: onDragRight,
     draggedPosition: width,
+    setDraggedPosition: setWidth,
   } = useDraggable(widthInitial, MIN_ELEMENT_WIDTH, maxRightCrop)
 
   const { setPosition, setDetails } = useEditedClipDetails()
   const navigate = useNavigate()
   const menuItems = useMemo(() => {
     if (clip.type !== "custom") return []
-    return [{ label: "Edit code", action: () => navigate(`/code/${clip.id}`) }]
-  }, [clip.id, navigate])
+    return [
+      { label: "Edit code", action: () => navigate(`/code/${clip.id}`) },
+      {
+        label: "Add to the library",
+        action: () =>
+          addAvailableCustomElement(
+            new CustomElement({
+              ...clip,
+              start: 0,
+              end: 0,
+              offset: 0,
+              content: clip.content!,
+            })
+          ),
+      },
+    ]
+  }, [addAvailableCustomElement, clip, navigate])
   const { showMenu, hideMenu, menuPosition, isVisible } = useContextMenu(
     menuItems.length
   )
@@ -117,8 +140,18 @@ const Clip = (props: { clip: TimelineElement }) => {
           args: [`"${clip.id}"`, clipTimeShift.toString()],
         },
       ])
+      // Reset the dragged position to the original position in case the drag didn't move the clip in which case a rerender wouldn't be triggered
+      // SetTimeout is used to ensure the draggedPosition is set after the rerender, so that there is no flickering if the dragging moved the object
+      setTimeout(() => setDraggedPosition(clip.left + cropLeft), 0)
     },
-    [onDrag, timeline.widthPerSecond, clip.id]
+    [
+      onDrag,
+      timeline.widthPerSecond,
+      clip.id,
+      clip.left,
+      setDraggedPosition,
+      cropLeft,
+    ]
   )
 
   const onCropRightEnd = useCallback(
@@ -135,6 +168,8 @@ const Clip = (props: { clip: TimelineElement }) => {
           ],
         },
       ])
+      // Explanation in onDragMoveEnd
+      setTimeout(() => setWidth(widthInitial), 0)
     },
     [
       onDragRight,
@@ -143,6 +178,8 @@ const Clip = (props: { clip: TimelineElement }) => {
       clip.offset,
       clip.start,
       clip.end,
+      setWidth,
+      widthInitial,
     ]
   )
 
@@ -150,7 +187,7 @@ const Clip = (props: { clip: TimelineElement }) => {
     (cropTimeShift: number) => {
       executeScript([
         {
-          command: "move_delta",
+          command: "move_delta_without_embedded",
           args: [`"${clip.id}"`, cropTimeShift.toString()],
         },
         {
@@ -179,7 +216,7 @@ const Clip = (props: { clip: TimelineElement }) => {
           ],
         },
         {
-          command: "move_delta",
+          command: "move_delta_without_embedded",
           args: [`"${clip.id}"`, cropTimeShift.toString()],
         },
       ])
@@ -196,6 +233,8 @@ const Clip = (props: { clip: TimelineElement }) => {
       } else {
         cropVideoElement(cropTimeShift)
       }
+      // Explanation in onDragMoveEnd
+      setTimeout(() => setCropLeft(0), 0)
     },
     [
       onDragLeft,
@@ -203,6 +242,7 @@ const Clip = (props: { clip: TimelineElement }) => {
       clip.type,
       cropCustomElement,
       cropVideoElement,
+      setCropLeft,
     ]
   )
 
@@ -278,15 +318,9 @@ const Clip = (props: { clip: TimelineElement }) => {
             setDetails(undefined)
           }}
           onContextMenu={showMenu}
-          draggable={true}
-          onDrag={onDrag}
           style={{
             width: `${width}px`,
             left: `${draggedPosition}px`,
-          }}
-          onDragStart={(e) => {
-            onDragStart(e)
-            setSelectedClipId(clip.id)
           }}
         >
           <ClipContent

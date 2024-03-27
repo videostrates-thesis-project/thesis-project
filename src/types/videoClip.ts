@@ -1,3 +1,6 @@
+const precision =
+  10 ** ((import.meta.env.VITE_TIME_DECIMALS_PRECISION as number) || 0)
+
 export interface RawMetadata {
   status: "CACHED" | "UNCACHED"
   meta?: {
@@ -28,6 +31,8 @@ export default class VideoClip {
     if (rawMetadata.status === "CACHED") {
       this.title = rawMetadata?.meta?.title || this.title
       this.length = rawMetadata?.meta?.duration
+      if (this.length)
+        this.length = Math.floor(this.length * precision) / precision
       this.thumbnailUrl = rawMetadata?.thumbnail?.small?.url
     }
   }

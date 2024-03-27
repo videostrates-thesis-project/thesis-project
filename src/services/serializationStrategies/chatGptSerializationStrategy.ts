@@ -1,6 +1,7 @@
 import { useStore } from "../../store"
 import { VideoClipElement, VideoElement } from "../../types/videoElement"
 import { SerializationStrategyBase } from "./serializationStrategyBase"
+import { CustomElement } from "../../types/videoElement"
 
 export class ChatGptSerializationStrategy extends SerializationStrategyBase {
   protected addElementToHtml(element: VideoElement, document: Document): void {
@@ -9,7 +10,7 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
     const availableClip = useStore
       .getState()
       .availableClips.find((c) => c.source === clip.source)
-    const html = `<video id="${clip.id}" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "")}" style="z-index: ${clip.layer};" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>`
+    const html = `<video id="${clip.id}" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "") ?? ""}" layer="${clip.layer}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>`
 
     // Find the parent element
     const parent = document.getElementById(clip.parentId ?? "root")
@@ -19,42 +20,53 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
     parent.innerHTML += html
   }
 
-  protected serializeElement(element: VideoElement): string {
-    if (element.nodeType === "video") {
+  public serializeElement(element: VideoElement): string {
+    if (element.type === "video") {
       const clip = element as VideoClipElement
 
       const availableClip = useStore
         .getState()
         .availableClips.find((c) => c.source === clip.source)
-      return `<video id="${clip.id}" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "")}" style="z-index: ${clip.layer};" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>`
+      return `<div><video id="${clip.id}" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "") ?? ""}" layer="${clip.layer}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video></div>`
     } else {
-      if (!element.outerHtml) throw new Error("Missing outerHtml")
+      if (!(element as CustomElement).content) throw new Error("Missing content")
 
       const parser = new DOMParser()
-      const document = parser.parseFromString(element.outerHtml, "text/html")
+      const document = parser.parseFromString(
+        (element as CustomElement).content,
+        "text/html"
+      )
       const htmlElement = document.body.firstChild as HTMLElement
       if (!htmlElement) throw new Error("Invalid outerHtml")
 
-      if (htmlElement.classList.contains("composited")) {
-        htmlElement.classList.remove("composited")
+      console.log("Serializing html element", htmlElement)
+
+      const parent = htmlElement.parentNode
+      const wrapper = document.createElement("div")
+      parent?.replaceChild(wrapper, htmlElement)
+      wrapper.appendChild(htmlElement)
+
+      if (wrapper.classList.contains("composited")) {
+        wrapper.classList.remove("composited")
       }
-      htmlElement.setAttribute("id", element.id)
-      htmlElement.setAttribute("custom-element-name", element.name)
-      htmlElement.setAttribute("absolute-start", element.start.toString())
-      htmlElement.setAttribute("absolute-end", element.end.toString())
-      htmlElement.setAttribute(
+
+      wrapper.setAttribute("id", element.id)
+      wrapper.setAttribute("custom-element-name", element.name)
+      wrapper.setAttribute("absolute-start", element.start.toString())
+      wrapper.setAttribute("absolute-end", element.end.toString())
+      wrapper.setAttribute(
         "relative-start",
-        (element.offset ?? 0).toString()
+        "0"
       )
-      htmlElement.setAttribute(
-        "clip-end",
-        (element.end - element.start + element.offset).toString()
+      wrapper.setAttribute(
+        "relative-end",
+        (element.end - element.start).toString()
       )
-      htmlElement.setAttribute(
-        "data-speed",
-        (isNaN(element.speed) ? 1 : element.speed).toString()
-      )
-      return htmlElement.outerHTML
+      wrapper.setAttribute("layer", element.layer.toString())
+
+      SerializationStrategyBase.removeElementsWithClipNameAttribute(wrapper)
+
+      return wrapper.outerHTML
     }
   }
 }
