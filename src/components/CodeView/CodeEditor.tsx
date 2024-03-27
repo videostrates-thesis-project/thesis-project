@@ -14,6 +14,11 @@ export type EditorFile = {
   isModified?: boolean
 }
 
+export type EditorMatch = {
+  position: { lineNumber: number; column: number }
+  content: string
+}
+
 type CodeEditorProps = {
   code: string
   language: string
@@ -27,6 +32,8 @@ type CodeEditorProps = {
   diff?: boolean
   onAccept: () => void
   onReject: () => void
+  highlightedElement: HTMLElement | null
+  onMatchesFound: (matches: EditorMatch[]) => void
 }
 
 const CodeEditor = ({
@@ -42,6 +49,8 @@ const CodeEditor = ({
   diff,
   onAccept,
   onReject,
+  highlightedElement,
+  onMatchesFound,
 }: CodeEditorProps) => {
   const [editor, setEditor] = useState<editor.ICodeEditor>()
   const [monaco, setMonaco] = useState<Monaco>()
@@ -136,6 +145,67 @@ const CodeEditor = ({
       dispose()
     }
   }, [editor, getCompletion])
+
+  useEffect(() => {
+    if (!editor || !monaco) return
+
+    if (!highlightedElement) {
+      editor.setSelection(new monaco.Selection(0, 0, 0, 0))
+      onMatchesFound([])
+      return
+    }
+
+    let matches = editor
+      ?.getModel()
+      ?.findMatches(
+        highlightedElement.outerHTML,
+        false,
+        false,
+        false,
+        null,
+        true
+      )
+    if (!matches || matches.length === 0) {
+      matches =
+        editor
+          ?.getModel()
+          ?.findMatches(
+            highlightedElement.outerHTML.replaceAll('"', "'"),
+            false,
+            false,
+            false,
+            null,
+            true
+          ) ?? []
+    }
+
+    onMatchesFound(
+      matches.map((match) => ({
+        position: {
+          lineNumber: match.range.startLineNumber,
+          column: match.range.startColumn,
+        },
+        content: match.matches?.[0] ?? "",
+      }))
+    )
+
+    editor.setSelections(
+      matches.map(
+        (match) =>
+          new monaco.Selection(
+            match.range.startLineNumber,
+            match.range.startColumn,
+            match.range.endLineNumber,
+            match.range.endColumn
+          )
+      )
+    )
+
+    if (matches.length > 0) {
+      editor.revealLine(matches[0].range.startLineNumber)
+    }
+  }, [editor, highlightedElement, monaco, onMatchesFound])
+
   return (
     <div className="flex flex-col flex-1">
       <div className="flex flex-row items-center">

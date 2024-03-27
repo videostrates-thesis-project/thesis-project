@@ -8,9 +8,19 @@ type ChatProps = {
   onSend: (message: string) => void
   messages: ChatMessage[]
   pendingChanges?: boolean
+  highlight?: {
+    isEnabled: boolean
+    isHighlighted: boolean
+    toggleHighlight?: () => void
+  }
 }
 
-const Chat = ({ onSend, messages, pendingChanges }: ChatProps) => {
+const Chat = ({
+  onSend,
+  messages,
+  pendingChanges,
+  highlight = { isEnabled: false, isHighlighted: false },
+}: ChatProps) => {
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
   const endRef = useRef<HTMLDivElement>(null)
@@ -66,7 +76,7 @@ const Chat = ({ onSend, messages, pendingChanges }: ChatProps) => {
   }, [loading])
 
   return (
-    <div className="flex flex-col h-ful max-h-full bg-base-300 border-l border-neutral rounded">
+    <div className="flex flex-col h-full max-h-full bg-base-300 border-l border-neutral rounded">
       <div className="pt-4 max-h-full overflow-y-auto overflow-x-hidden break-words break-all">
         {messages.map((msg, index) => (
           <div
@@ -128,6 +138,17 @@ const Chat = ({ onSend, messages, pendingChanges }: ChatProps) => {
         {pendingChanges && <PendingChangesBanner />}
 
         <div className="flex flex-row join w-full">
+          {highlight.isEnabled && (
+            <button
+              className={clsx(
+                "btn btn-sm btn-warning join-item px-2 h-full min-w-0",
+                !highlight.isHighlighted && "btn-disabled"
+              )}
+              onClick={highlight.toggleHighlight}
+            >
+              <i className="bi bi-x text-xl"></i>
+            </button>
+          )}
           <textarea
             rows={1}
             ref={textAreaRef}

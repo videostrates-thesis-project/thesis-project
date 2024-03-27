@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { useStore } from "../../store"
 import Browser from "../CodeView/Browser"
 import { CustomElement } from "../../types/videoElement"
-import CodeEditor, { EditorFile } from "../CodeView/CodeEditor"
+import CodeEditor, { EditorFile, EditorMatch } from "../CodeView/CodeEditor"
 import { css_beautify, html_beautify } from "js-beautify"
 import { executeScript } from "../../services/command/executeScript"
 import { VideostrateStyle } from "../../types/parsedVideostrate"
@@ -31,6 +31,9 @@ const CodeView = () => {
   const [beforeAssistantHtml, setBeforeAssistantHtml] = useState("")
   const [beforeAssistantCss, setBeforeAssistantCss] = useState("")
   const [diff, setDiff] = useState(false)
+  const [highlightedElement, setHighlightedElement] =
+    useState<HTMLElement | null>(null)
+  const [currentMatch, setCurrentMatch] = useState<EditorMatch | null>(null)
   const navigate = useNavigate()
 
   const element = useMemo(() => {
@@ -174,14 +177,21 @@ const CodeView = () => {
 
   const onSend = useCallback(
     async (message: string) => {
-      const prompt = buildCodeMessage(html, css)(message)
+      console.log("CodeView", currentMatch)
+
+      const prompt = buildCodeMessage(
+        html,
+        css,
+        currentMatch?.position,
+        currentMatch?.content
+      )(message)
       chatMessages.push({ role: "user", id: uuid(), content: message })
       setChatMessages(chatMessages)
       setBeforeAssistantHtml(html)
       setBeforeAssistantCss(css)
       const response =
         await openAIService.sendChatMessageToAzureBase<CodeSuggestionsFunction>(
-          "mirrorverse-gpt-35-turbo",
+          "mirrorverse-gpt-4-turbo",
           [
             ...chatMessages.map((m) => ({ role: m.role, content: m.content })),
             { role: "user", content: prompt },
@@ -197,7 +207,7 @@ const CodeView = () => {
       setCss(response.css)
       setDiff(true)
     },
-    [chatMessages, css, html]
+    [chatMessages, css, currentMatch, html]
   )
 
   const onAccept = useCallback(() => {
@@ -209,6 +219,14 @@ const CodeView = () => {
     setCss(beforeAssistantCss)
     setDiff(false)
   }, [beforeAssistantCss, beforeAssistantHtml])
+
+  const onHighlight = useCallback((element: HTMLElement) => {
+    setHighlightedElement(element)
+  }, [])
+
+  const onMatchesFound = useCallback((matches: EditorMatch[]) => {
+    setCurrentMatch(matches?.[0] ?? null)
+  }, [])
 
   return (
     <div className="grid grid-cols-2" onKeyDown={onHotkey}>
@@ -222,13 +240,23 @@ const CodeView = () => {
       )}
       {element && (
         <>
-          <div className="grid grid-rows-2">
+          <div className="flex flex-col">
             <Browser
               html={displayedHtml}
-              highlight={() => {}}
-              isHighlighting={false}
+              highlight={onHighlight}
+              isHighlighting={true}
             />
-            <Chat messages={chatMessages} onSend={onSend} />
+            <Chat
+              messages={chatMessages}
+              onSend={onSend}
+              highlight={{
+                isEnabled: true,
+                isHighlighted: highlightedElement !== null,
+                toggleHighlight: () => {
+                  setHighlightedElement(null)
+                },
+              }}
+            />
           </div>
           <CodeEditor
             code={currentCode}
@@ -243,6 +271,8 @@ const CodeView = () => {
             diff={diff}
             onAccept={onAccept}
             onReject={onReject}
+            highlightedElement={highlightedElement}
+            onMatchesFound={onMatchesFound}
           />
         </>
       )}

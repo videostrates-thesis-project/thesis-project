@@ -7,11 +7,11 @@ export const buildCodeMessage = (
   return (
     input: string
   ) => `Based on the following html code: ${html}, and css code: ${css} suggest a way of making the following changes: ${input}.
-    When making style changes, ALWAYS use CSS classes and other selectors. DO NOT use inline styles or IDs.
+    When making style changes, ALWAYS use CSS classes and other selectors. NEVER use inline styles or IDs.
     Make ONLY the changes the user asked for above.
       ${
         highlighted && position
-          ? `The change should be made around line number ${position.lineNumber}, column ${position.column}, near ${highlighted}.`
+          ? `The change should be made around line number ${position.lineNumber}, column ${position.column}, near ${highlighted}. Your change should ONLY affect this part of the code. DO NOT use inline styles for styling, ONLY classes.`
           : ""
       }
       Reply in the following JSON format: {html: "...", "css": "..." "explanation": "..."},
