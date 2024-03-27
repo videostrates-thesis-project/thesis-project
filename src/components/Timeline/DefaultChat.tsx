@@ -27,7 +27,7 @@ const DefaultChat = () => {
         seek,
         message
       )
-      openAIService.sendChatMessageToAzure(prompt)
+      openAIService.sendDefaultChatMessageToAzure(prompt)
       addChatMessage({
         role: "user",
         content: message,
@@ -35,15 +35,17 @@ const DefaultChat = () => {
       })
       openAIService.sendChatMessageForReaction()
     },
-    [addChatMessage, availableClips, parsedVideostrate, selectedClipId]
+    [addChatMessage, availableClips, parsedVideostrate, seek, selectedClipId]
   )
 
   return (
-    <Chat
-      messages={chatMessages}
-      onSend={onSend}
-      pendingChanges={pendingChanges}
-    />
+    <div className="w-96 min-w-96">
+      <Chat
+        messages={chatMessages}
+        onSend={onSend}
+        pendingChanges={pendingChanges}
+      />
+    </div>
   )
 }
 

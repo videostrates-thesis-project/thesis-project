@@ -7,6 +7,7 @@ import instructions from "./instructions.txt?raw"
 import { v4 as uuid } from "uuid"
 import { buildReactionMessage } from "./reactionTemplate"
 import { azureFunctionRequest } from "../api/api"
+import { AzureModelType } from "../api/apiTypes"
 
 const ASSISTANT_POLL_RATE = 5000
 
@@ -71,7 +72,7 @@ class OpenAIService {
     }, ASSISTANT_POLL_RATE)
   }
 
-  async sendChatMessageToAzure(text: string) {
+  async sendDefaultChatMessageToAzure(text: string) {
     const userMessage: ChatCompletionMessageParam = {
       role: "user",
       content: text,
@@ -88,7 +89,14 @@ class OpenAIService {
     }
     const messages = useStore.getState().addMessage(userMessage)
 
-    console.log(messages)
+    const message = await this.sendChatMessageToAzureBase<ExecuteChanges>(
+      "mirrorverse-gpt-4-turbo",
+      messages,
+      "execute_changes",
+      executeChangesFunction
+    )
+
+    /*console.log(messages)
     const response = await azureFunctionRequest({
       model: "mirrorverse-gpt-4-turbo",
       messages: messages,
@@ -97,7 +105,7 @@ class OpenAIService {
     })
 
     console.log("[ChatGPT] Response", response)
-    const message = response as ExecuteChanges
+    const message = response as ExecuteChanges*/
 
     const chatMessage: ChatCompletionMessageParam = {
       role: "assistant",
@@ -112,6 +120,24 @@ class OpenAIService {
 
     if (message.script)
       (await parseAndExecuteScript(message.script))?.asPendingChanges()
+  }
+
+  async sendChatMessageToAzureBase<T>(
+    model: AzureModelType,
+    messages: ChatCompletionMessageParam[],
+    functionName: string,
+    functionDefinition: unknown
+  ) {
+    const response = await azureFunctionRequest({
+      model,
+      messages,
+      tool_choice: { type: "function", function: { name: functionName } },
+      functions: [functionDefinition],
+    })
+
+    const message = response as T
+
+    return message
   }
 
   /**

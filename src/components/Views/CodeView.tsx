@@ -9,6 +9,14 @@ import { executeScript } from "../../services/command/executeScript"
 import { VideostrateStyle } from "../../types/parsedVideostrate"
 import { ExecutableCommand } from "../../services/command/recognizedCommands"
 import { parseStyle } from "../../services/parser/parseStyle"
+import { ChatMessage } from "../../types/chatMessage"
+import Chat from "../Chat"
+import { buildCodeMessage } from "../../services/chatgpt/codeTemplate"
+import openAIService from "../../services/chatgpt/openai"
+import codeSuggestionFunction, {
+  CodeSuggestionsFunction,
+} from "../../services/chatgpt/codeSuggestionFunction"
+import { v4 as uuid } from "uuid"
 
 const CodeView = () => {
   const { elementId } = useParams()
@@ -19,6 +27,10 @@ const CodeView = () => {
   const [oldCssText, setOldCssText] = useState("")
   const [oldHtmlText, setOldHtmlText] = useState("")
   const [currentFileName, setCurrentFileName] = useState("")
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+  const [beforeAssistantHtml, setBeforeAssistantHtml] = useState("")
+  const [beforeAssistantCss, setBeforeAssistantCss] = useState("")
+  const [diff, setDiff] = useState(false)
   const navigate = useNavigate()
 
   const element = useMemo(() => {
@@ -33,6 +45,7 @@ const CodeView = () => {
     })
     setHtml(beautifiedHtml)
     setOldHtmlText(beautifiedHtml)
+    setBeforeAssistantHtml(beautifiedHtml)
     const parser = new DOMParser()
     const document = parser.parseFromString(element.content, "text/html")
     const filteredCss = parsedVideostrate.style.filter(
@@ -45,6 +58,7 @@ const CodeView = () => {
     const beautifiedCss = css_beautify(serializedCss, { indent_size: 4 })
     setCss(beautifiedCss)
     setOldCssText(beautifiedCss)
+    setBeforeAssistantCss(beautifiedCss)
 
     setCurrentFileName(element.name + ".html")
 
@@ -93,6 +107,13 @@ const CodeView = () => {
       return html
     }
   }, [css, currentFileName, html])
+
+  const originalCode = useMemo(() => {
+    if (currentFileName.endsWith("css")) {
+      return beforeAssistantCss
+    }
+    return beforeAssistantHtml
+  }, [beforeAssistantCss, beforeAssistantHtml, currentFileName])
 
   const currentLanguage = useMemo(() => {
     if (currentFileName.endsWith("css")) {
@@ -151,6 +172,44 @@ const CodeView = () => {
     navigate(-1)
   }, [navigate])
 
+  const onSend = useCallback(
+    async (message: string) => {
+      const prompt = buildCodeMessage(html, css)(message)
+      chatMessages.push({ role: "user", id: uuid(), content: message })
+      setChatMessages(chatMessages)
+      setBeforeAssistantHtml(html)
+      setBeforeAssistantCss(css)
+      const response =
+        await openAIService.sendChatMessageToAzureBase<CodeSuggestionsFunction>(
+          "mirrorverse-gpt-35-turbo",
+          [
+            ...chatMessages.map((m) => ({ role: m.role, content: m.content })),
+            { role: "user", content: prompt },
+          ],
+          "code_suggestions",
+          codeSuggestionFunction
+        )
+      setChatMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: response.explanation, id: uuid() },
+      ])
+      setHtml(response.html)
+      setCss(response.css)
+      setDiff(true)
+    },
+    [chatMessages, css, html]
+  )
+
+  const onAccept = useCallback(() => {
+    setDiff(false)
+  }, [])
+
+  const onReject = useCallback(() => {
+    setHtml(beforeAssistantHtml)
+    setCss(beforeAssistantCss)
+    setDiff(false)
+  }, [beforeAssistantCss, beforeAssistantHtml])
+
   return (
     <div className="grid grid-cols-2" onKeyDown={onHotkey}>
       {!element && (
@@ -169,10 +228,11 @@ const CodeView = () => {
               highlight={() => {}}
               isHighlighting={false}
             />
-            <h1>Chat</h1>
+            <Chat messages={chatMessages} onSend={onSend} />
           </div>
           <CodeEditor
             code={currentCode}
+            originalCode={originalCode}
             language={currentLanguage}
             onChange={onEditorChange}
             files={files}
@@ -180,6 +240,9 @@ const CodeView = () => {
             onChangeTab={onChangeTab}
             onSave={onSave}
             onFormat={onFormat}
+            diff={diff}
+            onAccept={onAccept}
+            onReject={onReject}
           />
         </>
       )}

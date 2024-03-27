@@ -28,19 +28,13 @@ export const processAddCustomElementCommand = async (
   const document = parser.parseFromString(content.value, "text/html")
   let htmlElement = document.body.firstChild as HTMLElement
   htmlElement = cleanTree(htmlElement)
-  const parent = htmlElement.parentNode
-  const wrapper = document.createElement("div")
-  // TODO: determine z-index based on where it's added in the timeline
-  wrapper.style.zIndex = "1"
-  parent?.replaceChild(wrapper, htmlElement)
-  wrapper.appendChild(htmlElement)
 
   const parsedVideostrate = useStore.getState().parsedVideostrate
 
   try {
     const elementId = parsedVideostrate.addCustomElement(
       name.value,
-      wrapper.outerHTML,
+      htmlElement.outerHTML,
       start.value,
       end.value
     )

@@ -66,7 +66,7 @@ const Chat = ({ onSend, messages, pendingChanges }: ChatProps) => {
   }, [loading])
 
   return (
-    <div className="flex flex-col h-full w-96 min-w-96 max-h-full bg-base-300 border-l border-neutral rounded">
+    <div className="flex flex-col h-ful max-h-full bg-base-300 border-l border-neutral rounded">
       <div className="pt-4 max-h-full overflow-y-auto overflow-x-hidden break-words break-all">
         {messages.map((msg, index) => (
           <div

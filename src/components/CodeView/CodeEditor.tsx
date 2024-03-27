@@ -1,4 +1,4 @@
-import { Editor } from "@monaco-editor/react"
+import { DiffEditor, Editor } from "@monaco-editor/react"
 import HtmlImage from "../../assets/html.svg"
 import CssImage from "../../assets/css.svg"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -23,6 +23,10 @@ type CodeEditorProps = {
   onFormat: () => void
   currentFileName: string
   files: EditorFile[]
+  originalCode: string
+  diff?: boolean
+  onAccept: () => void
+  onReject: () => void
 }
 
 const CodeEditor = ({
@@ -34,6 +38,10 @@ const CodeEditor = ({
   onChangeTab,
   onSave,
   onFormat,
+  originalCode,
+  diff,
+  onAccept,
+  onReject,
 }: CodeEditorProps) => {
   const [editor, setEditor] = useState<editor.ICodeEditor>()
   const [monaco, setMonaco] = useState<Monaco>()
@@ -161,31 +169,55 @@ const CodeEditor = ({
           <i className="bi bi-floppy text-lg"></i>Save
         </button>
       </div>
-      <Editor
-        onMount={(editor, monaco) => {
-          setEditor(editor)
-          setMonaco(monaco)
-        }}
-        width="100%"
-        height="calc(100vh - 5rem)"
-        language={language}
-        defaultValue={code}
-        value={code}
-        theme="vs-dark"
-        onChange={onChange}
-        options={{
-          inlineSuggest: {
-            enabled: true,
-            showToolbar: "never",
-          },
-          suggest: {
-            preview: true,
-            showStatusBar: false,
-          },
-          quickSuggestions: false,
-          suggestOnTriggerCharacters: false,
-        }}
-      />
+      {diff && (
+        <div className="flex flex-row gap-2 absolute bottom-4 right-4 z-10">
+          <button className="btn btn-accent btn-sm" onClick={onAccept}>
+            <i className="bi bi-check2 text-lg"></i> Accept
+          </button>
+          <button className="btn btn-error btn-sm" onClick={onReject}>
+            <i className="bi bi-x text-2xl"></i> Reject
+          </button>
+        </div>
+      )}
+      {diff ? (
+        <DiffEditor
+          onMount={(_, monaco) => {
+            setMonaco(monaco)
+          }}
+          width="100%"
+          height="calc(100vh - 5rem)"
+          language={language}
+          original={originalCode}
+          modified={code}
+          theme="vs-dark"
+        />
+      ) : (
+        <Editor
+          onMount={(editor, monaco) => {
+            setEditor(editor)
+            setMonaco(monaco)
+          }}
+          width="100%"
+          height="calc(100vh - 5rem)"
+          language={language}
+          defaultValue={code}
+          value={code}
+          theme="vs-dark"
+          onChange={onChange}
+          options={{
+            inlineSuggest: {
+              enabled: true,
+              showToolbar: "never",
+            },
+            suggest: {
+              preview: true,
+              showStatusBar: false,
+            },
+            quickSuggestions: false,
+            suggestOnTriggerCharacters: false,
+          }}
+        />
+      )}
     </div>
   )
 }
