@@ -3,6 +3,9 @@ import clsx from "clsx"
 import PendingChangesBanner from "./PendingChangesBanner"
 import { Typewriter } from "./Typewriter"
 import { ChatMessage } from "../types/chatMessage"
+import data from "@emoji-mart/data"
+import Picker from "@emoji-mart/react"
+import { useOnClickOutside } from "../hooks/useClickOutside"
 
 type ChatProps = {
   onSend: (message: string) => void
@@ -13,6 +16,7 @@ type ChatProps = {
     isHighlighted: boolean
     toggleHighlight?: () => void
   }
+  addEmoji?: (id: string, reaction: string) => void
 }
 
 const Chat = ({
@@ -20,14 +24,29 @@ const Chat = ({
   messages,
   pendingChanges,
   highlight = { isEnabled: false, isHighlighted: false },
+  addEmoji,
 }: ChatProps) => {
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
   const endRef = useRef<HTMLDivElement>(null)
   const [typewriterIndex, setTypewriterIndex] = useState<number | null>(null)
   const [newMessage, setNewMessage] = useState(false)
+  const [reactionSelectorOpen, setReactionSelectorOpen] = useState<
+    string | null
+  >(null)
+  const [reactionPopupStyle, setReactionPopupStyle] = useState({
+    top: "0px",
+    left: "0px",
+  })
+
+  const reactionRef = useRef<HTMLDivElement>(null)
 
   const textAreaRef = useRef<HTMLTextAreaElement>(null)
+
+  const handleReactionClickOutside = useCallback(() => {
+    setReactionSelectorOpen(null)
+  }, [])
+  useOnClickOutside(reactionRef, handleReactionClickOutside)
 
   const adjustTextAreaHeight = () => {
     const textArea = textAreaRef.current
@@ -75,6 +94,48 @@ const Chat = ({
     }
   }, [loading])
 
+  const openReactionSelector = useCallback(
+    (id: string | null, event?: React.MouseEvent<HTMLDivElement>) => {
+      if (event && id) {
+        const x = event.clientX
+        const y = event.clientY + 20
+        const screenWidth = window.innerWidth
+        const screenHeight = window.innerHeight
+        // These dimensions should ideally be dynamic or set based on the size of your popup
+        const popupWidth = 298 // Replace with your popup's actual width if dynamic
+        const popupHeight = 435 // Replace with your popup's actual height if dynamic
+
+        let adjustedX = x
+        let adjustedY = y
+
+        // Adjust if the popup goes beyond the right edge of the screen
+        if (x + popupWidth > screenWidth) {
+          adjustedX -= popupWidth
+        }
+
+        // Adjust if the popup goes beyond the bottom edge of the screen
+        if (y + popupHeight > screenHeight) {
+          adjustedY -= popupHeight
+        }
+
+        setReactionPopupStyle({
+          top: adjustedY + "px",
+          left: adjustedX + "px",
+        })
+      }
+      setReactionSelectorOpen((prev) => (prev === id ? null : id))
+    },
+    []
+  )
+
+  const addEmojiToMessage = useCallback(
+    (id: string, reaction: string) => {
+      setReactionSelectorOpen(null)
+      addEmoji?.(id, reaction)
+    },
+    [addEmoji]
+  )
+
   return (
     <div className="flex flex-col h-full max-h-full bg-base-300 border-l border-neutral rounded">
       <div className="pt-4 max-h-full overflow-y-auto overflow-x-hidden break-words break-all">
@@ -82,9 +143,8 @@ const Chat = ({
           <div
             key={index}
             className={clsx(
-              "chat",
-              msg.role === "user" ? "chat-end" : "chat-start",
-              msg.reaction && "pb-4"
+              "chat pb-4",
+              msg.role === "user" ? "chat-end" : "chat-start"
             )}
           >
             <div
@@ -101,13 +161,60 @@ const Chat = ({
                 msg.content
               )}
 
+              {!msg.reaction && msg.role === "assistant" && (
+                <div
+                  onClick={(event) => openReactionSelector(msg.id, event)}
+                  className={clsx(
+                    "animate-shrink text-[1.2rem] absolute right-2 -bottom-4 bg-neutral rounded-full border-base-300 border-2 flex justify-center items-center cursor-pointer"
+                  )}
+                  style={{
+                    paddingTop: "2px",
+                    width: "36px",
+                    height: "36px",
+                  }}
+                >
+                  <i className="bi bi-plus-circle-fill text-lg text-white"></i>
+                </div>
+              )}
+              {reactionSelectorOpen === msg.id && (
+                <div
+                  ref={reactionRef}
+                  className="fixed z-10"
+                  style={{
+                    top: reactionPopupStyle.top,
+                    left: reactionPopupStyle.left,
+                  }}
+                >
+                  <Picker
+                    data={data}
+                    onEmojiSelect={(e: { native: string }) =>
+                      addEmojiToMessage?.(msg.id, e.native)
+                    }
+                    emojiButtonSize={30}
+                    emojiSize={20}
+                    maxFrequentRows={1}
+                    perLine={9}
+                    previewPosition="none"
+                  />
+                </div>
+              )}
+
               {msg.reaction && (
                 <div
-                  className="animate-shrink text-[1.2rem] absolute left-2 -bottom-4 bg-neutral rounded-full border-base-300 border-2"
+                  className={clsx(
+                    "animate-shrink text-[1.2rem] absolute -bottom-4 bg-neutral rounded-full border-base-300 border-2",
+                    msg.role === "user" ? "left-2" : "right-2",
+                    msg.role === "assistant" && "cursor-pointer"
+                  )}
                   style={{
                     padding: "5px",
                     paddingBottom: "3.5px",
                   }}
+                  onClick={
+                    msg.role === "assistant"
+                      ? (event) => openReactionSelector(msg.id, event)
+                      : () => {}
+                  }
                 >
                   {msg.reaction}
                 </div>

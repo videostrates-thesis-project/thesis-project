@@ -189,9 +189,17 @@ const CodeView = () => {
       setChatMessages(chatMessages)
       setBeforeAssistantHtml(html)
       setBeforeAssistantCss(css)
+      openAIService.sendChatMessageForReaction(
+        [...chatMessages],
+        (id, reaction) => {
+          setChatMessages((prev) =>
+            prev.map((m) => (m.id === id ? { ...m, reaction: reaction } : m))
+          )
+        }
+      )
       const response =
         await openAIService.sendChatMessageToAzureBase<CodeSuggestionsFunction>(
-          "mirrorverse-gpt-4-turbo",
+          "mirrorverse-gpt-35-turbo",
           [
             ...chatMessages.map((m) => ({ role: m.role, content: m.content })),
             { role: "user", content: prompt },
@@ -199,12 +207,18 @@ const CodeView = () => {
           "code_suggestions",
           codeSuggestionFunction
         )
-      setChatMessages((prev) => [
-        ...prev,
-        { role: "assistant", content: response.explanation, id: uuid() },
-      ])
-      setHtml(response.html)
-      setCss(response.css)
+      if (response.explanation) {
+        setChatMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: response.explanation, id: uuid() },
+        ])
+      }
+      if (response.html) {
+        setHtml(response.html)
+      }
+      if (response.css) {
+        setCss(response.css)
+      }
       setDiff(true)
     },
     [chatMessages, css, currentMatch, html]
@@ -226,6 +240,12 @@ const CodeView = () => {
 
   const onMatchesFound = useCallback((matches: EditorMatch[]) => {
     setCurrentMatch(matches?.[0] ?? null)
+  }, [])
+
+  const addEmoji = useCallback((id: string, reaction: string) => {
+    setChatMessages((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, reaction } : m))
+    )
   }, [])
 
   return (
@@ -256,6 +276,7 @@ const CodeView = () => {
                   setHighlightedElement(null)
                 },
               }}
+              addEmoji={addEmoji}
             />
           </div>
           <CodeEditor

@@ -16,6 +16,7 @@ const DefaultChat = () => {
     chatMessages,
     pendingChanges,
     seek,
+    addReactionToMessage,
   } = useStore()
 
   const onSend = useCallback(
@@ -51,12 +52,20 @@ const DefaultChat = () => {
     ]
   )
 
+  const addEmoji = useCallback(
+    (id: string, reaction: string) => {
+      addReactionToMessage(id, reaction)
+    },
+    [addReactionToMessage]
+  )
+
   return (
     <div className="w-96 min-w-96">
       <Chat
         messages={chatMessages}
         onSend={onSend}
         pendingChanges={pendingChanges}
+        addEmoji={addEmoji}
       />
     </div>
   )
