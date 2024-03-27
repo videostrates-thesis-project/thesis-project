@@ -2,13 +2,7 @@ import { VideoElement } from "../types/videoElement"
 
 const updateLayers = (elements: VideoElement[]) => {
   const sorted = elements
-    .toSorted((a, b) => {
-      if (a.layer !== b.layer) {
-        return a.layer - b.layer
-      } else {
-        return a.start - b.start
-      }
-    })
+    .toSorted((a, b) => a.layer - b.layer)
     .map((e) => {
       return e.clone()
     })

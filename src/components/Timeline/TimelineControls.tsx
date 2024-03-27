@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from "react"
+import { useCallback } from "react"
 import { useTimeStamp } from "../../hooks/useTimeStamp"
 import { useStore } from "../../store"
 import useEditCommands from "../../hooks/useEditCommands"
@@ -9,42 +9,17 @@ const TimelineControls = (props: {
   zoomToFit: () => void
 }) => {
   const { parsedVideostrate, playbackState, selectedClipId } = useStore()
-  const { execute, moveLayer, deleteClip } = useEditCommands()
+  const { execute, moveLayerDown, moveLayerUp, deleteClip } = useEditCommands()
   const playbackTime = useTimeStamp(playbackState.time)
   const fullTime = useTimeStamp(parsedVideostrate.length)
-  const currentLayer = useMemo(() => {
-    return parsedVideostrate.getElementById(selectedClipId!)?.layer
-  }, [parsedVideostrate, selectedClipId])
-
-  const isColliding = useCallback(
-    (layer: number) => {
-      const element = parsedVideostrate.getElementById(selectedClipId!)
-      const timeStart = element!.start
-      const timeEnd = element!.end
-      const elements = parsedVideostrate.all.filter(
-        (element) => element.layer === layer
-      )
-      for (const element of elements) {
-        if (element.start < timeEnd && element.end > timeStart) {
-          return true
-        }
-      }
-      return false
-    },
-    [parsedVideostrate, selectedClipId]
-  )
 
   const moveUp = useCallback(() => {
-    if (currentLayer === undefined) return
-    const layerShift = isColliding(currentLayer + 1) ? 2 : 1
-    execute(moveLayer(selectedClipId!, currentLayer + layerShift))
-  }, [currentLayer, execute, isColliding, moveLayer, selectedClipId])
+    execute(moveLayerUp(selectedClipId!))
+  }, [execute, moveLayerUp, selectedClipId])
 
   const moveDown = useCallback(() => {
-    if (currentLayer === undefined) return
-    const layerShift = isColliding(currentLayer - 1) ? -2 : -1
-    execute(moveLayer(selectedClipId!, currentLayer + layerShift))
-  }, [currentLayer, execute, isColliding, moveLayer, selectedClipId])
+    execute(moveLayerDown(selectedClipId!))
+  }, [execute, moveLayerDown, selectedClipId])
 
   const deleteElement = useCallback(() => {
     execute(deleteClip(selectedClipId!))

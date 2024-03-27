@@ -32,6 +32,7 @@ const Chat = ({ onSend, messages, pendingChanges }: ChatProps) => {
   }, [message])
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    e.stopPropagation() // Prevents shortcuts from being triggered when the textarea is focused
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault() // Prevents adding a new line on Enter
       onTrySend()

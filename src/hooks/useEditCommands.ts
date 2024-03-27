@@ -1,8 +1,11 @@
 import { useCallback } from "react"
 import { executeScript } from "../services/command/executeScript"
 import { ExecutableCommand } from "../services/command/recognizedCommands"
+import { useStore } from "../store"
 
 const useEditCommands = () => {
+  const { parsedVideostrate } = useStore()
+
   const deleteClip = useCallback(
     (clipId: string): ExecutableCommand => ({
       command: "delete_element",
@@ -69,8 +72,46 @@ const useEditCommands = () => {
     []
   )
 
-  const execute = useCallback((...args: ExecutableCommand[]) => {
-    executeScript(args)
+  const isColliding = useCallback(
+    (elementId: string, layer: number) => {
+      const element = parsedVideostrate.getElementById(elementId)
+      const timeStart = element!.start
+      const timeEnd = element!.end
+      const elements = parsedVideostrate.all.filter(
+        (element) => element.layer === layer
+      )
+      for (const element of elements) {
+        if (element.start < timeEnd && element.end > timeStart) {
+          return true
+        }
+      }
+      return false
+    },
+    [parsedVideostrate]
+  )
+
+  const moveLayerUp = useCallback(
+    (elementId: string): ExecutableCommand | undefined => {
+      const currentLayer = parsedVideostrate.getElementById(elementId)?.layer
+      if (currentLayer === undefined) return
+      const layerShift = isColliding(elementId, currentLayer + 1) ? 2 : 1
+      return moveLayer(elementId, currentLayer + layerShift)
+    },
+    [isColliding, moveLayer, parsedVideostrate]
+  )
+
+  const moveLayerDown = useCallback(
+    (elementId: string): ExecutableCommand | undefined => {
+      const currentLayer = parsedVideostrate.getElementById(elementId)?.layer
+      if (currentLayer === undefined) return
+      const layerShift = isColliding(elementId, currentLayer - 1) ? -2 : -1
+      return moveLayer(elementId, currentLayer + layerShift)
+    },
+    [isColliding, moveLayer, parsedVideostrate]
+  )
+
+  const execute = useCallback((...args: (ExecutableCommand | undefined)[]) => {
+    executeScript(args.filter((c): c is ExecutableCommand => c !== undefined))
   }, [])
 
   return {
@@ -81,6 +122,8 @@ const useEditCommands = () => {
     moveDeltaWithoutEmbedded,
     cropElement,
     moveLayer,
+    moveLayerUp,
+    moveLayerDown,
     execute,
   }
 }
