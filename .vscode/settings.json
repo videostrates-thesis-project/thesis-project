@@ -1,0 +1,30 @@
+{
+	"editor.formatOnSave": false,
+	"css.validate": false,
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "always",
+		"source.fixAll.stylelint": "always"
+	},
+	"[json]": {
+		"editor.formatOnSave": true
+	},
+	"[html]": {
+		"editor.formatOnSave": true
+	},
+	"[css]": {
+		"editor.formatOnSave": true
+	},
+	"cSpell.words": [
+		"clsx",
+		"metamax",
+		"openai",
+		"partialize",
+		"Playhead",
+		"Stylelint",
+		"videostrate",
+		"Videostrates",
+		"Webstrate",
+		"Webstrates",
+		"zustand"
+	],
+}
