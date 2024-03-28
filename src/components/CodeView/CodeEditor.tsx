@@ -147,11 +147,26 @@ const CodeEditor = ({
   }, [editor, getCompletion])
 
   useEffect(() => {
+    if (!highlightedElement && editor && monaco) {
+      onMatchesFound([])
+      const position = editor.getPosition()
+      if (!position) return
+      editor.setSelection(
+        new monaco.Range(
+          position.lineNumber,
+          position.column,
+          position.lineNumber,
+          position.column
+        )
+      )
+      return
+    }
+  }, [editor, highlightedElement, monaco, onMatchesFound])
+
+  useEffect(() => {
     if (!editor || !monaco) return
 
     if (!highlightedElement) {
-      editor.setSelection(new monaco.Selection(0, 0, 0, 0))
-      onMatchesFound([])
       return
     }
 
