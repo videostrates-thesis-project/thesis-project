@@ -152,3 +152,39 @@ test("can parse string concatenations with many variables, strings and numbers",
     value: " bighello123world big",
   })
 })
+
+test("can parse single quote strings", () => {
+  const value = determineReturnValue("'hello'", {})
+
+  expect(value).toEqual({
+    type: "string",
+    value: "hello",
+  })
+})
+
+test("can parse mixed strings in arrays", () => {
+  const value = determineReturnValue("[\"hello\", 'world', variable]", {
+    variable: {
+      type: "string",
+      value: "variable",
+    },
+  })
+
+  expect(value).toEqual({
+    type: "array",
+    value: [
+      {
+        type: "string",
+        value: "hello",
+      },
+      {
+        type: "string",
+        value: "world",
+      },
+      {
+        type: "string",
+        value: "variable",
+      },
+    ],
+  })
+})

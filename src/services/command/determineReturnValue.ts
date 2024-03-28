@@ -20,6 +20,7 @@ export const determineReturnValue = (
 ): ReturnValue => {
   // if value has + signs in it outside of quotes, it's a concatenation
   let quoteCounter = 0
+  let singleQuoteCounter = 0
   const parts: string[] = []
   let previousPartIndex = 0
   for (let i = 0; i < value.length; i++) {
@@ -27,7 +28,15 @@ export const determineReturnValue = (
       quoteCounter++
     }
 
-    if (value[i] === "+" && quoteCounter % 2 === 0) {
+    if (value[i] === "'" && value[i - 1] !== "\\") {
+      singleQuoteCounter++
+    }
+
+    if (
+      value[i] === "+" &&
+      quoteCounter % 2 === 0 &&
+      singleQuoteCounter % 2 === 0
+    ) {
       const nextPart = value.slice(previousPartIndex, i - 1).trim()
       parts.push(nextPart)
       previousPartIndex = i + 1
@@ -54,7 +63,10 @@ export const determineReturnValue = (
   }
 
   // if value starts and ends with apostrophes, it's a constant string
-  if (value.startsWith('"') && value.endsWith('"')) {
+  if (
+    (value.startsWith('"') && value.endsWith('"')) ||
+    (value.startsWith("'") && value.endsWith("'"))
+  ) {
     return {
       type: "string" as const,
       value: value.slice(1, -1),
