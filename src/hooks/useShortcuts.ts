@@ -5,7 +5,7 @@ import { undo } from "../services/command/undo"
 import { redo } from "../services/command/redo"
 import useThrottledFunction from "./useThrottledFunction"
 
-const useShortcuts = () => {
+const useShortcuts = (enabled: boolean) => {
   const { selectedClipId } = useStore()
   const { execute, deleteClip, moveLayerDown, moveLayerUp } = useEditCommands()
   const throttledMoveLayerDown = useThrottledFunction(
@@ -65,12 +65,13 @@ const useShortcuts = () => {
   )
 
   useEffect(() => {
-    document.addEventListener("keydown", handleKeyPress)
+    if (!enabled) return
 
+    document.addEventListener("keydown", handleKeyPress)
     return () => {
       document.removeEventListener("keydown", handleKeyPress)
     }
-  }, [handleKeyPress])
+  }, [enabled, handleKeyPress])
 }
 
 export default useShortcuts
