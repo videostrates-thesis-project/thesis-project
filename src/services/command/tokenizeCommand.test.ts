@@ -72,3 +72,13 @@ test("can tokenize complex element", () => {
   ])
   expect(variable).toBe("table_id")
 })
+
+test("can tokenize array", () => {
+  const { command, args, variable } = tokenizeCommand(
+    'assign_class([clip_1_id, clip_2_id], "composition-class");'
+  )
+
+  expect(command).toBe("assign_class")
+  expect(args).toEqual(["[clip_1_id, clip_2_id]", '"composition-class"'])
+  expect(variable).toBe(null)
+})

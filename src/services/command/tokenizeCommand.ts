@@ -28,12 +28,25 @@ export const tokenizeCommand = (input: string): ExecutableCommand => {
 
   const args: string[] = []
   let quoteNum = 0
+  let squareBracketsNum = 0
   for (let i = argStart + 1; i < input.length; i++) {
     if (input[i] === '"' && input[i - 1] !== "\\") {
       quoteNum++
     }
 
-    if ((input[i] === "," || input[i] === ")") && quoteNum % 2 === 0) {
+    if (input[i] === "[" && input[i - 1] !== "\\") {
+      squareBracketsNum++
+    }
+
+    if (input[i] === "]" && input[i - 1] !== "\\") {
+      squareBracketsNum--
+    }
+
+    if (
+      (input[i] === "," || input[i] === ")") &&
+      quoteNum % 2 === 0 &&
+      squareBracketsNum === 0
+    ) {
       args.push(input.slice(argStart + 1, i).trim())
       quoteNum = 0
       argStart = i
