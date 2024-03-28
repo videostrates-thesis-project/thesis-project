@@ -3,12 +3,20 @@ import { useNavigate, useParams } from "react-router-dom"
 import { useStore } from "../../store"
 import Browser from "../CodeView/Browser"
 import { CustomElement } from "../../types/videoElement"
-import CodeEditor, { EditorFile } from "../CodeView/CodeEditor"
+import CodeEditor, { EditorFile, EditorMatch } from "../CodeView/CodeEditor"
 import { css_beautify, html_beautify } from "js-beautify"
 import { executeScript } from "../../services/command/executeScript"
 import { VideostrateStyle } from "../../types/parsedVideostrate"
 import { ExecutableCommand } from "../../services/command/recognizedCommands"
 import { parseStyle } from "../../services/parser/parseStyle"
+import { ChatMessage } from "../../types/chatMessage"
+import Chat from "../Chat"
+import { buildCodeMessage } from "../../services/chatgpt/codeTemplate"
+import openAIService from "../../services/chatgpt/openai"
+import codeSuggestionFunction, {
+  CodeSuggestionsFunction,
+} from "../../services/chatgpt/codeSuggestionFunction"
+import { v4 as uuid } from "uuid"
 
 const CodeView = () => {
   const { elementId } = useParams()
@@ -19,6 +27,13 @@ const CodeView = () => {
   const [oldCssText, setOldCssText] = useState("")
   const [oldHtmlText, setOldHtmlText] = useState("")
   const [currentFileName, setCurrentFileName] = useState("")
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
+  const [beforeAssistantHtml, setBeforeAssistantHtml] = useState("")
+  const [beforeAssistantCss, setBeforeAssistantCss] = useState("")
+  const [diff, setDiff] = useState(false)
+  const [highlightedElement, setHighlightedElement] =
+    useState<HTMLElement | null>(null)
+  const [currentMatch, setCurrentMatch] = useState<EditorMatch | null>(null)
   const navigate = useNavigate()
 
   const element = useMemo(() => {
@@ -33,6 +48,7 @@ const CodeView = () => {
     })
     setHtml(beautifiedHtml)
     setOldHtmlText(beautifiedHtml)
+    setBeforeAssistantHtml(beautifiedHtml)
     const parser = new DOMParser()
     const document = parser.parseFromString(element.content, "text/html")
     const filteredCss = parsedVideostrate.style.filter(
@@ -45,6 +61,7 @@ const CodeView = () => {
     const beautifiedCss = css_beautify(serializedCss, { indent_size: 4 })
     setCss(beautifiedCss)
     setOldCssText(beautifiedCss)
+    setBeforeAssistantCss(beautifiedCss)
 
     setCurrentFileName(element.name + ".html")
 
@@ -93,6 +110,13 @@ const CodeView = () => {
       return html
     }
   }, [css, currentFileName, html])
+
+  const originalCode = useMemo(() => {
+    if (currentFileName.endsWith("css")) {
+      return beforeAssistantCss
+    }
+    return beforeAssistantHtml
+  }, [beforeAssistantCss, beforeAssistantHtml, currentFileName])
 
   const currentLanguage = useMemo(() => {
     if (currentFileName.endsWith("css")) {
@@ -151,6 +175,79 @@ const CodeView = () => {
     navigate(-1)
   }, [navigate])
 
+  const onSend = useCallback(
+    async (message: string) => {
+      console.log("CodeView", currentMatch)
+
+      const prompt = buildCodeMessage(
+        html,
+        css,
+        currentMatch?.position,
+        currentMatch?.content
+      )(message)
+      chatMessages.push({ role: "user", id: uuid(), content: message })
+      setChatMessages(chatMessages)
+      setBeforeAssistantHtml(html)
+      setBeforeAssistantCss(css)
+      openAIService.sendChatMessageForReaction(
+        [...chatMessages],
+        (id, reaction) => {
+          setChatMessages((prev) =>
+            prev.map((m) => (m.id === id ? { ...m, reaction: reaction } : m))
+          )
+        }
+      )
+      const response =
+        await openAIService.sendChatMessageToAzureBase<CodeSuggestionsFunction>(
+          "mirrorverse-gpt-35-turbo",
+          [
+            ...chatMessages.map((m) => ({ role: m.role, content: m.content })),
+            { role: "user", content: prompt },
+          ],
+          "code_suggestions",
+          codeSuggestionFunction
+        )
+      if (response.explanation) {
+        setChatMessages((prev) => [
+          ...prev,
+          { role: "assistant", content: response.explanation, id: uuid() },
+        ])
+      }
+      if (response.html) {
+        setHtml(response.html)
+      }
+      if (response.css) {
+        setCss(response.css)
+      }
+      setDiff(true)
+    },
+    [chatMessages, css, currentMatch, html]
+  )
+
+  const onAccept = useCallback(() => {
+    setDiff(false)
+  }, [])
+
+  const onReject = useCallback(() => {
+    setHtml(beforeAssistantHtml)
+    setCss(beforeAssistantCss)
+    setDiff(false)
+  }, [beforeAssistantCss, beforeAssistantHtml])
+
+  const onHighlight = useCallback((element: HTMLElement) => {
+    setHighlightedElement(element)
+  }, [])
+
+  const onMatchesFound = useCallback((matches: EditorMatch[]) => {
+    setCurrentMatch(matches?.[0] ?? null)
+  }, [])
+
+  const addEmoji = useCallback((id: string, reaction: string) => {
+    setChatMessages((prev) =>
+      prev.map((m) => (m.id === id ? { ...m, reaction } : m))
+    )
+  }, [])
+
   return (
     <div className="grid grid-cols-2" onKeyDown={onHotkey}>
       {!element && (
@@ -163,16 +260,28 @@ const CodeView = () => {
       )}
       {element && (
         <>
-          <div className="grid grid-rows-2">
+          <div className="flex flex-col">
             <Browser
               html={displayedHtml}
-              highlight={() => {}}
-              isHighlighting={false}
+              highlight={onHighlight}
+              isHighlighting={true}
             />
-            <h1>Chat</h1>
+            <Chat
+              messages={chatMessages}
+              onSend={onSend}
+              highlight={{
+                isEnabled: true,
+                isHighlighted: highlightedElement !== null,
+                toggleHighlight: () => {
+                  setHighlightedElement(null)
+                },
+              }}
+              addEmoji={addEmoji}
+            />
           </div>
           <CodeEditor
             code={currentCode}
+            originalCode={originalCode}
             language={currentLanguage}
             onChange={onEditorChange}
             files={files}
@@ -180,6 +289,11 @@ const CodeView = () => {
             onChangeTab={onChangeTab}
             onSave={onSave}
             onFormat={onFormat}
+            diff={diff}
+            onAccept={onAccept}
+            onReject={onReject}
+            highlightedElement={highlightedElement}
+            onMatchesFound={onMatchesFound}
           />
         </>
       )}

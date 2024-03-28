@@ -5,6 +5,7 @@ import { buildAssistantMessage } from "../../services/chatgpt/assistantTemplate"
 import openAIService from "../../services/chatgpt/openai"
 import { serializeVideostrate } from "../../services/parser/serializationExecutor"
 import { v4 as uuid } from "uuid"
+import { ChatMessage } from "../../types/chatMessage"
 
 const DefaultChat = () => {
   const {
@@ -15,6 +16,7 @@ const DefaultChat = () => {
     chatMessages,
     pendingChanges,
     seek,
+    addReactionToMessage,
   } = useStore()
 
   const onSend = useCallback(
@@ -28,23 +30,44 @@ const DefaultChat = () => {
         seek,
         message
       )
-      openAIService.sendChatMessageToAzure(prompt)
-      addChatMessage({
+      openAIService.sendDefaultChatMessageToAzure(prompt)
+      const latestMessage: ChatMessage = {
         role: "user",
         content: message,
         id: uuid(),
-      })
-      openAIService.sendChatMessageForReaction()
+      }
+      addChatMessage(latestMessage)
+      openAIService.sendChatMessageForReaction(
+        [...chatMessages, latestMessage],
+        useStore.getState().addReactionToMessage
+      )
     },
-    [addChatMessage, availableClips, parsedVideostrate, selectedClipId]
+    [
+      addChatMessage,
+      availableClips,
+      chatMessages,
+      parsedVideostrate,
+      seek,
+      selectedClipId,
+    ]
+  )
+
+  const addEmoji = useCallback(
+    (id: string, reaction: string) => {
+      addReactionToMessage(id, reaction)
+    },
+    [addReactionToMessage]
   )
 
   return (
-    <Chat
-      messages={chatMessages}
-      onSend={onSend}
-      pendingChanges={pendingChanges}
-    />
+    <div className="w-96 min-w-96">
+      <Chat
+        messages={chatMessages}
+        onSend={onSend}
+        pendingChanges={pendingChanges}
+        addEmoji={addEmoji}
+      />
+    </div>
   )
 }
 

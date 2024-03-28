@@ -1,4 +1,4 @@
-import { Editor } from "@monaco-editor/react"
+import { DiffEditor, Editor } from "@monaco-editor/react"
 import HtmlImage from "../../assets/html.svg"
 import CssImage from "../../assets/css.svg"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
@@ -14,6 +14,11 @@ export type EditorFile = {
   isModified?: boolean
 }
 
+export type EditorMatch = {
+  position: { lineNumber: number; column: number }
+  content: string
+}
+
 type CodeEditorProps = {
   code: string
   language: string
@@ -23,6 +28,12 @@ type CodeEditorProps = {
   onFormat: () => void
   currentFileName: string
   files: EditorFile[]
+  originalCode: string
+  diff?: boolean
+  onAccept: () => void
+  onReject: () => void
+  highlightedElement: HTMLElement | null
+  onMatchesFound: (matches: EditorMatch[]) => void
 }
 
 const CodeEditor = ({
@@ -34,6 +45,12 @@ const CodeEditor = ({
   onChangeTab,
   onSave,
   onFormat,
+  originalCode,
+  diff,
+  onAccept,
+  onReject,
+  highlightedElement,
+  onMatchesFound,
 }: CodeEditorProps) => {
   const [editor, setEditor] = useState<editor.ICodeEditor>()
   const [monaco, setMonaco] = useState<Monaco>()
@@ -112,7 +129,7 @@ const CodeEditor = ({
   useEffect(() => {
     if (!editor) return
 
-    const { dispose } = editor.onDidChangeCursorPosition((e) => {
+    const { dispose } = editor.onDidChangeModelContent(() => {
       suggestionText.current = ""
 
       if (positionChangeTimerRef.current) {
@@ -120,14 +137,86 @@ const CodeEditor = ({
       }
 
       positionChangeTimerRef.current = setTimeout(() => {
-        getCompletion(e.position)
-      }, 1000)
+        getCompletion(editor.getPosition() ?? { lineNumber: 0, column: 0 })
+      }, 500)
     })
 
     return () => {
       dispose()
     }
   }, [editor, getCompletion])
+
+  useEffect(() => {
+    if (!editor || !monaco) return
+
+    if (!highlightedElement) {
+      editor.setSelection(new monaco.Selection(0, 0, 0, 0))
+      onMatchesFound([])
+      return
+    }
+
+    if (!currentFileName.endsWith(".html")) {
+      return
+    }
+
+    let matches = editor
+      ?.getModel()
+      ?.findMatches(
+        highlightedElement.outerHTML,
+        false,
+        false,
+        false,
+        null,
+        true
+      )
+    if (!matches || matches.length === 0) {
+      matches =
+        editor
+          ?.getModel()
+          ?.findMatches(
+            highlightedElement.outerHTML.replaceAll('"', "'"),
+            false,
+            false,
+            false,
+            null,
+            true
+          ) ?? []
+    }
+
+    onMatchesFound(
+      matches.map((match) => ({
+        position: {
+          lineNumber: match.range.startLineNumber,
+          column: match.range.startColumn,
+        },
+        content: match.matches?.[0] ?? "",
+      }))
+    )
+
+    editor.setSelections(
+      matches.map(
+        (match) =>
+          new monaco.Selection(
+            match.range.startLineNumber,
+            match.range.startColumn,
+            match.range.endLineNumber,
+            match.range.endColumn
+          )
+      )
+    )
+
+    if (matches.length > 0) {
+      editor.revealLine(matches[0].range.startLineNumber)
+    }
+  }, [
+    currentFileName,
+    editor,
+    files,
+    highlightedElement,
+    monaco,
+    onChangeTab,
+    onMatchesFound,
+  ])
 
   return (
     <div className="flex flex-col flex-1">
@@ -136,8 +225,10 @@ const CodeEditor = ({
           <div
             key={index}
             className={clsx(
-              "px-4 py-2 bg-neutral min-w-24 flex flex-row items-center text-sm border-b-2 border-transparent hover:border-primary cursor-pointer",
-              currentFileName === tab.name && "border-primary"
+              "px-4 py-2 bg-neutral min-w-24 flex flex-row items-center text-sm border-b-2 hover:border-primary cursor-pointer",
+              currentFileName === tab.name
+                ? "border-primary"
+                : "border-transparent"
             )}
             onClick={() => onChangeTab(tab.name)}
           >
@@ -160,31 +251,55 @@ const CodeEditor = ({
           <i className="bi bi-floppy text-lg"></i>Save
         </button>
       </div>
-      <Editor
-        onMount={(editor, monaco) => {
-          setEditor(editor)
-          setMonaco(monaco)
-        }}
-        width="100%"
-        height="calc(100vh - 5rem)"
-        language={language}
-        defaultValue={code}
-        value={code}
-        theme="vs-dark"
-        onChange={onChange}
-        options={{
-          inlineSuggest: {
-            enabled: true,
-            showToolbar: "never",
-          },
-          suggest: {
-            preview: true,
-            showStatusBar: false,
-          },
-          quickSuggestions: false,
-          suggestOnTriggerCharacters: false,
-        }}
-      />
+      {diff && (
+        <div className="flex flex-row gap-2 absolute bottom-4 right-4 z-10">
+          <button className="btn btn-accent btn-sm" onClick={onAccept}>
+            <i className="bi bi-check2 text-lg"></i> Accept
+          </button>
+          <button className="btn btn-error btn-sm" onClick={onReject}>
+            <i className="bi bi-x text-2xl"></i> Reject
+          </button>
+        </div>
+      )}
+      {diff ? (
+        <DiffEditor
+          onMount={(_, monaco) => {
+            setMonaco(monaco)
+          }}
+          width="100%"
+          height="calc(100vh - 5rem)"
+          language={language}
+          original={originalCode}
+          modified={code}
+          theme="vs-dark"
+        />
+      ) : (
+        <Editor
+          onMount={(editor, monaco) => {
+            setEditor(editor)
+            setMonaco(monaco)
+          }}
+          width="100%"
+          height="calc(100vh - 5rem)"
+          language={language}
+          defaultValue={code}
+          value={code}
+          theme="vs-dark"
+          onChange={onChange}
+          options={{
+            inlineSuggest: {
+              enabled: true,
+              showToolbar: "never",
+            },
+            suggest: {
+              preview: true,
+              showStatusBar: false,
+            },
+            quickSuggestions: false,
+            suggestOnTriggerCharacters: false,
+          }}
+        />
+      )}
     </div>
   )
 }
