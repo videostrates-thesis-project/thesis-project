@@ -92,3 +92,33 @@ test("can tokenize single quotes", () => {
   expect(args).toEqual(["[clip_1_id, clip_2_id]", "'composition-class'"])
   expect(variable).toBe(null)
 })
+
+test("can tokenize var variables", () => {
+  const { command, args, variable } = tokenizeCommand(
+    "var variable = assign_class([clip_1_id, clip_2_id], 'composition-class');"
+  )
+
+  expect(command).toBe("assign_class")
+  expect(args).toEqual(["[clip_1_id, clip_2_id]", "'composition-class'"])
+  expect(variable).toBe("variable")
+})
+
+test("can tokenize let variables", () => {
+  const { command, args, variable } = tokenizeCommand(
+    "let variable = assign_class([clip_1_id, clip_2_id], 'composition-class');"
+  )
+
+  expect(command).toBe("assign_class")
+  expect(args).toEqual(["[clip_1_id, clip_2_id]", "'composition-class'"])
+  expect(variable).toBe("variable")
+})
+
+test("can tokenize const variables", () => {
+  const { command, args, variable } = tokenizeCommand(
+    "const variable = assign_class([clip_1_id, clip_2_id], 'composition-class');"
+  )
+
+  expect(command).toBe("assign_class")
+  expect(args).toEqual(["[clip_1_id, clip_2_id]", "'composition-class'"])
+  expect(variable).toBe("variable")
+})
