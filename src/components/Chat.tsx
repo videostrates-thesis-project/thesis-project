@@ -165,7 +165,7 @@ const Chat = ({
                 <div
                   onClick={(event) => openReactionSelector(msg.id, event)}
                   className={clsx(
-                    "animate-shrink text-[1.2rem] absolute right-2 -bottom-4 bg-neutral rounded-full border-base-300 border-2 flex justify-center items-center cursor-pointer"
+                    "animate-shrink text-[1.2rem] absolute right-2 -bottom-4 bg-neutral rounded-full border-base-300 border-2 flex justify-center items-center cursor-pointer hover:text-white transition-all"
                   )}
                   style={{
                     paddingTop: "2px",
@@ -173,7 +173,7 @@ const Chat = ({
                     height: "36px",
                   }}
                 >
-                  <i className="bi bi-plus-circle-fill text-lg text-white"></i>
+                  <i className="bi bi-plus-lg text-lg"></i>
                 </div>
               )}
               {reactionSelectorOpen === msg.id && (
@@ -187,9 +187,12 @@ const Chat = ({
                 >
                   <Picker
                     data={data}
-                    onEmojiSelect={(e: { native: string }) =>
-                      addEmojiToMessage?.(msg.id, e.native)
-                    }
+                    onEmojiSelect={(e: { native: string }) => {
+                      addEmojiToMessage?.(
+                        msg.id,
+                        e.native === msg.reaction ? "" : e.native
+                      )
+                    }}
                     emojiButtonSize={30}
                     emojiSize={20}
                     maxFrequentRows={1}
