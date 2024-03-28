@@ -188,3 +188,12 @@ test("can parse mixed strings in arrays", () => {
     ],
   })
 })
+
+test("can parse string length", () => {
+  const value = determineReturnValue("'hello'.length", {})
+
+  expect(value).toEqual({
+    type: "number",
+    value: 5,
+  })
+})

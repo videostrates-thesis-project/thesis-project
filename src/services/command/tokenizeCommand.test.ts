@@ -122,3 +122,13 @@ test("can tokenize const variables", () => {
   expect(args).toEqual(["[clip_1_id, clip_2_id]", "'composition-class'"])
   expect(variable).toBe("variable")
 })
+
+test("can tokenize string length", () => {
+  const { command, args, variable } = tokenizeCommand(
+    "const variable = move(clip_id, 'hello'.length, 20);"
+  )
+
+  expect(command).toBe("move")
+  expect(args).toEqual(["clip_id", "'hello'.length", "20"])
+  expect(variable).toBe("variable")
+})

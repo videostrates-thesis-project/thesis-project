@@ -1,6 +1,9 @@
 import { ExecutionContext } from "./executionContext"
 import { AcceptedReturnValue, ReturnValue } from "./returnValue"
 
+const stringFunctions = ["length"] as const
+type StringFunction = (typeof stringFunctions)[number]
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const determineReturnValueTyped = <T = any>(
   expectedType: AcceptedReturnValue,
@@ -63,13 +66,33 @@ export const determineReturnValue = (
   }
 
   // if value starts and ends with apostrophes, it's a constant string
+  const dotSplit = value.split(".")
   if (
-    (value.startsWith('"') && value.endsWith('"')) ||
-    (value.startsWith("'") && value.endsWith("'"))
+    (dotSplit[0].startsWith('"') && dotSplit[0].endsWith('"')) ||
+    (dotSplit[0].startsWith("'") && dotSplit[0].endsWith("'"))
   ) {
-    return {
-      type: "string" as const,
-      value: value.slice(1, -1),
+    if (dotSplit.length === 1) {
+      return {
+        type: "string" as const,
+        value: dotSplit[0].slice(1, -1),
+      }
+    } else if (dotSplit.length > 2) {
+      throw new Error(`String "${value}" cannot have multiple function calls`)
+    } else {
+      const stringFunction = stringFunctions.find(
+        (q) => q === (dotSplit[1].trim() as StringFunction)
+      )
+      if (stringFunction) {
+        switch (stringFunction) {
+          case "length":
+            return {
+              type: "number" as const,
+              value: dotSplit[0].slice(1, -1).length,
+            }
+          default:
+            throw new Error(`String function "${dotSplit[1]}" not recognized`)
+        }
+      }
     }
   }
 
