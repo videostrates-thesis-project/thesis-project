@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo } from "react"
 import { useStore } from "../../store"
 import { WebstrateSerializationStrategy } from "../../services/serializationStrategies/webstrateSerializationStrategy"
 import { CustomElement } from "../../types/videoElement"
-import { executeScript } from "../../services/command/executeScript"
+import useEditCommands from "../../hooks/useEditCommands"
 
 const AvailableCustomElement = (props: { element: CustomElement }) => {
   const {
@@ -18,6 +18,8 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
   } = useScaledIframe()
   const { serializedVideostrate, deleteAvailableCustomElement, seek } =
     useStore()
+
+  const { execute, addCustomElement } = useEditCommands()
 
   const elementHtml = useMemo(() => {
     const serializer = new WebstrateSerializationStrategy()
@@ -44,18 +46,21 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
   }, [iframeRef, serializedVideostrate.css])
 
   const addToTimeline = useCallback(() => {
-    executeScript([
-      {
-        command: "add_custom_element",
-        args: [
-          `"${props.element.name}"`,
-          `"${props.element.content}"`,
-          seek.toString(),
-          "10",
-        ],
-      },
-    ])
-  }, [props.element.name, props.element.content, seek])
+    execute(
+      addCustomElement(
+        props.element.name,
+        props.element.content,
+        seek,
+        seek + 10
+      )
+    )
+  }, [
+    execute,
+    addCustomElement,
+    props.element.name,
+    props.element.content,
+    seek,
+  ])
 
   const deleteElement = useCallback(() => {
     deleteAvailableCustomElement(props.element.id)

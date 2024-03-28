@@ -1,11 +1,12 @@
 import { useCallback, useMemo } from "react"
 import { useStore } from "../../store"
-import { executeScript } from "../../services/command/executeScript"
 import VideoClip from "../../types/videoClip"
 import DeleteMediaButton from "./DeleteMediaButton"
+import useEditCommands from "../../hooks/useEditCommands"
 
 const AvailableClip = (props: { clip: VideoClip }) => {
   const { seek, deleteAvailableClip, parsedVideostrate } = useStore()
+  const { execute, addClip } = useEditCommands()
 
   const canBeDeleted = useMemo(() => {
     return !parsedVideostrate.clips.some((c) => c.source === props.clip.source)
@@ -16,13 +17,8 @@ const AvailableClip = (props: { clip: VideoClip }) => {
       console.log("Error: No clip title")
       return
     }
-    executeScript([
-      {
-        command: "add_clip",
-        args: [`"${props.clip.title}"`, seek.toString()],
-      },
-    ])
-  }, [props.clip.title, seek])
+    execute(addClip(props.clip.title, seek))
+  }, [addClip, execute, props.clip.title, seek])
 
   const deleteClip = useCallback(() => {
     deleteAvailableClip(props.clip.source)
