@@ -155,6 +155,10 @@ const CodeEditor = ({
       return
     }
 
+    if (!currentFileName.endsWith(".html")) {
+      return
+    }
+
     let matches = editor
       ?.getModel()
       ?.findMatches(
@@ -204,7 +208,15 @@ const CodeEditor = ({
     if (matches.length > 0) {
       editor.revealLine(matches[0].range.startLineNumber)
     }
-  }, [editor, highlightedElement, monaco, onMatchesFound])
+  }, [
+    currentFileName,
+    editor,
+    files,
+    highlightedElement,
+    monaco,
+    onChangeTab,
+    onMatchesFound,
+  ])
 
   return (
     <div className="flex flex-col flex-1">
