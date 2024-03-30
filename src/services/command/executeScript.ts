@@ -95,7 +95,9 @@ const recognizedCommands: RecognizedCommands = {
 export const parseAndExecuteScript = async (script: string) => {
   console.log("Executing script: \n", script)
   const lines = script.trim().split("\n")
-  const parsed = lines.map((line) => tokenizeCommand(line))
+  const parsed = lines
+    .filter((line) => line.trim().length > 0 && !line.trim().startsWith("//"))
+    .map((line) => tokenizeCommand(line))
 
   return await executeScript(parsed)
 }
