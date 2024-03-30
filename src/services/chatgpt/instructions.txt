@@ -7,19 +7,21 @@ Naming conventions:
 - custom element: A custom HTML element that is shown on the timeline
 - embedded clip: Clip that is inside a custom element
 
-HTML tags applicable to all elements:
+HTML attributes applicable to all elements:
 - absolute-start: the start of the clip/element on the timeline of the whole video, absolute to the video
 - absolute-end: the start of the clip/element on the timeline of the whole video, absolute to the video
-- layer: the layer of the custom element, 0 is the bottom layer, 1 is the layer above 0, and so on
+- layer: the layer of the custom element, -1 is the bottom layer, 0 is the layer above -1, and so on. The layer order overrides the z-index of the root elements. Do not use the z-index attribute for ordering elements on the timeline.
 
-HTML tags applicable to clips:
+HTML attributes applicable to clips:
 - clip-name: the name of the clip
 - playback-speed: the playback speed of the clip, 1 is normal speed, 2 is double speed, 0.5 is half speed
 - relative-start: the timestamp of the clip when it starts playing, relative to the clip
 - relative-end: the timestamp of the clip when it ends playing, relative to the clip
 
-HTML tags applicable to custom elements:
+HTML attributes applicable to custom elements:
 - custom-element-name: the name of the custom element
+- embedded-clip-container: unique identifier value of an element that contains embedded clips
+
 
 The script should always be a set of commands. The possible commands are the following:
 
@@ -58,7 +60,7 @@ function reposition(element_id: string, absolute_start: number, absolute_end: nu
  * Moves the layer of the element. Affects the layer attribute.
  *     Note that layers are adjusted automatically when moving elements on the timeline. So they don't necessarily need to be adjusted manually.
  * @param {element_id} id of the element in the html. Needs to be a root element.
- * @param {layer} the new layer of the element. 0 is the bottom layer, 1 is the layer above 0, and so on.
+ * @param {layer} the new layer of the element. -1 is the bottom layer, 0 is the layer above -1, and so on.
  */
 function move_layer(element_id: string, layer: number)
 
@@ -96,7 +98,7 @@ function add_subtitle(text: string, absolute_start: number, absolute_end: number
 
 /**
  * Adds a custom html element to the video.
- *      Note that clips with the video tag cannot be added as custom elements. They can be added using the add_clip function, and then styled using the assign_class function.
+ *      DO NOT include clips using the video tag in the element. An embedded clip can be added to an embedded clip container using the add_clip_to_element function.
  * @param {element_name} the name of the element, e.g. "Cat table", short, max 20 characters
  * @param {element} the html code of the custom element, must include only one root element
  * @param {absolute_start} when the element starts displaying in the timeline, in seconds
@@ -106,14 +108,14 @@ function add_subtitle(text: string, absolute_start: number, absolute_end: number
 function add_custom_element(element_name: string, element: string, absolute_start: number, absolute_end: number): string
 
 /**
- * Adds a clip inside a custom element.
- * @param {element_id} id of the element in the html. Use explicitly defined ids from inside the custom element, and not the returned id of the add_custom_element function.
+ * Adds a clip inside an embedded clip container.
+ * @param {embedded_clip_container} the embedded-clip-container attribute value of the element to which the clip should be added
  * @param {clip_name} name of the clip, HAS TO BE one of the clips from the list of available clips
  * @param {absolute_start} when the clip starts displaying in the timeline, in seconds
  * @param {absolute_end} when the clip stops displaying in the timeline, in seconds
  * @returns {string} the id of the added clip
  */
-function add_clip_to_element(element_id: string, clip_name: string, absolute_start: number, absolute_end: number): string
+function add_clip_to_element(embedded_clip_container: string, clip_name: string, absolute_start: number, absolute_end: number): string
 
 /**
  * Changes the name of an element.
@@ -178,12 +180,13 @@ When creating an element with an animation do the following steps:
 2. Create styles for styling and applying the animation
 3. Create the element with all the classes for the styles and animations
 
-A clip can be added inside a custom element:
-    1. Create a custom element that has a container with a unique id
+A clip can be added inside a custom element that has the embedded-clip-container attribute:
+    1. Create a custom element that has a container with a unique embedded-clip-container attribute value. This container has to be a div element.
     2. Add a clip to the container using the add_clip_to_element function.
+    3. [Optional] Style the clips inside the container using the assign_class function.
 For example:
-create_or_update_style(".grid-2-by-2-class", "display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; padding: 100px; max-height: 100vh;");
-add_custom_element("Video grid", "<div id="grid-2-by-2" class="grid-2-by-2-class"></div>", 2.23, 10.02);
+create_or_update_style(".grid-2-by-2-style", "display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; padding: 100px; max-height: 100vh;");
+add_custom_element("Video grid", "<div embedded-clip-container='grid-2-by-2' class='grid-2-by-2-style'></div>", 2.23, 10.02);
 clip_1_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
 clip_2_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
 clip_3_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);

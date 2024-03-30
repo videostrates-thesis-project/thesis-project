@@ -135,7 +135,7 @@ class OpenAIService {
     const messages = useStore.getState().addMessage(userMessage)
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4-turbo-preview",
+      model: "gpt-4-0125-preview",
       messages: messages,
       tool_choice: { type: "function", function: { name: "execute_changes" } },
       tools: [executeChangesFunction],

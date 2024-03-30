@@ -20,7 +20,7 @@ export const processCreateOrUpdateStyleCommand = async (
 
   const parsedVideostrate = useStore.getState().parsedVideostrate
   try {
-      const elementId = parsedVideostrate.updateStyle(selector.value, style.value)
+    const elementId = parsedVideostrate.updateStyle(selector.value, style.value)
     useStore.getState().setParsedVideostrate(parsedVideostrate)
 
     return {

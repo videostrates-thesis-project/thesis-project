@@ -1,5 +1,4 @@
 import { useStore } from "../store"
-import updateLayers from "../utils/updateLayers"
 import { Image } from "./image"
 import VideoClip from "./videoClip"
 import {
@@ -46,7 +45,6 @@ export class ParsedVideostrate {
 
   private set all(elements: VideoElement[]) {
     this._all = elements
-    this.updateLayers()
     this.updateComputedProperties()
   }
 
@@ -93,9 +91,10 @@ export class ParsedVideostrate {
   }
 
   public moveEmbeddedClips(elementId: string, delta: number) {
-    const clips = this.all.filter((c) => 
-      c.type === "video" && 
-      (c as VideoClipElement).containerElementId === elementId
+    const clips = this.all.filter(
+      (c) =>
+        c.type === "video" &&
+        (c as VideoClipElement).containerElementId === elementId
     ) as VideoClipElement[]
 
     clips.forEach((c) => {
@@ -162,13 +161,19 @@ export class ParsedVideostrate {
       }
       const customElement = e as CustomElement
       const parser = new DOMParser()
-      const document = parser.parseFromString(customElement.content, "text/html")
-      const htmlElement = document.body.firstChild as HTMLElement
-      if (!htmlElement) {
-        return false
-      }
-      return htmlElement.querySelector(`#${elementId}`)
+      const document = parser.parseFromString(
+        customElement.content,
+        "text/html"
+      )
+
+      return document.body.querySelector(
+        `[embedded-clip-container="${elementId}"]`
+      )
     }) as CustomElement
+
+    if (!containerElement) {
+      throw new Error(`Container element with id ${elementId} not found`)
+    }
 
     return containerElement.id
   }
@@ -208,7 +213,11 @@ export class ParsedVideostrate {
     if (useStore.getState().selectedClipId === elementId) {
       useStore.getState().setSelectedClipId(null)
     }
-    this.all = this.all.filter((c) => c.id !== elementId && (c as VideoClipElement).containerElementId !== elementId)
+    this.all = this.all.filter(
+      (c) =>
+        c.id !== elementId &&
+        (c as VideoClipElement).containerElementId !== elementId
+    )
     this.updateImages()
   }
 
@@ -322,13 +331,19 @@ export class ParsedVideostrate {
   }
 
   public parseStyle(style: string): Record<string, string> {
-    let styleArray = style.split(";").map((s) => s.trim()).filter((s) => s.length > 0)
+    const styleArray = style
+      .split(";")
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0)
 
-    return styleArray.reduce((acc, val) => {
-      const [key, value] = val.split(":").map((s) => s.trim())
-      acc[key] = value
-      return acc
-    }, {} as Record<string, string>)
+    return styleArray.reduce(
+      (acc, val) => {
+        const [key, value] = val.split(":").map((s) => s.trim())
+        acc[key] = value
+        return acc
+      },
+      {} as Record<string, string>
+    )
   }
 
   public updateStyle(selector: string, style: string) {
@@ -367,7 +382,9 @@ export class ParsedVideostrate {
   }
 
   private assignClassToClip(clip: VideoClipElement, className: string) {
-    clip.className = clip.className ? `${clip.className} ${className}` : className
+    clip.className = clip.className
+      ? `${clip.className} ${className}`
+      : className
   }
 
   public assignClass(elementIds: string[], className: string) {
@@ -375,11 +392,9 @@ export class ParsedVideostrate {
       if (elementIds.includes(e.id)) {
         if (e.type === "video") {
           this.assignClassToClip(e as VideoClipElement, className)
-        }
-        else if (e.type === "custom") {
+        } else if (e.type === "custom") {
           this.assignClassToElement(e as CustomElement, className)
-        }
-        else {
+        } else {
           throw new Error(`Element with id ${e.id} has an invalid type`)
         }
       }
@@ -405,8 +420,8 @@ export class ParsedVideostrate {
   public setSpeed(elementId: string, speed: number) {
     const element = this.all.find((e) => e.id === elementId)
     if (element) {
-      let length = (element.end - element.start)
-      let relativeSpeed = speed / element.speed
+      const length = element.end - element.start
+      const relativeSpeed = speed / element.speed
       element.end = element.start + length / relativeSpeed
 
       if (element.type === "video") {
@@ -438,11 +453,6 @@ export class ParsedVideostrate {
       throw new Error(`Element with id ${elementId} not found`)
     }
     this.all = [...this.all]
-  }
-
-  private updateLayers() {
-    console.log("updateLayers", this._all)
-    this._all = updateLayers(this._all)
   }
 
   private updateComputedProperties() {

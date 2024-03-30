@@ -14,8 +14,11 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
     </div>`
 
     // Find the parent element
-    const parent = document.getElementById(clip.parentId ?? "root")
-    if (!parent) throw new Error("Parent with id '" + clip.parentId + "' not found")
+    const parent = document.querySelector(
+      `[embedded-clip-container="${clip.parentId ?? "root"}"]`
+    )
+    if (!parent)
+      throw new Error("Parent with id '" + clip.parentId + "' not found")
 
     // Add the element
     parent.innerHTML += html
@@ -32,7 +35,8 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
         </div>
       </div>`
     } else {
-      if (!(element as CustomElement).content) throw new Error("Missing content")
+      if (!(element as CustomElement).content)
+        throw new Error("Missing content")
 
       const parser = new DOMParser()
       const document = parser.parseFromString(
