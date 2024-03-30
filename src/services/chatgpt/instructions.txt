@@ -108,6 +108,13 @@ function add_subtitle(text: string, absolute_start: number, absolute_end: number
 function add_custom_element(element_name: string, element: string, absolute_start: number, absolute_end: number): string
 
 /**
+ * Edits a custom html element.
+ * @param {element_id} the id of the element to edit
+ * @param {element} the new html code of the custom element, must include only one root element
+ */
+function edit_custom_element(element_id: string, element: string)
+
+/**
  * Adds a clip inside an embedded clip container.
  * @param {embedded_clip_container} the embedded-clip-container attribute value of the element to which the clip should be added
  * @param {clip_name} name of the clip, HAS TO BE one of the clips from the list of available clips
