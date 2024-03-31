@@ -91,16 +91,13 @@ export class Visitor {
       args.push(result)
     }
 
-    console.log(callee, (builtinFunctions as any)[callee as any])
     const func = (builtinFunctions as any)[callee as any]
     if (!func) throw new Error(`Function ${callee} not found`)
 
     console.log(
       `[CommandProcessor] Calling builtin function ${callee} with args ${args}`
     )
-    console.log("CommandProcessor func", func)
     const value = await func(...args)()
-    console.log("CommandProcessor func return value", value)
     this.executedFunctions.push({ name: callee, arguments: args })
     return value
   }
