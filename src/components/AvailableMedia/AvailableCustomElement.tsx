@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo } from "react"
 import { useStore } from "../../store"
 import { WebstrateSerializationStrategy } from "../../services/serializationStrategies/webstrateSerializationStrategy"
 import { CustomElement } from "../../types/videoElement"
-import { executeScript } from "../../services/command/executeScript"
+import { runCommands } from "../../services/interpreter/run"
+import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
 
 const AvailableCustomElement = (props: { element: CustomElement }) => {
   const {
@@ -44,17 +45,9 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
   }, [iframeRef, serializedVideostrate.css])
 
   const addToTimeline = useCallback(() => {
-    executeScript([
-      {
-        command: "add_custom_element",
-        args: [
-          `"${props.element.name}"`,
-          `"${props.element.content}"`,
-          seek.toString(),
-          "10",
-        ],
-      },
-    ])
+    runCommands(
+      addCustomElement(props.element.name, props.element.content, seek, 10)
+    )
   }, [props.element.name, props.element.content, seek])
 
   const deleteElement = useCallback(() => {

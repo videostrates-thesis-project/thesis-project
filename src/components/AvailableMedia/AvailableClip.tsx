@@ -1,8 +1,9 @@
 import { useCallback, useMemo } from "react"
 import { useStore } from "../../store"
-import { executeScript } from "../../services/command/executeScript"
 import VideoClip from "../../types/videoClip"
 import DeleteMediaButton from "./DeleteMediaButton"
+import { runCommands } from "../../services/interpreter/run"
+import { addClip } from "../../services/interpreter/builtin/addClip"
 
 const AvailableClip = (props: { clip: VideoClip }) => {
   const { seek, deleteAvailableClip, parsedVideostrate } = useStore()
@@ -16,12 +17,7 @@ const AvailableClip = (props: { clip: VideoClip }) => {
       console.log("Error: No clip title")
       return
     }
-    executeScript([
-      {
-        command: "add_clip",
-        args: [`"${props.clip.title}"`, seek.toString()],
-      },
-    ])
+    runCommands(addClip(props.clip.title, seek))
   }, [props.clip.title, seek])
 
   const deleteClip = useCallback(() => {

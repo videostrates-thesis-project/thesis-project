@@ -1,8 +1,9 @@
 import { useCallback, useMemo } from "react"
 import { useStore } from "../../store"
-import { executeScript } from "../../services/command/executeScript"
 import DeleteMediaButton from "./DeleteMediaButton"
 import { Image } from "../../types/image"
+import { runCommands } from "../../services/interpreter/run"
+import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
 
 const AvailableImage = (props: { image: Image }) => {
   const { parsedVideostrate, seek, deleteAvailableImage } = useStore()
@@ -12,17 +13,14 @@ const AvailableImage = (props: { image: Image }) => {
   }, [parsedVideostrate.images, props.image])
 
   const addImage = useCallback(() => {
-    executeScript([
-      {
-        command: "add_custom_element",
-        args: [
-          `"${props.image.title}"`,
-          `"<img src="${props.image.url}" alt="${props.image.title}" />"`,
-          seek.toString(),
-          (seek + 20).toString(),
-        ],
-      },
-    ])
+    runCommands(
+      addCustomElement(
+        props.image.title,
+        `<img src="${props.image.url}" alt="${props.image.title}" />`,
+        seek,
+        seek + 20
+      )
+    )
   }, [props.image.title, props.image.url, seek])
 
   const deleteImage = useCallback(() => {

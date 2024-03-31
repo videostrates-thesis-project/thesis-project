@@ -3,7 +3,6 @@ import { TimelineElement } from "../../hooks/useTimelineElements"
 import ClipContent from "./ClipContent"
 import { useStore } from "../../store"
 import { TimelineContext } from "./Timeline"
-import { executeScript } from "../../services/command/executeScript"
 import useDraggable from "../../hooks/useDraggable"
 import clsx from "clsx"
 import { useEditedClipDetails } from "../../store/editedClipDetails"
@@ -11,6 +10,10 @@ import useContextMenu from "../../hooks/useContextMenu"
 import ContextMenu from "../ContextMenu"
 import { useNavigate } from "react-router-dom"
 import { CustomElement } from "../../types/videoElement"
+import { runCommands } from "../../services/interpreter/run"
+import { moveDelta } from "../../services/interpreter/builtin/moveDelta"
+import { crop } from "../../services/interpreter/builtin/crop"
+import { moveDeltaWithoutEmbedded } from "../../services/interpreter/builtin/moveDeltaWithoutEmbedded"
 
 const MIN_ELEMENT_WIDTH = 16
 
@@ -134,12 +137,7 @@ const Clip = (props: { clip: TimelineElement }) => {
     (e: React.DragEvent) => {
       const clipShift = onDrag(e)
       const clipTimeShift = clipShift / timeline.widthPerSecond
-      executeScript([
-        {
-          command: "move_delta",
-          args: [`"${clip.id}"`, clipTimeShift.toString()],
-        },
-      ])
+      runCommands(moveDelta(clip.id, clipTimeShift))
       // Reset the dragged position to the original position in case the drag didn't move the clip in which case a rerender wouldn't be triggered
       // SetTimeout is used to ensure the draggedPosition is set after the rerender, so that there is no flickering if the dragging moved the object
       setTimeout(() => setDraggedPosition(clip.left + cropLeft), 0)
@@ -158,16 +156,13 @@ const Clip = (props: { clip: TimelineElement }) => {
     (e: React.DragEvent) => {
       const widthShift = onDragRight(e)
       const widthTimeShift = widthShift / timeline.widthPerSecond
-      executeScript([
-        {
-          command: "crop",
-          args: [
-            `"${clip.id}"`,
-            clip.offset.toString(),
-            (clip.offset - clip.start + clip.end + widthTimeShift).toString(),
-          ],
-        },
-      ])
+      runCommands(
+        crop(
+          clip.id,
+          clip.offset,
+          clip.offset - clip.start + clip.end + widthTimeShift
+        )
+      )
       // Explanation in onDragMoveEnd
       setTimeout(() => setWidth(widthInitial), 0)
     },
@@ -185,20 +180,14 @@ const Clip = (props: { clip: TimelineElement }) => {
 
   const cropCustomElement = useCallback(
     (cropTimeShift: number) => {
-      executeScript([
-        {
-          command: "move_delta_without_embedded",
-          args: [`"${clip.id}"`, cropTimeShift.toString()],
-        },
-        {
-          command: "crop",
-          args: [
-            `"${clip.id}"`,
-            clip.offset.toString(),
-            (clip.offset - clip.start + clip.end - cropTimeShift).toString(),
-          ],
-        },
-      ])
+      runCommands(
+        moveDelta(clip.id, cropTimeShift),
+        crop(
+          clip.id,
+          clip.offset,
+          clip.offset - clip.start + clip.end - cropTimeShift
+        )
+      )
     },
     [clip.id, clip.offset, clip.start, clip.end]
   )
@@ -206,20 +195,14 @@ const Clip = (props: { clip: TimelineElement }) => {
   const cropVideoElement = useCallback(
     (cropTimeShift: number) => {
       const newOffset = clip.offset + cropTimeShift
-      executeScript([
-        {
-          command: "crop",
-          args: [
-            `"${clip.id}"`,
-            newOffset.toString(),
-            (clip.end + newOffset - clip.start - cropTimeShift).toString(),
-          ],
-        },
-        {
-          command: "move_delta_without_embedded",
-          args: [`"${clip.id}"`, cropTimeShift.toString()],
-        },
-      ])
+      runCommands(
+        crop(
+          clip.id,
+          newOffset,
+          clip.end + newOffset - clip.start - cropTimeShift
+        ),
+        moveDeltaWithoutEmbedded(clip.id, cropTimeShift)
+      )
     },
     [clip.offset, clip.id, clip.end, clip.start]
   )

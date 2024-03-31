@@ -1,7 +1,9 @@
 import { useCallback, useMemo } from "react"
 import { useTimeStamp } from "../../hooks/useTimeStamp"
-import { executeScript } from "../../services/command/executeScript"
 import { useStore } from "../../store"
+import { runCommands } from "../../services/interpreter/run"
+import { moveLayer as moveLayerCommand } from "../../services/interpreter/builtin/moveLayer"
+import { deleteElement as deleteElementCommand } from "../../services/interpreter/builtin/deleteElement"
 
 const TimelineControls = (props: {
   zoomIn: (step: number) => void
@@ -16,12 +18,7 @@ const TimelineControls = (props: {
   }, [parsedVideostrate, selectedClipId])
 
   const moveLayer = useCallback((elementId: string, layer: number) => {
-    executeScript([
-      {
-        command: "move_layer",
-        args: [`"${elementId}"`, layer.toString()],
-      },
-    ])
+    runCommands(moveLayerCommand(elementId, layer))
   }, [])
 
   const isColliding = useCallback(
@@ -55,12 +52,9 @@ const TimelineControls = (props: {
   }, [currentLayer, isColliding, moveLayer, selectedClipId])
 
   const deleteElement = useCallback(() => {
-    executeScript([
-      {
-        command: "delete_element",
-        args: [`"${selectedClipId}"`],
-      },
-    ])
+    if (!selectedClipId) return
+
+    runCommands(deleteElementCommand(selectedClipId))
   }, [selectedClipId])
 
   return (
