@@ -1,7 +1,5 @@
 import {
-  BrowserRouter,
   Route,
-  RouterProvider,
   Routes,
   createBrowserRouter,
   useLocation,
@@ -13,6 +11,8 @@ import DefaultView from "./components/Views/DefaultView"
 import { useClipsMetadata } from "./hooks/useClipsMetadata"
 import openAIService from "./services/chatgpt/openai"
 import CodeView from "./components/Views/CodeView"
+import useShortcuts from "./hooks/useShortcuts"
+import { useMemo } from "react"
 
 openAIService.init()
 
@@ -28,7 +28,13 @@ const router = createBrowserRouter([
 ])
 
 function App() {
+  const location = useLocation()
+  const shortcutsEnabled = useMemo(() => {
+    // Disable the shortcuts in the code editor
+    return location.pathname === "/"
+  }, [location.pathname])
   useClipsMetadata()
+  useShortcuts(shortcutsEnabled)
   return (
     <>
       <Toasts />

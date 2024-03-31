@@ -13,6 +13,7 @@ const TimelineControls = (props: {
   const { parsedVideostrate, playbackState, selectedClipId } = useStore()
   const playbackTime = useTimeStamp(playbackState.time)
   const fullTime = useTimeStamp(parsedVideostrate.length)
+
   const currentLayer = useMemo(() => {
     return parsedVideostrate.getElementById(selectedClipId!)?.layer
   }, [parsedVideostrate, selectedClipId])

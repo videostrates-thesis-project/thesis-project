@@ -1,0 +1,140 @@
+<html>
+  <head>
+    <script>
+      let videostrateIframe = null
+      webstrate.on("loaded", function () {
+        top.postMessage(
+          {
+            type: "loaded",
+          },
+          "*"
+        )
+      })
+
+      function controlVideostrate(command, args) {
+        console.log("Control Videostrate: ", command, args)
+        switch (command) {
+          case "load":
+            loadVideostrate(args.url)
+            break
+          case "update":
+            updateVideostrate(args.html, args.style)
+            break
+          default:
+            console.error("Unknown command: ", command)
+        }
+      }
+
+      function loadVideostrate(url) {
+        if (videostrateIframe) videostrateIframe.remove()
+        videostrateIframe = createVideostrateIframe(url)
+        console.log("Creating videostrate iframe", url)
+        videostrateIframe.webstrate.on("transcluded", function () {
+          // When the videostrate is loaded, send all the necessary information to the parent
+          postVideostrateContent()
+          postMetamaxRealm()
+          watchRealmChange()
+        })
+      }
+
+      function createVideostrateIframe(videoUrl) {
+        console.log("Creating videostrate iframe", videoUrl)
+        const transient = document.createElement("transient")
+        let iframe = document.createElement("iframe")
+        iframe.src = videoUrl
+        // It's only for getting the code, so it should be hidden
+        iframe.style.display = "none"
+        transient.appendChild(iframe)
+        document.body.appendChild(transient)
+
+        return iframe
+      }
+
+      function postMetamaxRealm() {
+        const realm =
+          videostrateIframe.contentWindow.document.documentElement.getAttribute(
+            "data-metamax-realm"
+          )
+        if (realm) {
+          top.postMessage(
+            {
+              type: "metamax-realm",
+              realm,
+            },
+            "*"
+          )
+        }
+      }
+
+      function watchRealmChange() {
+        videostrateIframe.contentWindow.document.documentElement.webstrate.on(
+          "attributeChanged",
+          function (attributeName, oldValue, newValue) {
+            console.log("attributeChanged", attributeName, oldValue, newValue)
+            if (attributeName === "data-metamax-realm") {
+              top.postMessage(
+                {
+                  type: "metamax-realm",
+                  realm: newValue,
+                },
+                "*"
+              )
+            }
+          }
+        )
+      }
+
+      function postVideostrateContent() {
+        const stringHtml = new XMLSerializer().serializeToString(
+          videostrateIframe.contentWindow.document
+        )
+        console.log(
+          "Posting videostrate content",
+          stringHtml.slice(0, 100) + "..."
+        )
+        top.postMessage(
+          {
+            type: "videostrate-content",
+            html: stringHtml,
+          },
+          "*"
+        )
+      }
+
+      function updateVideostrate(html, style) {
+        console.log("Updating videostrate content", html)
+        var body =
+          videostrateIframe.contentWindow.document.getElementsByTagName(
+            "BODY"
+          )[0]
+        body.innerHTML = html
+
+        var styleElement =
+          videostrateIframe.contentWindow.document.getElementById(
+            "videostrate-style"
+          )
+        if (styleElement) {
+          styleElement.innerHTML = style
+        } else {
+          styleElement =
+            videostrateIframe.contentWindow.document.createElement("style")
+          styleElement.id = "videostrate-style"
+          styleElement.innerHTML = style
+          videostrateIframe.contentWindow.document.head.appendChild(
+            styleElement
+          )
+        }
+      }
+
+      function onMsg(msg) {
+        if (msg.data.type === "videostrate-control") {
+          controlVideostrate(msg.data.command, msg.data.args)
+        }
+      }
+
+      window.addEventListener("message", onMsg, false)
+    </script>
+  </head>
+
+  <body></body>
+</html>

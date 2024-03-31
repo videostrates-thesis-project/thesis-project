@@ -143,12 +143,12 @@ const Clip = (props: { clip: TimelineElement }) => {
       setTimeout(() => setDraggedPosition(clip.left + cropLeft), 0)
     },
     [
-      onDrag,
-      timeline.widthPerSecond,
       clip.id,
       clip.left,
-      setDraggedPosition,
       cropLeft,
+      onDrag,
+      setDraggedPosition,
+      timeline.widthPerSecond,
     ]
   )
 

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
 import { useStore } from "../store"
-import { parseVideostrate } from "../services/videostrateParser"
 import PlayerCommands from "../types/playerCommands"
 import PlayerControls from "./PlayerControls"
 import useScaledIframe from "../hooks/useScaledIframe"
@@ -10,9 +9,7 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     videostrateUrl,
     setVideostrateUrl,
     setParsedVideostrate,
-    setMetamaxRealm,
     setPlaybackState,
-    serializedVideostrate,
     playing,
     setPlaying,
     seek,
@@ -29,21 +26,24 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     iframeContainerHeight,
   } = useScaledIframe()
 
-  // The iframeRef doesn't work when wrapped in a useCallback
-  const controlPlayer = (command: PlayerCommands, args?: object) => {
-    if (command === PlayerCommands.Play) setPlaying(true)
-    else if (command === PlayerCommands.Pause) setPlaying(false)
+  const iframeWindow = iframeRef.current?.contentWindow
 
-    const iframeWindow = iframeRef.current?.contentWindow
-    iframeWindow?.postMessage(
-      {
-        type: "player-control",
-        command: command.toString(),
-        args: args,
-      },
-      "*"
-    )
-  }
+  const controlPlayer = useCallback(
+    (command: PlayerCommands, args?: object) => {
+      if (command === PlayerCommands.Play) setPlaying(true)
+      else if (command === PlayerCommands.Pause) setPlaying(false)
+
+      iframeWindow?.postMessage(
+        {
+          type: "player-control",
+          command: command.toString(),
+          args: args,
+        },
+        "*"
+      )
+    },
+    [iframeWindow, setPlaying]
+  )
 
   useEffect(() => {
     controlPlayer(PlayerCommands.Seek, { time: seek })
@@ -72,8 +72,13 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
       width: iframeWidth,
       height: iframeHeight,
     })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setPlaybackState, videostrateUrl])
+  }, [
+    controlPlayer,
+    iframeHeight,
+    iframeWidth,
+    setPlaybackState,
+    videostrateUrl,
+  ])
 
   useEffect(() => {
     // Listen for messages from the iframe
@@ -82,14 +87,8 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
         case "player-loaded":
           loadVideo()
           break
-        case "metamax-realm":
-          setMetamaxRealm(event.data.realm)
-          break
         case "player-position":
           setPlaybackState({ frame: event.data.frame, time: event.data.time })
-          break
-        case "videostrate-content":
-          setParsedVideostrate(parseVideostrate(event.data.html))
           break
       }
     }
@@ -98,15 +97,7 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     return () => {
       window.removeEventListener("message", listener)
     }
-  }, [loadVideo, setPlaybackState, setParsedVideostrate, setMetamaxRealm])
-
-  useEffect(() => {
-    controlPlayer(PlayerCommands.UpdateVideo, {
-      html: serializedVideostrate.html,
-      style: serializedVideostrate.css,
-    })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [serializedVideostrate.css, serializedVideostrate.html])
+  }, [loadVideo, setPlaybackState, setParsedVideostrate])
 
   const onChangeUrl = useCallback(() => {
     setVideostrateUrl(url)
@@ -115,8 +106,9 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
       width: iframeWidth,
       height: iframeHeight,
     })
+    // Run this only when the URL changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setVideostrateUrl, url])
+  }, [url])
 
   return (
     <div className="flex flex-col gap-2 w-full flex-grow p-2 min-h-0 min-w-0">
