@@ -1,74 +1,13 @@
 import { useCallback } from "react"
-import { executeScript } from "../services/command/executeScript"
-import { ExecutableCommand } from "../services/command/recognizedCommands"
 import { useStore } from "../store"
+import { runCommands } from "../services/interpreter/run"
+import { moveLayer as moveLayerCommand } from "../services/interpreter/builtin/moveLayer"
 
 const useEditCommands = () => {
   const { parsedVideostrate } = useStore()
 
-  const deleteClip = useCallback(
-    (clipId: string): ExecutableCommand => ({
-      command: "delete_element",
-      args: [`"${clipId}"`],
-    }),
-    []
-  )
-
-  const addClip = useCallback(
-    (clipTitle: string, time: number): ExecutableCommand => ({
-      command: "add_clip",
-      args: [`"${clipTitle}"`, time.toString()],
-    }),
-    []
-  )
-
-  const addCustomElement = useCallback(
-    (
-      elementName: string,
-      elementContent: string,
-      time: number,
-      end: number
-    ): ExecutableCommand => ({
-      command: "add_custom_element",
-      args: [
-        `"${elementName}"`,
-        `"${elementContent}"`,
-        time.toString(),
-        end.toString(),
-      ],
-    }),
-    []
-  )
-
-  const moveDelta = useCallback(
-    (elementId: string, delta: number): ExecutableCommand => ({
-      command: "move_delta",
-      args: [`"${elementId}"`, delta.toString()],
-    }),
-    []
-  )
-
-  const cropElement = useCallback(
-    (elementId: string, start: number, end: number): ExecutableCommand => ({
-      command: "crop",
-      args: [`"${elementId}"`, start.toString(), end.toString()],
-    }),
-    []
-  )
-
-  const moveDeltaWithoutEmbedded = useCallback(
-    (elementId: string, delta: number): ExecutableCommand => ({
-      command: "move_delta_without_embedded",
-      args: [`"${elementId}"`, delta.toString()],
-    }),
-    []
-  )
-
   const moveLayer = useCallback(
-    (elementId: string, layer: number): ExecutableCommand => ({
-      command: "move_layer",
-      args: [`"${elementId}"`, layer.toString()],
-    }),
+    (elementId: string, layer: number) => moveLayerCommand(elementId, layer),
     []
   )
 
@@ -91,7 +30,7 @@ const useEditCommands = () => {
   )
 
   const moveLayerUp = useCallback(
-    (elementId: string): ExecutableCommand | undefined => {
+    (elementId: string) => {
       const currentLayer = parsedVideostrate.getElementById(elementId)?.layer
       if (currentLayer === undefined) return
       const layerShift = isColliding(elementId, currentLayer + 1) ? 2 : 1
@@ -101,7 +40,7 @@ const useEditCommands = () => {
   )
 
   const moveLayerDown = useCallback(
-    (elementId: string): ExecutableCommand | undefined => {
+    (elementId: string) => {
       const currentLayer = parsedVideostrate.getElementById(elementId)?.layer
       if (currentLayer === undefined) return
       const layerShift = isColliding(elementId, currentLayer - 1) ? -2 : -1
@@ -110,17 +49,12 @@ const useEditCommands = () => {
     [isColliding, moveLayer, parsedVideostrate]
   )
 
-  const execute = useCallback((...args: (ExecutableCommand | undefined)[]) => {
-    executeScript(args.filter((c): c is ExecutableCommand => c !== undefined))
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const execute = useCallback((...args: any[]) => {
+    runCommands(...args)
   }, [])
 
   return {
-    deleteClip,
-    addClip,
-    addCustomElement,
-    moveDelta,
-    moveDeltaWithoutEmbedded,
-    cropElement,
     moveLayer,
     moveLayerUp,
     moveLayerDown,
