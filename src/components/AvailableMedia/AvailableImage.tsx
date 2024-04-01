@@ -13,7 +13,7 @@ const AvailableImage = (props: { image: Image }) => {
   }, [parsedVideostrate.images, props.image])
 
   const addImage = useCallback(() => {
-    const elementContent = `"<img src="${props.image.url}" alt="${props.image.title}" />"`
+    const elementContent = `<img src="${props.image.url}" alt="${props.image.title}" />`
     execute(
       addCustomElement(props.image.title, elementContent, seek, seek + 20)
     )
