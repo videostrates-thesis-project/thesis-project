@@ -1,29 +1,23 @@
 import { useCallback, useMemo } from "react"
 import { useStore } from "../../store"
-import { executeScript } from "../../services/command/executeScript"
 import DeleteMediaButton from "./DeleteMediaButton"
 import { Image } from "../../types/image"
+import useEditCommands from "../../hooks/useEditCommands"
 
 const AvailableImage = (props: { image: Image }) => {
   const { parsedVideostrate, seek, deleteAvailableImage } = useStore()
+  const { execute, addCustomElement } = useEditCommands()
 
   const canBeDeleted = useMemo(() => {
     return !parsedVideostrate.images.some((i) => i.url === props.image.url)
   }, [parsedVideostrate.images, props.image])
 
   const addImage = useCallback(() => {
-    executeScript([
-      {
-        command: "add_custom_element",
-        args: [
-          `"${props.image.title}"`,
-          `"<img src="${props.image.url}" alt="${props.image.title}" />"`,
-          seek.toString(),
-          (seek + 20).toString(),
-        ],
-      },
-    ])
-  }, [props.image.title, props.image.url, seek])
+    const elementContent = `"<img src="${props.image.url}" alt="${props.image.title}" />"`
+    execute(
+      addCustomElement(props.image.title, elementContent, seek, seek + 20)
+    )
+  }, [addCustomElement, execute, props.image.title, props.image.url, seek])
 
   const deleteImage = useCallback(() => {
     deleteAvailableImage(props.image.url)

@@ -57,11 +57,11 @@ const Commander = () => {
   return (
     <div className="flex flex-col h-full relative">
       <div className="flex flex-col font-mono overflow-y-auto overflow-x-hidden mb-4">
-        {undoStack.map((command) => (
-          <div className="flex flex-col bg-neutral rounded p-2 mt-2">
-            {command.script.map((line, index) => (
-              <div className="text-[11px] text-start select-all">
-                <span className="opacity-50 mr-2 select-none">{index + 1}</span>
+        {undoStack.map((command, i) => (
+          <div key={i} className="flex flex-col bg-neutral rounded p-2 mt-2">
+            {command.script.map((line, j) => (
+              <div key={j} className="text-[11px] text-start select-all">
+                <span className="opacity-50 mr-2 select-none">{j + 1}</span>
                 {getCommandString(line)}
               </div>
             ))}

@@ -7,6 +7,8 @@ import instructions from "./instructions.txt?raw"
 import { v4 as uuid } from "uuid"
 import { buildReactionMessage } from "./reactionTemplate"
 import { azureFunctionRequest } from "../api/api"
+import { AzureModelType } from "../api/apiTypes"
+import { ChatMessage } from "../../types/chatMessage"
 
 const ASSISTANT_POLL_RATE = 5000
 
@@ -71,7 +73,7 @@ class OpenAIService {
     }, ASSISTANT_POLL_RATE)
   }
 
-  async sendChatMessageToAzure(text: string) {
+  async sendDefaultChatMessageToAzure(text: string) {
     const userMessage: ChatCompletionMessageParam = {
       role: "user",
       content: text,
@@ -88,7 +90,14 @@ class OpenAIService {
     }
     const messages = useStore.getState().addMessage(userMessage)
 
-    console.log(messages)
+    const message = await this.sendChatMessageToAzureBase<ExecuteChanges>(
+      "mirrorverse-gpt-4-turbo",
+      messages,
+      "execute_changes",
+      executeChangesFunction
+    )
+
+    /*console.log(messages)
     const response = await azureFunctionRequest({
       model: "mirrorverse-gpt-4-turbo",
       messages: messages,
@@ -97,7 +106,7 @@ class OpenAIService {
     })
 
     console.log("[ChatGPT] Response", response)
-    const message = response as ExecuteChanges
+    const message = response as ExecuteChanges*/
 
     const chatMessage: ChatCompletionMessageParam = {
       role: "assistant",
@@ -112,6 +121,24 @@ class OpenAIService {
 
     if (message.script)
       (await parseAndExecuteScript(message.script))?.asPendingChanges()
+  }
+
+  async sendChatMessageToAzureBase<T>(
+    model: AzureModelType,
+    messages: ChatCompletionMessageParam[],
+    functionName: string,
+    functionDefinition: unknown
+  ) {
+    const response = await azureFunctionRequest({
+      model,
+      messages,
+      tool_choice: { type: "function", function: { name: functionName } },
+      functions: [functionDefinition],
+    })
+
+    const message = response as T
+
+    return message
   }
 
   /**
@@ -175,10 +202,14 @@ class OpenAIService {
       (await parseAndExecuteScript(message.script))?.asPendingChanges()
   }
 
-  async sendChatMessageForReaction() {
-    const messages = [...useStore.getState().chatMessages]
+  async sendChatMessageForReaction(
+    messages: ChatMessage[],
+    addReactionToMessage: (id: string, reaction: string) => void
+  ) {
+    //const messages = [...useStore.getState().chatMessages]
 
     // Find last user message in list
+    console.log("[ChatGPT] Messages:", messages)
     let lastUserMessageIndex = -1
     for (let i = messages.length - 1; i >= 0; i--) {
       if (messages[i].role === "user") {
@@ -189,6 +220,7 @@ class OpenAIService {
     if (lastUserMessageIndex === -1) {
       throw new Error("No user message found")
     }
+    console.log("[ChatGPT] Last user message:", messages[lastUserMessageIndex])
     messages[lastUserMessageIndex] = {
       ...messages[lastUserMessageIndex],
       content: buildReactionMessage(
@@ -198,7 +230,9 @@ class OpenAIService {
 
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
-      messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      messages: messages
+        .filter((m) => m.content)
+        .map((m) => ({ role: m.role, content: m.content })),
       // messages: [messages.map((m) => ({ role: m.role, content: m.content }))[lastUserMessageIndex]],
     })
 
@@ -206,12 +240,10 @@ class OpenAIService {
     console.log("[ChatGPT] Reaction:", reaction)
     if (!reaction || reaction.toLowerCase().includes("no reaction")) return
 
-    useStore
-      .getState()
-      .addReactionToMessage(
-        messages[lastUserMessageIndex].id,
-        reaction?.slice(0, 2) ?? ""
-      )
+    addReactionToMessage(
+      messages[lastUserMessageIndex].id,
+      reaction?.slice(0, 2) ?? ""
+    )
   }
 
   public async githubCopilotAtHome(
