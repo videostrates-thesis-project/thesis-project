@@ -167,7 +167,7 @@ function create_animation(name: string, body: string)
 function delete_animation(name: string)
 
 /**
- * Generates an image based on a prompt. The returned link can be used as the src attribute of an img tag. The generated image size is 1024x1024 pixels.
+ * Generates an image based on a prompt. The returned link can be used as the src attribute of an img tag. The generated image size is 1792x1024 pixels (16:9 ratio).
  * @param {name} the name of the image, e.g. "A nice cat", short, max 20 characters
  * @param {prompt} the prompt to generate the image from, e.g. "A cat with a hat sitting on a chair, cartoon style"
  * @returns {string} link to the generated image

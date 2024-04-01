@@ -11,7 +11,11 @@ export const processGenerateImageCommand = async (
   if (args.length !== 2) {
     throw new Error("Invalid number of arguments")
   }
-  const image_name = determineReturnValueTyped<string>("string", args[0], context)
+  const image_name = determineReturnValueTyped<string>(
+    "string",
+    args[0],
+    context
+  )
   const prompt = determineReturnValueTyped<string>("string", args[1], context)
 
   try {
@@ -23,7 +27,9 @@ export const processGenerateImageCommand = async (
     if (!uploadedUrl) {
       throw new Error("Failed to upload image")
     }
-    useStore.getState().addAvailableImage({ url: uploadedUrl, title: image_name.value })
+    useStore
+      .getState()
+      .addAvailableImage({ url: uploadedUrl, title: image_name.value })
 
     return {
       type: "string" as const,
