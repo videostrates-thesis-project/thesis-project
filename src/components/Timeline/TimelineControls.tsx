@@ -1,6 +1,8 @@
 import { useCallback } from "react"
 import { useTimeStamp } from "../../hooks/useTimeStamp"
 import { useStore } from "../../store"
+import { runCommands } from "../../services/interpreter/run"
+import { deleteElement as deleteElementCommand } from "../../services/interpreter/builtin/deleteElement"
 import useEditCommands from "../../hooks/useEditCommands"
 
 const TimelineControls = (props: {
@@ -9,7 +11,7 @@ const TimelineControls = (props: {
   zoomToFit: () => void
 }) => {
   const { parsedVideostrate, playbackState, selectedClipId } = useStore()
-  const { execute, moveLayerDown, moveLayerUp, deleteClip } = useEditCommands()
+  const { execute, moveLayerDown, moveLayerUp } = useEditCommands()
   const playbackTime = useTimeStamp(playbackState.time)
   const fullTime = useTimeStamp(parsedVideostrate.length)
 
@@ -22,8 +24,10 @@ const TimelineControls = (props: {
   }, [execute, moveLayerDown, selectedClipId])
 
   const deleteElement = useCallback(() => {
-    execute(deleteClip(selectedClipId!))
-  }, [deleteClip, execute, selectedClipId])
+    if (!selectedClipId) return
+
+    runCommands(deleteElementCommand(selectedClipId))
+  }, [selectedClipId])
 
   return (
     <div className="flex flex-row text-lg bg-base-300 border-y border-neutral p-2 ">

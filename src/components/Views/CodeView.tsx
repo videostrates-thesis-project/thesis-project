@@ -5,9 +5,7 @@ import Browser from "../CodeView/Browser"
 import { CustomElement } from "../../types/videoElement"
 import CodeEditor, { EditorFile, EditorMatch } from "../CodeView/CodeEditor"
 import { css_beautify, html_beautify } from "js-beautify"
-import { executeScript } from "../../services/command/executeScript"
 import { VideostrateStyle } from "../../types/parsedVideostrate"
-import { ExecutableCommand } from "../../services/command/recognizedCommands"
 import { parseStyle } from "../../services/parser/parseStyle"
 import { ChatMessage } from "../../types/chatMessage"
 import Chat from "../Chat"
@@ -17,6 +15,10 @@ import codeSuggestionFunction, {
   CodeSuggestionsFunction,
 } from "../../services/chatgpt/codeSuggestionFunction"
 import { v4 as uuid } from "uuid"
+import { runCommands } from "../../services/interpreter/run"
+import { editCustomElement } from "../../services/interpreter/builtin/editCustomElement"
+import { deleteStyle } from "../../services/interpreter/builtin/deleteStyle"
+import { createStyle } from "../../services/interpreter/builtin/createStyle"
 
 const CodeView = () => {
   const { elementId } = useParams()
@@ -131,23 +133,16 @@ const CodeView = () => {
   }, [css, html])
 
   const onSave = useCallback(() => {
-    const parsedStyle = parseStyle(css)
-    const script: ExecutableCommand[] = [
-      {
-        command: "edit_custom_element",
-        args: [`"${elementId}"`, `"${html}"`],
-      },
-      ...oldCss.map((style) => ({
-        command: "delete_style" as const,
-        args: [`"${style.selector}"`],
-      })),
-      ...parsedStyle.style.map((style) => ({
-        command: "create_style" as const,
-        args: [`"${style.selector}"`, `"${style.style}"`],
-      })),
-    ]
+    if (!elementId) return
 
-    executeScript(script)
+    const parsedStyle = parseStyle(css)
+    runCommands(
+      editCustomElement(elementId, html),
+      ...oldCss.map((style) => deleteStyle(style.selector)),
+      ...parsedStyle.style.map((style) =>
+        createStyle(style.selector, style.style)
+      )
+    )
     navigate("/")
   }, [css, elementId, html, navigate, oldCss])
 

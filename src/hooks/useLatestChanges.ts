@@ -1,11 +1,6 @@
 import { useMemo } from "react"
 import { useStore } from "../store"
 import { WebstrateSerializationStrategy } from "../services/serializationStrategies/webstrateSerializationStrategy"
-import {
-  determineReturnValue,
-  determineReturnValueTyped,
-} from "../services/command/determineReturnValue"
-import { ReturnValue } from "../services/command/returnValue"
 
 export interface ClipChange {
   changeType: ChangeType
@@ -122,14 +117,11 @@ export const useLatestChanges = () => {
       })
     })
     lastExecutedChange.script.forEach((command) => {
-      if (["create_style", "delete_style"].includes(command.command)) {
+      if (["create_style", "delete_style"].includes(command.name)) {
         // It detects changes applied by:
         // create_style, delete_style, create_animation, delete_animation
-        const selector = determineReturnValue(
-          command.args[0],
-          lastExecutedChange.context
-        )
-        const matchingElements = parsedHtml.querySelectorAll(selector.value)
+        const selector = command.arguments[0]
+        const matchingElements = parsedHtml.querySelectorAll(selector)
         matchingElements.forEach((element) => {
           // Find the first composited parent
           while (element && !element.classList.contains("composited")) {
@@ -142,44 +134,29 @@ export const useLatestChanges = () => {
             })
           }
         })
-      } else if (command.command === "assign_class") {
-        const elementIds = determineReturnValueTyped<ReturnValue<string>[]>(
-          "array",
-          command.args[0],
-          lastExecutedChange.context
-        )
-        elementIds.value.forEach((elementId) => {
-          addToEdited(elementId.value, {
+      } else if (command.name === "assign_class") {
+        const elementIds = command.arguments[0]
+        elementIds.forEach((elementId: string) => {
+          addToEdited(elementId, {
             changeType: ChangeType.Edited,
             description: "Style changed",
           })
         })
-      } else if (command.command === "rename_element") {
-        const elementId = determineReturnValueTyped<string>(
-          "string",
-          command.args[0],
-          lastExecutedChange.context
-        )
-        addToEdited(elementId.value, {
+      } else if (command.name === "rename_element") {
+        const elementId = command.arguments[0]
+        addToEdited(elementId, {
           changeType: ChangeType.Edited,
           description: "The name changed",
         })
-      } else if (command.command === "set_speed") {
-        const elementId = determineReturnValueTyped<string>(
-          "string",
-          command.args[0],
-          lastExecutedChange.context
-        )
-        addToEdited(elementId.value, {
+      } else if (command.name === "set_speed") {
+        const elementId = command.arguments[0]
+        addToEdited(elementId, {
           changeType: ChangeType.Edited,
           description: "Speed Changed",
         })
-      } else if (["crop"].includes(command.command)) {
-        const elementId = determineReturnValue(
-          command.args[0],
-          lastExecutedChange.context
-        )
-        addToEdited(elementId.value, {
+      } else if (["crop"].includes(command.name)) {
+        const elementId = command.arguments[0]
+        addToEdited(elementId, {
           changeType: ChangeType.Edited,
           description: "Crop changed",
         })

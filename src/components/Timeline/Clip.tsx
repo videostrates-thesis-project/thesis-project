@@ -10,7 +10,10 @@ import useContextMenu from "../../hooks/useContextMenu"
 import ContextMenu from "../ContextMenu"
 import { useNavigate } from "react-router-dom"
 import { CustomElement } from "../../types/videoElement"
-import useEditCommands from "../../hooks/useEditCommands"
+import { runCommands } from "../../services/interpreter/run"
+import { moveDelta } from "../../services/interpreter/builtin/moveDelta"
+import { crop } from "../../services/interpreter/builtin/crop"
+import { moveDeltaWithoutEmbedded } from "../../services/interpreter/builtin/moveDeltaWithoutEmbedded"
 
 const MIN_ELEMENT_WIDTH = 16
 
@@ -24,9 +27,6 @@ const Clip = (props: { clip: TimelineElement }) => {
     pendingChanges,
     addAvailableCustomElement,
   } = useStore()
-
-  const { execute, moveDelta, moveDeltaWithoutEmbedded, cropElement } =
-    useEditCommands()
 
   const minLeftCrop = useMemo(
     () =>
@@ -137,7 +137,7 @@ const Clip = (props: { clip: TimelineElement }) => {
     (e: React.DragEvent) => {
       const clipShift = onDrag(e)
       const clipTimeShift = clipShift / timeline.widthPerSecond
-      execute(moveDelta(clip.id, clipTimeShift))
+      runCommands(moveDelta(clip.id, clipTimeShift))
       // Reset the dragged position to the original position in case the drag didn't move the clip in which case a rerender wouldn't be triggered
       // SetTimeout is used to ensure the draggedPosition is set after the rerender, so that there is no flickering if the dragging moved the object
       setTimeout(() => setDraggedPosition(clip.left + cropLeft), 0)
@@ -146,8 +146,6 @@ const Clip = (props: { clip: TimelineElement }) => {
       clip.id,
       clip.left,
       cropLeft,
-      execute,
-      moveDelta,
       onDrag,
       setDraggedPosition,
       timeline.widthPerSecond,
@@ -158,16 +156,19 @@ const Clip = (props: { clip: TimelineElement }) => {
     (e: React.DragEvent) => {
       const widthShift = onDragRight(e)
       const widthTimeShift = widthShift / timeline.widthPerSecond
-      const clipEnd = clip.offset - clip.start + clip.end + widthTimeShift
-      execute(cropElement(clip.id, clip.offset, clipEnd))
+      runCommands(
+        crop(
+          clip.id,
+          clip.offset,
+          clip.offset - clip.start + clip.end + widthTimeShift
+        )
+      )
       // Explanation in onDragMoveEnd
       setTimeout(() => setWidth(widthInitial), 0)
     },
     [
       onDragRight,
       timeline.widthPerSecond,
-      execute,
-      cropElement,
       clip.id,
       clip.offset,
       clip.start,
@@ -179,41 +180,31 @@ const Clip = (props: { clip: TimelineElement }) => {
 
   const cropCustomElement = useCallback(
     (cropTimeShift: number) => {
-      const clipEnd = clip.offset - clip.start + clip.end - cropTimeShift
-      execute(
-        moveDeltaWithoutEmbedded(clip.id, cropTimeShift),
-        cropElement(clip.id, clip.offset, clipEnd)
+      runCommands(
+        moveDelta(clip.id, cropTimeShift),
+        crop(
+          clip.id,
+          clip.offset,
+          clip.offset - clip.start + clip.end - cropTimeShift
+        )
       )
     },
-    [
-      execute,
-      moveDeltaWithoutEmbedded,
-      clip.id,
-      clip.offset,
-      clip.start,
-      clip.end,
-      cropElement,
-    ]
+    [clip.id, clip.offset, clip.start, clip.end]
   )
 
   const cropVideoElement = useCallback(
     (cropTimeShift: number) => {
       const newOffset = clip.offset + cropTimeShift
-      const clipEnd = clip.end + newOffset - clip.start - cropTimeShift
-      execute(
-        cropElement(clip.id, newOffset, clipEnd),
+      runCommands(
+        crop(
+          clip.id,
+          newOffset,
+          clip.end + newOffset - clip.start - cropTimeShift
+        ),
         moveDeltaWithoutEmbedded(clip.id, cropTimeShift)
       )
     },
-    [
-      clip.offset,
-      clip.id,
-      clip.end,
-      clip.start,
-      cropElement,
-      execute,
-      moveDeltaWithoutEmbedded,
-    ]
+    [clip.offset, clip.id, clip.end, clip.start]
   )
 
   const onCropLeftEnd = useCallback(

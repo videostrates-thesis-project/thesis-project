@@ -2,13 +2,13 @@ import OpenAI from "openai"
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 import { useStore } from "../../store"
 import executeChangesFunction from "./executeChangesFunction"
-import { parseAndExecuteScript } from "../command/executeScript"
 import instructions from "./instructions.txt?raw"
 import { v4 as uuid } from "uuid"
 import { buildReactionMessage } from "./reactionTemplate"
 import { azureFunctionRequest } from "../api/api"
 import { AzureModelType } from "../api/apiTypes"
 import { ChatMessage } from "../../types/chatMessage"
+import { runScript } from "../interpreter/run"
 
 const ASSISTANT_POLL_RATE = 5000
 
@@ -62,7 +62,7 @@ class OpenAIService {
             (q) => q.type === "text"
           ) as OpenAI.Beta.Threads.Messages.MessageContentText
         ).text.value
-        await parseAndExecuteScript(text)
+        await runScript(text)
       } else if (run.status === "requires_action") {
         console.log("Requires action", run)
         clearInterval(interval)
@@ -119,8 +119,7 @@ class OpenAIService {
       id: uuid(),
     })
 
-    if (message.script)
-      (await parseAndExecuteScript(message.script))?.asPendingChanges()
+    if (message.script) (await runScript(message.script))?.asPendingChanges()
   }
 
   async sendChatMessageToAzureBase<T>(
@@ -198,8 +197,7 @@ class OpenAIService {
       id: uuid(),
     })
 
-    if (message.script)
-      (await parseAndExecuteScript(message.script))?.asPendingChanges()
+    if (message.script) (await runScript(message.script))?.asPendingChanges()
   }
 
   async sendChatMessageForReaction(
