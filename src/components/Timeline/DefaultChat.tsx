@@ -12,6 +12,9 @@ const DefaultChat = () => {
     parsedVideostrate,
     availableClips,
     selectedClipId,
+    selectedImportableClipName,
+    selectedImportableImage,
+    selectedImportableCustomElement,
     addChatMessage,
     chatMessages,
     pendingChanges,
@@ -27,6 +30,9 @@ const DefaultChat = () => {
         serialized.style,
         serialized.html,
         selectedClipId,
+        selectedImportableClipName,
+        selectedImportableImage,
+        selectedImportableCustomElement,
         seek,
         message
       )
@@ -49,6 +55,9 @@ const DefaultChat = () => {
       parsedVideostrate,
       seek,
       selectedClipId,
+      selectedImportableClipName,
+      selectedImportableImage,
+      selectedImportableCustomElement,
     ]
   )
 

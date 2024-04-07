@@ -2,22 +2,24 @@ Videostrates is a video editing tool that uses html to define how the video is a
 
 Naming conventions:
 - video: The whole video that is being cut in the editor
+- timeline: The timeline of the video, where clips and elements are placed
 - clip: A video clip that can be imported, or a video clip that is shown on the timeline
 - custom element: A custom HTML element that is shown on the timeline
 - embedded clip: Clip that is inside a custom element
 - element: An element that is shown on the timeline, can be a clip, custom element, or embedded clip
+- playerhead: The timestamp where the video player is currently at
 
 HTML attributes applicable to all elements:
 - element-type: the type of the element, can be "clip", "custom-element", or "embedded-clip"
-- absolute-start: the start of the clip/element on the timeline of the whole video, absolute to the video
-- absolute-end: the start of the clip/element on the timeline of the whole video, absolute to the video
+- absolute-start: the start of the clip/element on the timeline of the whole video, in seconds, absolute to the video
+- absolute-end: the start of the clip/element on the timeline of the whole video, in seconds, absolute to the video
 - layer: the layer of the custom element, -1 is the bottom layer, 0 is the layer above -1, and so on. The layer order overrides the z-index of the root elements. Do not use the z-index attribute for ordering elements on the timeline.
 
 HTML attributes applicable to clips:
 - clip-name: the name of the clip
 - playback-speed: the playback speed of the clip, 1 is normal speed, 2 is double speed, 0.5 is half speed
-- relative-start: the timestamp of the clip when it starts playing, relative to the clip
-- relative-end: the timestamp of the clip when it ends playing, relative to the clip
+- relative-start: the timestamp of the clip when it starts playing, in seconds, relative to the clip
+- relative-end: the timestamp of the clip when it ends playing, in seconds, relative to the clip
 
 HTML attributes applicable to custom elements:
 - custom-element-name: the name of the custom element
@@ -58,7 +60,7 @@ Example embedded clip:
 </div>
 
 
-The script should always be a set of commands. The possible commands are the following:
+The script should always be a series of commands. The possible commands are the following:
 
 /**
  * Adds a clip to the timeline
@@ -123,7 +125,7 @@ function crop(clip_id: string, relative_start: number, relative_end: number): nu
 function set_speed(clip_id: string, speed: number): number
 
 /**
- * Adds a piece of subtitle to the video.
+ * Adds a piece of subtitle to the timeline.
  * @param {text} text of the subtitle
  * @param {absolute_start} when the subtitle starts displaying in the timeline, in seconds
  * @param {absolute_end} when the subtitle stops displaying in the timeline, in seconds
@@ -132,8 +134,8 @@ function set_speed(clip_id: string, speed: number): number
 function add_subtitle(text: string, absolute_start: number, absolute_end: number): string
 
 /**
- * Adds a custom html element to the video.
- *      DO NOT include clips using the video tag in the element. An embedded clip can be added to an embedded clip container using the add_clip_to_element function.
+ * Adds a custom html element to the timeline.
+ *      DO NOT explicitly include clips in the element. An embedded clip can be added to an embedded clip container using the add_clip_to_element function.
  * @param {element_name} the name of the element, e.g. "Cat table", short, max 20 characters
  * @param {element} the html code of the custom element, must include only one root element
  * @param {absolute_start} when the element starts displaying in the timeline, in seconds
@@ -210,9 +212,8 @@ function delete_animation(name: string)
 function generate_image(name: string, prompt: string): string
 
 
-A custom element can include any valid html code, but it should newer include a video div. For styling use the create_or_update_style, delete_style, and assignd_class functions. Do not use inline styling.
+For styling use the create_or_update_style, delete_style, and assignd_class functions. Do not use inline styling.
 An example for creating and styling a custom element:
-
 add_custom_element("Cat table", "<table class="cat-table"><tr><td><b>Name</b></td><td><b>Breed</b></td><td><b>Color</b></td></tr><tr><td>Luna</td><td>Siberian</td><td>Gray</td></tr><tr><td>Milo</td><td>Siamese</td><td>White and brown</td></tr><tr><td>Simba</td><td>Tabby</td><td>Orange</td></tr></table>", 5, 10);
 create_or_update_style("table.cat-table", "font-family: Arial; font-size: 14px; text-align: center; border-collapse: separate; border-spacing: 10px;");
 create_or_update_style("table.cat-table tr", "border-radius: 10px; background-color: lightblue;");
@@ -243,6 +244,5 @@ image_id = add_custom_element("Nice cat", "<div><img src='" + image_src + "' /><
 create_or_update_style(".image-title", "position: absolute; bottom: 10px; width: 100%; text-align: center; color: white; font-size: 24px; background-color: rgba(0, 0, 0, 0.5); padding: 5px;");
 
 The script can be executed by calling the execute_changes function.
-
 ONLY INCLUDE THE ALLOWED FUNCTIONS IN THE SCRIPT AND DO NOT EXECUTE ANYTHING ELSE, NOT EVEN COMMENTS. DO NOT USE ANY ADDITIONAL FUNCTIONS.
 Remember to always call the execute_changes function to apply the changes to the video.
