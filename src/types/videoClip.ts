@@ -13,16 +13,45 @@ export interface RawMetadata {
     }
   }
 }
+
+export interface IndexingState {
+  url: string
+  state: "Uploaded" | "Processing" | "Processed"
+  progress: number
+}
+
 export default class VideoClip {
   source: string
   status: "CACHED" | "UNCACHED"
   title: string = "Loading..."
   length: number | undefined
   thumbnailUrl: string | undefined
+  indexingState: IndexingState | undefined
+
+  constructor(source: string, title: string) {
+    this.source = source
+    this.title = title
+    this.status = "UNCACHED"
+  }
 
   updateMetadata(rawMetadata: RawMetadata) {
-    const clip = new VideoClip(this.source, this.title)
+    const clip = this.copy()
     clip._updateMetadata(rawMetadata)
+    return clip
+  }
+
+  updateIndexingState(indexingState: IndexingState) {
+    const clip = this.copy()
+    clip.indexingState = indexingState
+    return clip
+  }
+
+  copy() {
+    const clip = new VideoClip(this.source, this.title)
+    clip.status = this.status
+    clip.length = this.length
+    clip.thumbnailUrl = this.thumbnailUrl
+    clip.indexingState = this.indexingState
     return clip
   }
 
@@ -35,11 +64,5 @@ export default class VideoClip {
         this.length = Math.floor(this.length * precision) / precision
       this.thumbnailUrl = rawMetadata?.thumbnail?.small?.url
     }
-  }
-
-  constructor(source: string, title: string) {
-    this.source = source
-    this.title = title
-    this.status = "UNCACHED"
   }
 }

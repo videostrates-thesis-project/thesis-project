@@ -9,7 +9,7 @@ export const addClip = (clipName: string, start: number, end?: number) => {
   }
 
   const returnFn = () => {
-    const availableClips = useStore.getState().availableClips
+    const availableClips = useStore.getState().clipsMetadata
     const availableClip = availableClips.find((clip) => clip.title === clipName)
     if (!availableClip) {
       throw new Error(

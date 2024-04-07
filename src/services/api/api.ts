@@ -1,3 +1,4 @@
+import { IndexingState } from "../../types/videoClip"
 import {
   AzureFunctionRequest,
   ExecuteChangesFunctionResponse,
@@ -32,5 +33,36 @@ export const azureImageRequest = async (
       "Content-Type": "application/json",
     },
     body: JSON.stringify(request),
+  }).then((response) => response.json())
+}
+
+export const indexVideo = async (
+  videoUrl: string,
+  name: string
+): Promise<IndexingState> => {
+  const ENDPOINT = "/azure_video_indexer/index"
+
+  return fetch(BASE_URL + ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ url: videoUrl, name }),
+  }).then((response) => response.json())
+}
+
+export const getVideoIndexingState = async (
+  urls: string[]
+): Promise<{
+  [videoUrl: string]: IndexingState
+}> => {
+  const ENDPOINT = "/azure_video_indexer/status"
+
+  return fetch(BASE_URL + ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ urls }),
   }).then((response) => response.json())
 }

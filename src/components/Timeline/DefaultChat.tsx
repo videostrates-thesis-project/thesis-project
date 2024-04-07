@@ -10,7 +10,7 @@ import { ChatMessage } from "../../types/chatMessage"
 const DefaultChat = () => {
   const {
     parsedVideostrate,
-    availableClips,
+    clipsMetadata,
     selectedClipId,
     addChatMessage,
     chatMessages,
@@ -23,7 +23,7 @@ const DefaultChat = () => {
     (message: string) => {
       const serialized = serializeVideostrate(parsedVideostrate, "chatGPT")
       const prompt = buildAssistantMessage(
-        availableClips,
+        clipsMetadata,
         serialized.style,
         serialized.html,
         selectedClipId,
@@ -44,7 +44,7 @@ const DefaultChat = () => {
     },
     [
       addChatMessage,
-      availableClips,
+      clipsMetadata,
       chatMessages,
       parsedVideostrate,
       seek,

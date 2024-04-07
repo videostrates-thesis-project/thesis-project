@@ -3,12 +3,12 @@ import ClipUploader from "./ClipUploader"
 import AvailableClip from "./AvailableClip"
 
 const AvailableClips = () => {
-  const { availableClips } = useStore()
+  const { clipsMetadata } = useStore()
 
   return (
     <div className="w-full flex flex-col gap-3">
       <ClipUploader />
-      {availableClips.map((clip) => (
+      {clipsMetadata.map((clip) => (
         <AvailableClip key={clip.source} clip={clip} />
       ))}
     </div>
