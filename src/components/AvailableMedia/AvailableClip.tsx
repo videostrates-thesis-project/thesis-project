@@ -38,7 +38,7 @@ const AvailableClip = (props: { clip: VideoClip }) => {
           {props.clip.indexingState?.state !== "Processed" && (
             <div className="absolute top-0 left-0 w-1/2 h-full bg-black bg-opacity-70 flex flex-row justify-center items-center">
               <div className="text-base">
-                Indexing... {`${props.clip.indexingState?.progress}%` ?? ""}
+                Indexing... {props.clip.indexingState?.progress ?? "0"}%
               </div>
             </div>
           )}

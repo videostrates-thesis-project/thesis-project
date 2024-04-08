@@ -12,30 +12,34 @@ export const useClipsMetadata = () => {
     updateIndexingState,
   } = useStore()
 
+  const indexClip = useCallback(
+    async (clipSource: string, title: string) => {
+      updateIndexingState({
+        [clipSource]: {
+          state: "Processing",
+          progress: 0,
+          url: clipSource,
+        },
+      })
+      const indexingState = await indexVideo(clipSource, title)
+      updateIndexingState({ [clipSource]: indexingState })
+    },
+    [updateIndexingState]
+  )
+
   const updateAvailableClips = useCallback(async () => {
     if (metamaxRealm) {
       const metadataPromises = clipsMetadata
         .filter((clip) => clip.status === "UNCACHED")
         .map(async (clip) => {
           const metadata = await getClipMetadata(clip.source, metamaxRealm)
-          if (!clip.indexingState) {
-            updateIndexingState({
-              [clip.source]: {
-                state: "Processing",
-                progress: 0,
-                url: clip.source,
-              },
-            })
-            const indexingState = await indexVideo(clip.source, clip.title)
-            updateIndexingState({ [clip.source]: indexingState })
-          }
           updateClipMetadata(clip.source, metadata)
         })
       await Promise.all(metadataPromises)
     } else {
       console.log("fetchMetadata; no realm")
     }
-  }, [clipsMetadata, metamaxRealm, updateClipMetadata, updateIndexingState])
+  }, [clipsMetadata, metamaxRealm, updateClipMetadata])
 
   const updateClipsIndexingState = useCallback(async () => {
     const notIndexedClips = clipsMetadata.filter(
@@ -46,8 +50,16 @@ export const useClipsMetadata = () => {
         notIndexedClips.map((clip) => clip.source)
       )
       updateIndexingState(indexingState)
+      // Find clips with no indexing state and index them
+      const clipsToIndex = notIndexedClips.filter(
+        (clip) => !indexingState[clip.source]
+      )
+      console.log("Indexing clips", clipsToIndex)
+      clipsToIndex.forEach(async (clip) => {
+        await indexClip(clip.source, clip.title)
+      })
     }
-  }, [clipsMetadata, updateIndexingState])
+  }, [clipsMetadata, indexClip, updateIndexingState])
 
   useEffect(() => {
     // Periodically fetch metadata for clips that haven't been fetched yet
@@ -69,6 +81,7 @@ export const useClipsMetadata = () => {
   useEffect(() => {
     // Update available clips when the list of clip sources changes
     updateAvailableClips()
+    updateClipsIndexingState()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [availableClips])
 }
