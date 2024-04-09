@@ -57,3 +57,7 @@ h1 {
 .available-media:hover .remove-button {
   @apply opacity-100;
 }
+
+mark {
+  @apply bg-primary;
+}

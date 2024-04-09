@@ -32,3 +32,14 @@ interface AzureImageRequest {
 interface AzureImageResponse {
   url: string
 }
+
+interface SearchVideosResponse {
+  [videoUrl: string]: [
+    {
+      content: string
+      highlighted: string
+      start: number
+      end: number
+    },
+  ]
+}

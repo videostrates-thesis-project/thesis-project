@@ -4,6 +4,7 @@ import {
   ExecuteChangesFunctionResponse,
   AzureImageRequest,
   AzureImageResponse,
+  SearchVideosResponse,
 } from "./apiTypes"
 
 const BASE_URL = "http://localhost:5001"
@@ -64,5 +65,20 @@ export const getVideoIndexingState = async (
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ urls }),
+  }).then((response) => response.json())
+}
+
+export const searchVideos = async (
+  query: string,
+  videos: { url: string; start: number; end: number }[]
+): Promise<SearchVideosResponse> => {
+  const ENDPOINT = "/azure_video_indexer/search"
+
+  return fetch(BASE_URL + ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query, videos }),
   }).then((response) => response.json())
 }
