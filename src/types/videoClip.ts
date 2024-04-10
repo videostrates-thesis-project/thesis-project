@@ -24,14 +24,24 @@ export default class VideoClip {
   source: string
   status: "CACHED" | "UNCACHED"
   title: string = "Loading..."
-  length: number | undefined
-  thumbnailUrl: string | undefined
-  indexingState: IndexingState | undefined
+  length?: number
+  thumbnailUrl?: string
+  indexingState?: IndexingState
 
-  constructor(source: string, title: string) {
+  constructor(
+    source: string,
+    title: string,
+    status: "CACHED" | "UNCACHED" = "UNCACHED",
+    length?: number,
+    thumbnailUrl?: string,
+    indexingState?: IndexingState
+  ) {
     this.source = source
     this.title = title
-    this.status = "UNCACHED"
+    this.status = status
+    this.length = length
+    this.thumbnailUrl = thumbnailUrl
+    this.indexingState = indexingState
   }
 
   updateMetadata(rawMetadata: RawMetadata) {

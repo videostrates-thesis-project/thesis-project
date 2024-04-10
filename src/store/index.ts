@@ -362,6 +362,17 @@ export const useStore = create<AppState>()(
                   offset: c._offset,
                 })
               })
+            case "clipsMetadata":
+              return (value as VideoClip[]).map((c) => {
+                return new VideoClip(
+                  c.source,
+                  c.title,
+                  c.status,
+                  c.length,
+                  c.thumbnailUrl,
+                  c.indexingState
+                )
+              })
             case "toasts":
               return []
             case "seek":
