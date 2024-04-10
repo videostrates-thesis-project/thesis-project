@@ -130,7 +130,7 @@ export const useStore = create<AppState>()(
           }, state.availableClips)
 
           const availableImages = parsed.images.reduce((acc, img) => {
-            return concatAvailableImage(acc, img)
+            return concatAvailableImage(acc, img, true)
           }, state.availableImages)
 
           return {
@@ -188,7 +188,11 @@ export const useStore = create<AppState>()(
       addAvailableImage: (image: Image) => {
         set((state) => {
           return {
-            availableImages: concatAvailableImage(state.availableImages, image),
+            availableImages: concatAvailableImage(
+              state.availableImages,
+              image,
+              true
+            ),
           }
         })
       },
@@ -415,7 +419,11 @@ const concatAvailableClips = (
   return [...availableClips, new VideoClip(source, newTitle)]
 }
 
-const concatAvailableImage = (availableImages: Image[], image: Image) => {
+const concatAvailableImage = (
+  availableImages: Image[],
+  image: Image,
+  insertAtBeginning: boolean = false
+) => {
   if (availableImages.some((i) => i.url === image.url)) return availableImages
 
   image.title = image.title || DEFAULT_IMAGE_TITLE
@@ -428,5 +436,6 @@ const concatAvailableImage = (availableImages: Image[], image: Image) => {
     newTitle = `${image.title} ${index++}`
   }
   image.title = newTitle
-  return [...availableImages, image]
+  if (insertAtBeginning) return [image, ...availableImages]
+  else return [...availableImages, image]
 }

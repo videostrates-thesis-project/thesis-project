@@ -2,10 +2,10 @@ import { useCallback, useMemo } from "react"
 import { useStore } from "../../store"
 import DeleteMediaButton from "./DeleteMediaButton"
 import { Image } from "../../types/image"
-import useEditCommands from "../../hooks/useEditCommands"
 import clsx from "clsx"
 import { runCommands } from "../../services/interpreter/run"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
+import { createOrUpdateStyle } from "../../services/interpreter/builtin/createOrUpdateStyle"
 
 const AvailableImage = (props: { image: Image }) => {
   const { parsedVideostrate, seek, deleteAvailableImage } = useStore()
@@ -24,9 +24,13 @@ const AvailableImage = (props: { image: Image }) => {
     runCommands(
       addCustomElement(
         props.image.title,
-        `<img src="${props.image.url}" alt="${props.image.title}" />`,
+        `<img src="${props.image.url}" alt="${props.image.title}" class="image-full-cover"/>`,
         seek,
         seek + 20
+      ),
+      createOrUpdateStyle(
+        ".image-full-cover",
+        "width: 100%; height: auto; object-fit: cover;"
       )
     )
   }, [props.image.title, props.image.url, seek])
