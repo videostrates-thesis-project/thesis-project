@@ -4,10 +4,11 @@ import DeleteMediaButton from "./DeleteMediaButton"
 import { Image } from "../../types/image"
 import useEditCommands from "../../hooks/useEditCommands"
 import clsx from "clsx"
+import { runCommands } from "../../services/interpreter/run"
+import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
 
 const AvailableImage = (props: { image: Image }) => {
   const { parsedVideostrate, seek, deleteAvailableImage } = useStore()
-  const { execute, addCustomElement } = useEditCommands()
   const { selectedImportableImage, setSelectedImportableImage } = useStore()
 
   const isSelected = useMemo(
@@ -20,11 +21,15 @@ const AvailableImage = (props: { image: Image }) => {
   }, [parsedVideostrate.images, props.image])
 
   const addImage = useCallback(() => {
-    const elementContent = `<img src="${props.image.url}" alt="${props.image.title}" />`
-    execute(
-      addCustomElement(props.image.title, elementContent, seek, seek + 20)
+    runCommands(
+      addCustomElement(
+        props.image.title,
+        `<img src="${props.image.url}" alt="${props.image.title}" />`,
+        seek,
+        seek + 20
+      )
     )
-  }, [addCustomElement, execute, props.image.title, props.image.url, seek])
+  }, [props.image.title, props.image.url, seek])
 
   const deleteImage = useCallback(() => {
     deleteAvailableImage(props.image.url)

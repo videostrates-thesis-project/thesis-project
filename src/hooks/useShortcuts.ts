@@ -1,13 +1,14 @@
 import { useCallback, useEffect } from "react"
 import { useStore } from "../store"
 import useEditCommands from "./useEditCommands"
-import { undo } from "../services/command/undo"
-import { redo } from "../services/command/redo"
 import useThrottledFunction from "./useThrottledFunction"
+import { deleteElement } from "../services/interpreter/builtin/deleteElement"
+import { undo } from "../services/interpreter/undo"
+import { redo } from "../services/interpreter/redo"
 
 const useShortcuts = (enabled: boolean) => {
   const { selectedClipId } = useStore()
-  const { execute, deleteClip, moveLayerDown, moveLayerUp } = useEditCommands()
+  const { moveLayerDown, moveLayerUp, execute } = useEditCommands()
   const throttledMoveLayerDown = useThrottledFunction(
     (selectedClipId: string) => execute(moveLayerDown(selectedClipId))
   )
@@ -21,7 +22,7 @@ const useShortcuts = (enabled: boolean) => {
     (event: KeyboardEvent) => {
       switch (event.key) {
         case "Delete":
-          if (selectedClipId) execute(deleteClip(selectedClipId))
+          if (selectedClipId) execute(deleteElement(selectedClipId))
           break
         case "ArrowDown":
           if (selectedClipId) throttledMoveLayerDown(selectedClipId)
@@ -54,7 +55,6 @@ const useShortcuts = (enabled: boolean) => {
       }
     },
     [
-      deleteClip,
       execute,
       selectedClipId,
       throttledMoveLayerDown,

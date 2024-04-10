@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo } from "react"
 import { useStore } from "../../store"
 import { WebstrateSerializationStrategy } from "../../services/serializationStrategies/webstrateSerializationStrategy"
 import { CustomElement } from "../../types/videoElement"
+import { runCommands } from "../../services/interpreter/run"
+import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
 import useEditCommands from "../../hooks/useEditCommands"
 import clsx from "clsx"
 
@@ -23,8 +25,6 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
     selectedImportableCustomElement,
     setSelectedImportableCustomElement,
   } = useStore()
-
-  const { execute, addCustomElement } = useEditCommands()
 
   const isSelected = useMemo(
     () => selectedImportableCustomElement?.id === props.element.id,
@@ -56,21 +56,10 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
   }, [iframeRef, serializedVideostrate.css])
 
   const addToTimeline = useCallback(() => {
-    execute(
-      addCustomElement(
-        props.element.name,
-        props.element.content,
-        seek,
-        seek + 10
-      )
+    runCommands(
+      addCustomElement(props.element.name, props.element.content, seek, 10)
     )
-  }, [
-    execute,
-    addCustomElement,
-    props.element.name,
-    props.element.content,
-    seek,
-  ])
+  }, [props.element.name, props.element.content, seek])
 
   const deleteElement = useCallback(() => {
     deleteAvailableCustomElement(props.element.id)

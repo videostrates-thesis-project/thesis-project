@@ -5,11 +5,11 @@ import { PlaybackState } from "../types/playbackState"
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 import VideoClip, { RawMetadata } from "../types/videoClip"
 import { ChatMessage } from "../types/chatMessage"
-import { ExecutedScript } from "../services/command/executedScript"
 import { Image } from "../types/image"
 import { v4 as uuid } from "uuid"
 import { CustomElement, VideoClipElement } from "../types/videoElement"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
+import { ExecutedScript } from "../services/interpreter/executedScript"
 
 const TOAST_LENGTH = 5000
 const DEFAULT_IMAGE_TITLE = "Image"

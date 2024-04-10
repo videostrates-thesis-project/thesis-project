@@ -1,8 +1,8 @@
 import { useCallback } from "react"
-import { undo } from "../services/command/undo"
+import { undo } from "../services/interpreter/undo"
 import { useStore } from "../store"
 import clsx from "clsx"
-import { redo } from "../services/command/redo"
+import { redo } from "../services/interpreter/redo"
 
 const Navbar = () => {
   const { fileName, setFileName, undoStack, redoStack } = useStore()

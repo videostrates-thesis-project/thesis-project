@@ -4,7 +4,7 @@ import { CustomElement } from "../../types/videoElement"
 
 const buildHighlightPromptPlayerhead = (playerhead: number | null) => {
   if (playerhead !== null) {
-    return `The playerhead is at timestamp (in seconds): ${playerhead.toPrecision(2)}. The user can implicitly refer to this timestamp in the video. E.g., "Add a clip here"`
+    return `The playerhead is at timestamp (in seconds): ${playerhead.toFixed(2)}. The user can implicitly refer to this timestamp in the video. E.g., "Add a clip here"`
   } else {
     return ""
   }

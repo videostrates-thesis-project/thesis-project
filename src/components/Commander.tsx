@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { useStore } from "../store"
-import { parseAndExecuteScript } from "../services/command/executeScript"
-import { ExecutableCommand } from "../services/command/recognizedCommands"
+import { runScript } from "../services/interpreter/run"
 
 const Commander = () => {
   const { undoStack } = useStore()
@@ -27,20 +26,11 @@ const Commander = () => {
     }
   }, [undoStack.length])
 
-  const getCommandString = useCallback((line: ExecutableCommand) => {
-    return (
-      (line.variable ? `${line.variable} = ` : "") +
-      `${line.command}(${line.args.join(", ")})`
-    )
-  }, [])
-
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "ArrowUp") {
       e.preventDefault() // Prevents moving the cursor to the beginning of the line
       if (undoStack.length > 0) {
-        setCurrentCommand(
-          getCommandString(undoStack[undoStack.length - 1].script[0])
-        )
+        setCurrentCommand(undoStack[undoStack.length - 1].text)
       }
     }
     if (e.key === "Enter" && !e.shiftKey) {
@@ -50,7 +40,7 @@ const Commander = () => {
   }
 
   const issueCommand = useCallback(() => {
-    parseAndExecuteScript(currentCommand)
+    runScript(currentCommand)
     setCurrentCommand("")
   }, [currentCommand])
 
@@ -59,12 +49,15 @@ const Commander = () => {
       <div className="flex flex-col font-mono overflow-y-auto overflow-x-hidden mb-4">
         {undoStack.map((command, i) => (
           <div key={i} className="flex flex-col bg-neutral rounded p-2 mt-2">
-            {command.script.map((line, j) => (
-              <div key={j} className="text-[11px] text-start select-all">
-                <span className="opacity-50 mr-2 select-none">{j + 1}</span>
-                {getCommandString(line)}
-              </div>
-            ))}
+            {command.text
+              .split("\n")
+              .filter((l) => l)
+              .map((line, j) => (
+                <div key={j} className="text-[11px] text-start select-all">
+                  <span className="opacity-50 mr-2 select-none">{j + 1}</span>
+                  {line}
+                </div>
+              ))}
           </div>
         ))}
         <div ref={endRef}></div>

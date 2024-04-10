@@ -1,4 +1,4 @@
-import { undo } from "../services/command/undo"
+import { undo } from "../services/interpreter/undo"
 import { useStore } from "../store"
 
 const PendingChangesBanner = () => {
