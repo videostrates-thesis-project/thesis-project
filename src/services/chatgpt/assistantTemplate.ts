@@ -110,20 +110,20 @@ export const buildAssistantMessage = (
   )
 
   return `List of available clips:
-    ${clips
-      .map(
-        (clip, index) =>
-          `${index + 1}. "${clip.title}", ${clip.length}, "${clip.source}"`
-      )
-      .join("\n    ")}
-    
-    HTML code:
-    ${html}
+${clips
+  .map(
+    (clip, index) =>
+      `${index + 1}. "${clip.title}", ${clip.length}, "${clip.source}"`
+  )
+  .join("\n    ")}
 
-    CSS code:
-    ${style}
+HTML code:
+${html}
 
-    ${highlightPrompt}
+CSS code:
+${style}
 
-    The user input is: "${prompt}"`
+${highlightPrompt}
+
+The user input is: "${prompt}"`
 }

@@ -202,7 +202,7 @@ export const useStore = create<AppState>()(
       availableCustomElements: [],
       addAvailableCustomElement: (element: CustomElement) => {
         const newElement = element.clone()
-        newElement.id = uuid()
+        newElement.id = ParsedVideostrate.generateElementId()
         set((state) => {
           return {
             availableCustomElements: [

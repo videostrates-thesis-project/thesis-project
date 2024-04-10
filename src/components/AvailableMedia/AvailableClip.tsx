@@ -4,7 +4,6 @@ import VideoClip from "../../types/videoClip"
 import DeleteMediaButton from "./DeleteMediaButton"
 import { runCommands } from "../../services/interpreter/run"
 import { addClip } from "../../services/interpreter/builtin/addClip"
-import useEditCommands from "../../hooks/useEditCommands"
 import clsx from "clsx"
 
 const AvailableClip = (props: { clip: VideoClip }) => {

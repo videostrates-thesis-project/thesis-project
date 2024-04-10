@@ -60,6 +60,12 @@ export class ParsedVideostrate {
     )
   }
 
+  public static generateElementId() {
+    let id = uuid()
+    id = String.fromCharCode(97 + Math.floor(Math.random() * 26)) + id.slice(1)
+    return id
+  }
+
   public moveClipById(clipId: string, start: number) {
     const clip = this.all.find((c) => c.id === clipId)
     if (!clip) {
@@ -126,7 +132,7 @@ export class ParsedVideostrate {
   }
 
   public addClip(clip: VideoClip, start: number, end: number) {
-    const newId = uuid()
+    const newId = ParsedVideostrate.generateElementId()
     const layer =
       Math.max(
         ...this.all.filter((e) => e.type === "video").map((e) => e.layer)
@@ -184,7 +190,7 @@ export class ParsedVideostrate {
     start: number,
     end: number
   ) {
-    const newId = uuid()
+    const newId = ParsedVideostrate.generateElementId()
 
     const containerElementId = this.findContainerElement(elementId)
 
@@ -286,7 +292,7 @@ export class ParsedVideostrate {
     parent?.replaceChild(wrapper, htmlElement)
     wrapper.appendChild(htmlElement)
 
-    const newId = uuid()
+    const newId = ParsedVideostrate.generateElementId()
     const layer = Math.max(...this.all.map((e) => e.layer)) + 1
     this.all.push(
       new CustomElement({
