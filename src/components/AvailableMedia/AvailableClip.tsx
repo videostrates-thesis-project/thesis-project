@@ -4,8 +4,8 @@ import VideoClip from "../../types/videoClip"
 import DeleteMediaButton from "./DeleteMediaButton"
 import { runCommands } from "../../services/interpreter/run"
 import { addClip } from "../../services/interpreter/builtin/addClip"
-import useEditCommands from "../../hooks/useEditCommands"
 import clsx from "clsx"
+import AddElementButton from "./AddElementButton"
 
 const AvailableClip = (props: { clip: VideoClip }) => {
   const { seek, deleteAvailableClip, parsedVideostrate } = useStore()
@@ -21,13 +21,17 @@ const AvailableClip = (props: { clip: VideoClip }) => {
     return !parsedVideostrate.clips.some((c) => c.source === props.clip.source)
   }, [parsedVideostrate.clips, props.clip.source])
 
-  const addToTimeline = useCallback(() => {
-    if (!props.clip.title) {
-      console.log("Error: No clip title")
-      return
-    }
-    runCommands(addClip(props.clip.title, seek))
-  }, [props.clip.title, seek])
+  const addToTimeline = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation()
+      if (!props.clip.title) {
+        console.log("Error: No clip title")
+        return
+      }
+      runCommands(addClip(props.clip.title, seek))
+    },
+    [props.clip.title, seek]
+  )
 
   const deleteClip = useCallback(() => {
     deleteAvailableClip(props.clip.source)
@@ -59,10 +63,8 @@ const AvailableClip = (props: { clip: VideoClip }) => {
               {props.clip.title}
             </div>
             <div>{props.clip.length ?? "?"} seconds</div>
-            <div className="relative -right-2 -bottom-1 flex-grow w-full flex justify-end items-end">
-              <button className="btn btn-sm btn-ghost" onClick={addToTimeline}>
-                <i className="bi bi-plus-lg text-lg text-accent"></i>
-              </button>
+            <div className="relative -right-1 -bottom-1 flex-grow w-full flex justify-end items-end">
+              <AddElementButton onClick={addToTimeline} time={seek} />
             </div>
           </div>
           <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteClip} />

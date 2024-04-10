@@ -57,3 +57,14 @@ h1 {
 .available-media:hover .remove-button {
   @apply opacity-100;
 }
+
+.add-element-button .button-content {
+  width: 0px;
+  transition: width 0.2s;
+  overflow: hidden;
+}
+
+.add-element-button:hover .button-content {
+  width: 99px;
+  transition: width 0.2s;
+}

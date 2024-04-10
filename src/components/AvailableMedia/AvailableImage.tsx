@@ -2,10 +2,10 @@ import { useCallback, useMemo } from "react"
 import { useStore } from "../../store"
 import DeleteMediaButton from "./DeleteMediaButton"
 import { Image } from "../../types/image"
-import useEditCommands from "../../hooks/useEditCommands"
 import clsx from "clsx"
 import { runCommands } from "../../services/interpreter/run"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
+import AddElementButton from "./AddElementButton"
 
 const AvailableImage = (props: { image: Image }) => {
   const { parsedVideostrate, seek, deleteAvailableImage } = useStore()
@@ -20,20 +20,28 @@ const AvailableImage = (props: { image: Image }) => {
     return !parsedVideostrate.images.some((i) => i.url === props.image.url)
   }, [parsedVideostrate.images, props.image])
 
-  const addImage = useCallback(() => {
-    runCommands(
-      addCustomElement(
-        props.image.title,
-        `<img src="${props.image.url}" alt="${props.image.title}" />`,
-        seek,
-        seek + 20
+  const addImage = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation()
+      runCommands(
+        addCustomElement(
+          props.image.title,
+          `<img src="${props.image.url}" alt="${props.image.title}" />`,
+          seek,
+          seek + 20
+        )
       )
-    )
-  }, [props.image.title, props.image.url, seek])
+    },
+    [props.image.title, props.image.url, seek]
+  )
 
-  const deleteImage = useCallback(() => {
-    deleteAvailableImage(props.image.url)
-  }, [deleteAvailableImage, props.image.url])
+  const deleteImage = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation()
+      deleteAvailableImage(props.image.url)
+    },
+    [deleteAvailableImage, props.image.url]
+  )
 
   return (
     <div
@@ -56,10 +64,7 @@ const AvailableImage = (props: { image: Image }) => {
         <span className="overflow-hidden whitespace-nowrap text-ellipsis pl-1">
           {props.image.title}
         </span>
-
-        <button className="btn btn-sm btn-ghost w-fit" onClick={addImage}>
-          <i className="bi bi-plus-lg text-lg text-accent"></i>
-        </button>
+        <AddElementButton onClick={addImage} time={seek} />
       </div>
       <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteImage} />
     </div>

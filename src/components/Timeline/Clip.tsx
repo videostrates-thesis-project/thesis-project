@@ -258,7 +258,8 @@ const Clip = (props: { clip: TimelineElement }) => {
     if (!clipMetadata?.length) return 0
     const sourceClipWidth = clipMetadata.length * timeline.widthPerSecond
     if (sourceClipWidth + sourceClipLeft > timeline.width) {
-      return timeline.width - sourceClipLeft - 1
+      // Necessary to prevent the clip from overflowing the timeline
+      return timeline.width - sourceClipLeft - 11
     }
     return sourceClipWidth
   }, [

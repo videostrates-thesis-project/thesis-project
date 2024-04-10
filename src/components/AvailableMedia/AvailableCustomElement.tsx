@@ -6,8 +6,8 @@ import { WebstrateSerializationStrategy } from "../../services/serializationStra
 import { CustomElement } from "../../types/videoElement"
 import { runCommands } from "../../services/interpreter/run"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
-import useEditCommands from "../../hooks/useEditCommands"
 import clsx from "clsx"
+import AddElementButton from "./AddElementButton"
 
 const AvailableCustomElement = (props: { element: CustomElement }) => {
   const {
@@ -55,11 +55,15 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
     }
   }, [iframeRef, serializedVideostrate.css])
 
-  const addToTimeline = useCallback(() => {
-    runCommands(
-      addCustomElement(props.element.name, props.element.content, seek, 10)
-    )
-  }, [props.element.name, props.element.content, seek])
+  const addToTimeline = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation()
+      runCommands(
+        addCustomElement(props.element.name, props.element.content, seek, 10)
+      )
+    },
+    [props.element.name, props.element.content, seek]
+  )
 
   const deleteElement = useCallback(() => {
     deleteAvailableCustomElement(props.element.id)
@@ -98,9 +102,7 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
           {props.element.name}
         </span>
 
-        <button onClick={addToTimeline} className="btn btn-sm btn-ghost w-fit">
-          <i className="bi bi-plus-lg text-lg text-accent"></i>
-        </button>
+        <AddElementButton onClick={addToTimeline} time={seek} />
       </div>
       <DeleteMediaButton disabled={false} onClick={deleteElement} />
     </div>
