@@ -1,15 +1,21 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import useScaledIframe from "../../hooks/useScaledIframe"
 
 type BrowserProps = {
   html: string
-  highlight: (element: HTMLElement) => void
+  highlight: (element: HTMLElement | null) => void
   isHighlighting: boolean
+  highlightedElement?: HTMLElement | null
 }
 
 const styleElementId = "videostrates-highlight-style"
 
-const Browser = ({ html, highlight, isHighlighting }: BrowserProps) => {
+const Browser = ({
+  html,
+  highlight,
+  isHighlighting,
+  highlightedElement,
+}: BrowserProps) => {
   const [cursor, setCursor] = useState("default")
   const {
     iframeRef,
@@ -21,15 +27,33 @@ const Browser = ({ html, highlight, isHighlighting }: BrowserProps) => {
     iframeContainerHeight,
   } = useScaledIframe()
   const [iframeLoaded, setIframeLoaded] = useState(false)
+  const currentHighlighted = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     const iframe = iframeRef.current
+
     if (!iframeLoaded) return
     if (!iframe?.contentDocument?.head) return
 
     const highlightListener = (event: MouseEvent) => {
-      console.log(event.target)
+      if (
+        currentHighlighted.current !== null &&
+        currentHighlighted.current === event.target
+      ) {
+        highlight(null)
+        currentHighlighted.current.style.outline = ""
+        currentHighlighted.current = null
+        return
+      }
+
       highlight(event?.target as HTMLElement)
+      if (currentHighlighted.current !== null) {
+        currentHighlighted.current.style.outline = ""
+        currentHighlighted.current = null
+      }
+
+      currentHighlighted.current = event.target as HTMLElement
+      currentHighlighted.current.style.outline = "2px solid orange"
     }
 
     const handleLoad = () => {
@@ -71,6 +95,16 @@ const Browser = ({ html, highlight, isHighlighting }: BrowserProps) => {
       iframe.removeEventListener("load", handleLoad)
     }
   }, [highlight, isHighlighting, iframeLoaded, iframeRef])
+
+  useEffect(() => {
+    if (currentHighlighted.current !== null && !highlightedElement) {
+      highlight(null)
+      const highlighted = currentHighlighted.current as HTMLElement
+      highlighted.style.outline = ""
+      currentHighlighted.current = null
+      return
+    }
+  }, [highlight, highlightedElement])
 
   useEffect(() => {
     setCursor(isHighlighting ? "crosshair" : "default")

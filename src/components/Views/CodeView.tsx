@@ -229,7 +229,7 @@ const CodeView = () => {
     setDiff(false)
   }, [beforeAssistantCss, beforeAssistantHtml])
 
-  const onHighlight = useCallback((element: HTMLElement) => {
+  const onHighlight = useCallback((element: HTMLElement | null) => {
     setHighlightedElement(element)
   }, [])
 
@@ -260,6 +260,7 @@ const CodeView = () => {
               html={displayedHtml}
               highlight={onHighlight}
               isHighlighting={true}
+              highlightedElement={highlightedElement}
             />
             <Chat
               messages={chatMessages}
