@@ -125,7 +125,10 @@ const parseElement = (element: ChildNode) => {
         offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
         speed: parseFloat(htmlElement.getAttribute("data-speed") ?? "1"),
         className: htmlElement.parentElement?.className ?? "",
-        parentId: htmlElement.parentElement?.parentElement?.id ?? "",
+        parentId:
+          htmlElement.parentElement?.parentElement?.getAttribute(
+            "embedded-clip-container"
+          ) ?? "",
         containerElementId: findContainerElement(htmlElement) ?? "",
       })
 

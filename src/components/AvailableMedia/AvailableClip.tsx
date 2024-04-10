@@ -4,9 +4,18 @@ import VideoClip from "../../types/videoClip"
 import DeleteMediaButton from "./DeleteMediaButton"
 import { runCommands } from "../../services/interpreter/run"
 import { addClip } from "../../services/interpreter/builtin/addClip"
+import useEditCommands from "../../hooks/useEditCommands"
+import clsx from "clsx"
 
 const AvailableClip = (props: { clip: VideoClip }) => {
   const { seek, deleteAvailableClip, parsedVideostrate } = useStore()
+  const { selectedImportableClipName, setSelectedImportableClipName } =
+    useStore()
+
+  const isSelected = useMemo(
+    () => selectedImportableClipName === props.clip.title,
+    [selectedImportableClipName, props.clip.title]
+  )
 
   const canBeDeleted = useMemo(() => {
     return !parsedVideostrate.clips.some((c) => c.source === props.clip.source)
@@ -28,8 +37,17 @@ const AvailableClip = (props: { clip: VideoClip }) => {
     <>
       {props.clip.status === "CACHED" ? (
         <div
-          className="available-media relative flex flex-row rounded-lg overflow-clip bg-base-100"
+          className={clsx(
+            "available-media relative flex flex-row rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer",
+            isSelected
+              ? "!border-accent"
+              : "border-base-100 hover:border-gray-300"
+          )}
           key={props.clip.source}
+          onClick={() => {
+            if (isSelected) setSelectedImportableClipName(null)
+            else setSelectedImportableClipName(props.clip.title)
+          }}
         >
           <img
             className="w-1/2 h-28 flex-grow-0 flex-shrink-0 object-cover"
