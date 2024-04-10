@@ -68,12 +68,14 @@ const CodeEditor = ({
     async (position: { lineNumber: number; column: number }) => {
       suggestionText.current = ""
 
+      console.log("[CodeEditor] Getting completion at position ", position)
       const completion = await openAIService.githubCopilotAtHome(
         code,
         position.lineNumber,
         position.column
       )
       suggestionText.current = completion ?? ""
+      console.log("[CodeEditor] Got completion: ", completion)
 
       setTimeout(() => {
         if (suggestionText.current) {
@@ -207,6 +209,9 @@ const CodeEditor = ({
         content: match.matches?.[0] ?? "",
       }))
     )
+    console.log("[CodeEditor] Found highlight matches: ", matches)
+
+    if (matches.length === 0) return
 
     editor.setSelections(
       matches.map(
@@ -220,9 +225,7 @@ const CodeEditor = ({
       )
     )
 
-    if (matches.length > 0) {
-      editor.revealLine(matches[0].range.startLineNumber)
-    }
+    editor.revealLine(matches[0].range.startLineNumber)
   }, [
     currentFileName,
     editor,
