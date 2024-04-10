@@ -1,5 +1,5 @@
-const precision =
-  10 ** ((import.meta.env.VITE_TIME_DECIMALS_PRECISION as number) || 0)
+import { TIME_DECIMALS_PRECISION } from "../envVariables"
+const precision = 10 ** TIME_DECIMALS_PRECISION
 
 export interface RawMetadata {
   status: "CACHED" | "UNCACHED"

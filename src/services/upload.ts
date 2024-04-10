@@ -2,9 +2,10 @@ import { initializeApp } from "firebase/app"
 import { getStorage, ref as storageRef, uploadBytes } from "firebase/storage"
 import { v4 as uuid } from "uuid"
 import { useStore } from "../store"
+import { FIREBASE_API_KEY } from "../envVariables"
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  apiKey: FIREBASE_API_KEY,
   authDomain: "videostrates.firebaseapp.com",
   projectId: "videostrates",
   storageBucket: "videostrates.appspot.com",

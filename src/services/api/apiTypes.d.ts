@@ -1,5 +1,7 @@
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 
+//  OpenAI --------------------------------------------
+
 type AzureModelType =
   | "mirrorverse-gpt-35-turbo"
   | "mirrorverse-gpt-4-turbo"
@@ -31,6 +33,31 @@ interface AzureImageRequest {
 
 interface AzureImageResponse {
   url: string
+}
+
+// Azure Video Indexer --------------------------------------------
+
+interface IndexVideoRequest {
+  url: string
+  name: string
+}
+
+interface IndexVideoResponse {
+  url: string
+  state: "Uploaded" | "Processing" | "Processed"
+  progress: number
+}
+
+type getVideoIndexingStateRequest = {
+  urls: string[]
+}
+interface getVideoIndexingStateResponse {
+  [videoUrl: string]: IndexingState
+}
+
+interface SearchVideosRequest {
+  query: string
+  videos: { url: string; start: number; end: number }[]
 }
 
 interface SearchVideosResponse {

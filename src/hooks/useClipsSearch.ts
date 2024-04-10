@@ -7,33 +7,31 @@ const useClipsSearch = () => {
   const { clipsMetadata } = useStore()
 
   const [search, setSearch] = useState("")
+  const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<SearchVideosResponse | null>(null)
 
   useEffect(() => {
     const searchClips = async () => {
-      const response = await searchVideos(
-        search,
-        clipsMetadata.map((clip) => ({
+      setLoading(true)
+      const response = await searchVideos({
+        query: search,
+        videos: clipsMetadata.map((clip) => ({
           url: clip.source,
           start: 0,
           end: clip.length ?? 10000000,
-        }))
-      )
+        })),
+      })
+      setLoading(false)
       setResults(response)
     }
-    let timeout: NodeJS.Timeout
-    if (search.length > 2) {
-      timeout = setTimeout(searchClips, 300)
-    }
-    return () => {
-      if (timeout) clearTimeout(timeout)
-    }
+    searchClips()
   }, [search, clipsMetadata])
 
   return {
     search,
     setSearch,
     results,
+    loading,
   }
 }
 export default useClipsSearch

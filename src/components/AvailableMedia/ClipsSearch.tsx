@@ -1,74 +1,83 @@
-import { useEffect, useState } from "react"
 import { useStore } from "../../store"
-import { searchVideos } from "../../services/api/api"
 import { SearchVideosResponse } from "../../services/api/apiTypes"
-import sanitizeHtml from "sanitize-html"
+import { useCallback, useState } from "react"
+import { searchVideos } from "../../services/api/api"
+import SearchClipsResults from "./SearchClipsResults"
 
 const ClipsSearch = (props: {
-  search: string
-  setSearch: (search: string) => void
-  results: SearchVideosResponse | null
+  searchActive: boolean
+  setSearchActive: (active: boolean) => void
 }) => {
-  const formatTime = (seconds: number) => {
-    const date = new Date(0)
-    date.setSeconds(seconds)
-    return date.toISOString().substring(11, 19)
-  }
   const { clipsMetadata } = useStore()
+
+  const [search, setSearch] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [results, setResults] = useState<SearchVideosResponse | null>(null)
+  const [validationError, setValidationError] = useState<string | null>(null)
+
+  const searchClips = useCallback(async () => {
+    setLoading(true)
+    const response = await searchVideos({
+      query: search,
+      videos: clipsMetadata.map((clip) => ({
+        url: clip.source,
+        start: 0,
+        end: clip.length ?? 10000000,
+      })),
+    })
+    setLoading(false)
+    setResults(response)
+  }, [clipsMetadata, search])
+
+  const onSearch = useCallback(() => {
+    // Require at least 3 characters to search
+    if (search.length > 0) props.setSearchActive(true)
+    else props.setSearchActive(false)
+    if (search.length < 3) {
+      setValidationError("Type at least 3 characters")
+    } else {
+      searchClips()
+      setValidationError(null)
+    }
+  }, [props, search.length, searchClips])
+
+  const onSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearch(e.target.value)
+      if (e.target.value.length === 0) {
+        props.setSearchActive(false)
+        setValidationError(null)
+      }
+    },
+    [props]
+  )
 
   return (
     <>
       <div className="join w-full">
         <input
-          value={props.search}
-          onChange={(e) => props.setSearch(e.target.value)}
+          value={search}
+          onChange={onSearchChange}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") onSearch()
+          }}
           className="input input-sm join-item input-bordered w-full"
-          placeholder="Search clips..."
+          placeholder="Search in transcript..."
         />
-        <button className="btn btn-sm btn-neutral join-item">
+        <button className="btn btn-sm btn-neutral join-item" onClick={onSearch}>
           <i className="bi bi-search"></i>
         </button>
       </div>
-      {props.search &&
-        props.results &&
-        Object.entries(props.results).map(([url, result]) => {
-          const clip = clipsMetadata.find((clip) => clip.source === url)
-          return (
-            clip && (
-              <div className="flex flex-col gap-2 pb-2">
-                <div className="flex flex-row gap-2 items-center bg-base-100 rounded-lg mb-1">
-                  <img
-                    className="w-1/4 h-12 flex-grow-0 flex-shrink-0 object-cover"
-                    src={
-                      clipsMetadata.find((clip) => clip.source === url)
-                        ?.thumbnailUrl
-                    }
-                  />
-                  {clip.title}
-                </div>
-                {result.map((match) => (
-                  <div
-                    key={match.toString()}
-                    className="flex flex-col items-start mx-1 leading-4"
-                  >
-                    <div className="flex flex-row text-left">
-                      <span>
-                        <span className="mr-2 text-xs opacity-50 ">
-                          {formatTime(match.start)}
-                        </span>
-                      </span>
-                      <span
-                        dangerouslySetInnerHTML={{
-                          __html: sanitizeHtml(match.highlighted),
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )
-          )
-        })}
+      {validationError && <div className="opacity-50">{validationError}</div>}
+      {props.searchActive && loading && <div>Loading...</div>}
+      {props.searchActive &&
+        !loading &&
+        results &&
+        !validationError &&
+        !Object.keys(results).length && <div>No results</div>}
+      {props.searchActive && !loading && !validationError && (
+        <SearchClipsResults results={results} />
+      )}
     </>
   )
 }

@@ -21,7 +21,10 @@ export const useClipsMetadata = () => {
           url: clipSource,
         },
       })
-      const indexingState = await indexVideo(clipSource, title)
+      const indexingState = await indexVideo({
+        url: clipSource,
+        name: title,
+      })
       updateIndexingState({ [clipSource]: indexingState })
     },
     [updateIndexingState]
@@ -46,9 +49,9 @@ export const useClipsMetadata = () => {
       (clip) => clip.indexingState?.state !== "Processed"
     )
     if (notIndexedClips.length) {
-      const indexingState = await getVideoIndexingState(
-        notIndexedClips.map((clip) => clip.source)
-      )
+      const indexingState = await getVideoIndexingState({
+        urls: notIndexedClips.map((clip) => clip.source),
+      })
       updateIndexingState(indexingState)
       // Find clips with no indexing state and index them
       const clipsToIndex = notIndexedClips.filter(
