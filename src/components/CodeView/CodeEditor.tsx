@@ -26,6 +26,7 @@ type CodeEditorProps = {
   onChangeTab: (tab: string) => void
   onSave: () => void
   onFormat: () => void
+  onQuit: () => void
   currentFileName: string
   files: EditorFile[]
   originalCode: string
@@ -51,6 +52,7 @@ const CodeEditor = ({
   onReject,
   highlightedElement,
   onMatchesFound,
+  onQuit,
 }: CodeEditorProps) => {
   const [editor, setEditor] = useState<editor.ICodeEditor>()
   const [monaco, setMonaco] = useState<Monaco>()
@@ -256,15 +258,22 @@ const CodeEditor = ({
             ></div>
           </div>
         ))}
-        <button
-          className="btn btn-warning btn-sm ml-auto mr-2"
-          onClick={onFormat}
-        >
-          <i className="bi bi-braces text-lg"></i>Format
-        </button>
-        <button className="btn btn-info btn-sm mx-2" onClick={onSave}>
-          <i className="bi bi-floppy text-lg"></i>Save
-        </button>
+        <div className="tooltip ml-auto mr-2" data-tip="Format code">
+          <button className="btn btn-warning btn-sm" onClick={onFormat}>
+            <i className="bi bi-braces text-lg"></i>
+          </button>
+        </div>
+
+        <div className="tooltip mr-2" data-tip="Save">
+          <button className="btn btn-info btn-sm" onClick={onSave}>
+            <i className="bi bi-floppy text-lg"></i>
+          </button>
+        </div>
+        <div className="tooltip mr-2" data-tip="Quit without saving">
+          <button className="btn btn-error btn-sm" onClick={onQuit}>
+            <i className="bi bi-x-lg text-lg"></i>
+          </button>
+        </div>
       </div>
       {diff && (
         <div className="flex flex-row gap-2 absolute bottom-4 right-4 z-10">
@@ -295,7 +304,7 @@ const CodeEditor = ({
             setMonaco(monaco)
           }}
           width="100%"
-          height="calc(100vh - 5rem)"
+          height="calc(91.6vh - 5rem)"
           language={language}
           defaultValue={code}
           value={code}
