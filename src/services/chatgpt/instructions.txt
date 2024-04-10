@@ -240,8 +240,8 @@ assign_class([clip_1_id, clip_2_id, clip_3_id, clip_4_id], "round-corners");
 For image generation the returned url can be used in the custom element.
 For example:
 image_src = generate_image("A nice cat");
-image_id = add_custom_element("Nice cat", "<div><img src='" + image_src + "' /></div>", 2.3, 3.0);
-create_or_update_style(".image-title", "position: absolute; bottom: 10px; width: 100%; text-align: center; color: white; font-size: 24px; background-color: rgba(0, 0, 0, 0.5); padding: 5px;");
+image_id = add_custom_element("Nice cat", "<div><img class='nice-cat-img' src='" + image_src + "' /></div>", 2.3, 3.0);
+create_or_update_style(".nice-cat-img", "width: 100%; height: auto; object-fit: cover;");
 
 The script can be executed by calling the execute_changes function.
 ONLY INCLUDE THE ALLOWED FUNCTIONS IN THE SCRIPT AND DO NOT EXECUTE ANYTHING ELSE, NOT EVEN COMMENTS. DO NOT USE ANY ADDITIONAL FUNCTIONS.
