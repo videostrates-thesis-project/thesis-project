@@ -16,14 +16,10 @@ const ClipContent = (props: {
   const ref = useRef<HTMLDivElement>(null)
 
   const isSelected = useMemo(
-    () => (
+    () =>
       (!props.isOldClip && selectedClipId === clip.id) ||
-      (
-        clip.type == "video" &&
-        (clip as VideoClipElement).containerElementId === selectedClipId
-      
-      )
-    ),
+      (clip.type == "video" &&
+        (clip as VideoClipElement).containerElementId === selectedClipId),
     [props.isOldClip, selectedClipId, clip.id]
   )
 

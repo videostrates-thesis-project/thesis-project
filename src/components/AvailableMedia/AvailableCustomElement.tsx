@@ -6,6 +6,8 @@ import { WebstrateSerializationStrategy } from "../../services/serializationStra
 import { CustomElement } from "../../types/videoElement"
 import { runCommands } from "../../services/interpreter/run"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
+import useEditCommands from "../../hooks/useEditCommands"
+import clsx from "clsx"
 
 const AvailableCustomElement = (props: { element: CustomElement }) => {
   const {
@@ -19,6 +21,15 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
   } = useScaledIframe()
   const { serializedVideostrate, deleteAvailableCustomElement, seek } =
     useStore()
+  const {
+    selectedImportableCustomElement,
+    setSelectedImportableCustomElement,
+  } = useStore()
+
+  const isSelected = useMemo(
+    () => selectedImportableCustomElement?.id === props.element.id,
+    [selectedImportableCustomElement, props.element.id]
+  )
 
   const elementHtml = useMemo(() => {
     const serializer = new WebstrateSerializationStrategy()
@@ -55,7 +66,16 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
   }, [deleteAvailableCustomElement, props.element.id])
 
   return (
-    <div className="available-media relative flex flex-col w-full h-60 rounded-lg overflow-clip bg-base-100">
+    <div
+      className={clsx(
+        "available-media relative flex flex-col w-full h-60 rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer",
+        isSelected ? "!border-accent" : "border-base-100 hover:border-gray-300"
+      )}
+      onClick={() => {
+        if (isSelected) setSelectedImportableCustomElement(null)
+        else setSelectedImportableCustomElement(props.element)
+      }}
+    >
       <div
         className="w-full h-full overflow-hidden min-h-0 min-w-0"
         style={{ height: `${iframeContainerHeight}px` }}

@@ -54,8 +54,19 @@ export interface AppState {
   addAvailableCustomElement: (element: CustomElement) => void
   deleteAvailableCustomElement: (id: string) => void
 
+  clearSelection: () => void
+
   selectedClipId: string | null
   setSelectedClipId: (id: string | null) => void
+
+  selectedImportableClipName: string | null
+  setSelectedImportableClipName: (name: string | null) => void
+
+  selectedImportableImage: Image | null
+  setSelectedImportableImage: (image: Image | null) => void
+
+  selectedImportableCustomElement: CustomElement | null
+  setSelectedImportableCustomElement: (element: CustomElement | null) => void
 
   chatMessages: ChatMessage[]
   addChatMessage: (message: ChatMessage) => ChatMessage[]
@@ -99,6 +110,9 @@ export const useStore = create<AppState>()(
           playing: false,
           playbackState: { frame: 0, time: 0 },
           selectedClipId: null,
+          selectedImportableClipName: null,
+          selectedImportableImage: null,
+          selectedImportableCustomElement: null,
           chatMessages: [],
           currentMessages: [],
           pendingChanges: false,
@@ -234,8 +248,34 @@ export const useStore = create<AppState>()(
           }
         })
       },
+      clearSelection: () => {
+        set({
+          selectedClipId: null,
+          selectedImportableClipName: null,
+          selectedImportableImage: null,
+          selectedImportableCustomElement: null,
+        })
+      },
       selectedClipId: null,
-      setSelectedClipId: (id: string | null) => set({ selectedClipId: id }),
+      setSelectedClipId: (id: string | null) => {
+        get().clearSelection()
+        set({ selectedClipId: id })
+      },
+      selectedImportableClipName: null,
+      setSelectedImportableClipName: (name: string | null) => {
+        get().clearSelection()
+        set({ selectedImportableClipName: name })
+      },
+      selectedImportableImage: null,
+      setSelectedImportableImage: (image: Image | null) => {
+        get().clearSelection()
+        set({ selectedImportableImage: image })
+      },
+      selectedImportableCustomElement: null,
+      setSelectedImportableCustomElement: (element: CustomElement | null) => {
+        get().clearSelection()
+        set({ selectedImportableCustomElement: element })
+      },
       chatMessages: [],
       addChatMessage: (message: ChatMessage) => {
         set((state) => {

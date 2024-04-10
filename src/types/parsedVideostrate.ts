@@ -1,5 +1,4 @@
 import { useStore } from "../store"
-import updateLayers from "../utils/updateLayers"
 import { Image } from "./image"
 import VideoClip from "./videoClip"
 import {
@@ -46,7 +45,6 @@ export class ParsedVideostrate {
 
   private set all(elements: VideoElement[]) {
     this._all = elements
-    this.updateLayers()
     this.updateComputedProperties()
   }
 
@@ -167,12 +165,15 @@ export class ParsedVideostrate {
         customElement.content,
         "text/html"
       )
-      const htmlElement = document.body.firstChild as HTMLElement
-      if (!htmlElement) {
-        return false
-      }
-      return htmlElement.querySelector(`#${elementId}`)
+
+      return document.body.querySelector(
+        `[embedded-clip-container="${elementId}"]`
+      )
     }) as CustomElement
+
+    if (!containerElement) {
+      throw new Error(`Container element with id ${elementId} not found`)
+    }
 
     return containerElement.id
   }
@@ -452,11 +453,6 @@ export class ParsedVideostrate {
       throw new Error(`Element with id ${elementId} not found`)
     }
     this.all = [...this.all]
-  }
-
-  private updateLayers() {
-    console.log("updateLayers", this._all)
-    this._all = updateLayers(this._all)
   }
 
   private updateComputedProperties() {
