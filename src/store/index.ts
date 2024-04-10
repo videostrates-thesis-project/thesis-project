@@ -208,6 +208,9 @@ export const useStore = create<AppState>()(
             clipsMetadata: state.clipsMetadata.filter(
               (clip) => clip.source !== source
             ),
+            availableClips: state.availableClips.filter(
+              (clip) => clip.source !== source
+            ),
           }
         })
       },
