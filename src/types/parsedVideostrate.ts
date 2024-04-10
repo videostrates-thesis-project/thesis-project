@@ -410,6 +410,37 @@ export class ParsedVideostrate {
     this.all = [...this.all]
   }
 
+  private removeClassFromElement(element: CustomElement, className: string) {
+    const parser = new DOMParser()
+    const document = parser.parseFromString(element.content ?? "", "text/html")
+    const htmlElement = document.body.firstChild as HTMLElement
+    if (htmlElement) {
+      htmlElement.classList.remove(className)
+      element.content = htmlElement.outerHTML
+    }
+  }
+
+  private removeClassFromClip(clip: VideoClipElement, className: string) {
+    clip.className = clip.className?.replace(className, "")
+  }
+
+  public removeClass(elementIds: string[], className: string) {
+    this.all = this.all.map((e) => {
+      if (elementIds.includes(e.id)) {
+        if (e.type === "video") {
+          this.removeClassFromClip(e as VideoClipElement, className)
+        } else if (e.type === "custom") {
+          this.removeClassFromElement(e as CustomElement, className)
+        } else {
+          throw new Error(`Element with id ${e.id} has an invalid type`)
+        }
+      }
+      return e
+    })
+
+    this.all = [...this.all]
+  }
+
   public addAnimation(name: string, body: string) {
     const existing = this.animations.find((s) => s.selector === name)
     if (existing) {

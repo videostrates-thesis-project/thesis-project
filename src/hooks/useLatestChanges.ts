@@ -134,7 +134,10 @@ export const useLatestChanges = () => {
             })
           }
         })
-      } else if (command.name === "assign_class") {
+      } else if (
+        command.name === "assign_class" ||
+        command.name === "remove_class"
+      ) {
         const elementIds = command.arguments[0]
         elementIds.forEach((elementId: string) => {
           addToEdited(elementId, {

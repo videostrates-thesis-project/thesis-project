@@ -190,6 +190,13 @@ function delete_style(selector: string)
 function assign_class(element_ids: string[], class_name: string)
 
 /**
+ * Removes a class from the elements.
+ * @param {element_ids} the ids of the elements to remove the class from (clip, custom element, or embedded clip)
+ * @param {class_name} the name of the class to remove
+ */
+function remove_class(element_ids: string[], class_name: string)
+
+/**
  * Creates an animation.
  * @param {name} the name of the animation. It needs to be a valid css identifier, e.g. "my-animation".
  * @param {body} the css code of the animation, e.g. "from {left: 0px;} to {left: 200px;}"
@@ -240,7 +247,7 @@ assign_class([clip_1_id, clip_2_id, clip_3_id, clip_4_id], "round-corners");
 For image generation the returned url can be used in the custom element.
 For example:
 image_src = generate_image("A nice cat");
-image_id = add_custom_element("Nice cat", "<div><img class='nice-cat-img' src='" + image_src + "' /></div>", 2.3, 3.0);
+image_id = add_custom_element("Nice cat", "<img class='nice-cat-img' src='" + image_src + "' />", 2.3, 3.0);
 create_or_update_style(".nice-cat-img", "width: 100%; height: auto; object-fit: cover;");
 
 The script can be executed by calling the execute_changes function.
