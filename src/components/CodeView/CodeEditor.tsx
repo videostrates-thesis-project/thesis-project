@@ -178,22 +178,23 @@ const CodeEditor = ({
       return
     }
 
+    const cloned = highlightedElement.cloneNode(true) as HTMLElement
+    cloned.style.outline = ""
+    if (!cloned.getAttribute("style")) {
+      cloned.removeAttribute("style")
+    }
+    const searchText = cloned.outerHTML
+    console.log(searchText)
+
     let matches = editor
       ?.getModel()
-      ?.findMatches(
-        highlightedElement.outerHTML,
-        false,
-        false,
-        false,
-        null,
-        true
-      )
+      ?.findMatches(searchText, false, false, false, null, true)
     if (!matches || matches.length === 0) {
       matches =
         editor
           ?.getModel()
           ?.findMatches(
-            highlightedElement.outerHTML.replaceAll('"', "'"),
+            searchText.replaceAll('"', "'"),
             false,
             false,
             false,
