@@ -45,6 +45,7 @@ const ContextMenu = ({
               item.action()
               onClose()
             }}
+            onMouseDown={(e) => e.stopPropagation()}
           >
             <a>{item.label}</a>
           </li>

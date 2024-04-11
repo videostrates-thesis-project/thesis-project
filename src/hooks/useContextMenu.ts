@@ -5,13 +5,15 @@ const useContextMenu = (itemCount: number) => {
   const [isVisible, setIsVisible] = useState(false)
 
   const showMenu = useCallback(
-    (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    (
+      event: React.MouseEvent<HTMLDivElement | HTMLButtonElement, MouseEvent>
+    ) => {
       if (itemCount === 0) return
       event.preventDefault()
       setIsVisible(true)
 
-      const clickX = event.pageX
-      const clickY = event.pageY
+      const clickX = event.pageX + 5
+      const clickY = event.pageY + 5
       const screenW = window.innerWidth
       const screenH = window.innerHeight
       const rootW = 200 // Approx width of the context menu
