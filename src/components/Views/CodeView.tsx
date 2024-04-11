@@ -307,6 +307,7 @@ const CodeView = () => {
                 html={displayedHtml}
                 highlight={onHighlight}
                 isHighlighting={true}
+                highlightedElement={highlightedElement}
               />
               <Chat
                 messages={chatMessages}
