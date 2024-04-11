@@ -276,7 +276,7 @@ const CodeView = () => {
   return (
     <div
       className={clsx(
-        "animate-fade-in absolute top-0 left-0 right-0 bottom-0 bg-black/60 flex justify-center items-center z-10 transition-opacity duration-300 backdrop-blur-sm",
+        "animate-fade-in absolute top-0 left-0 right-0 bottom-0 bg-black/60 flex justify-center items-center z-10 backdrop-blur-sm",
         isQuitting && "animate-fade-out"
       )}
       onClick={onOutsideClick}

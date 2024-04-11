@@ -58,7 +58,7 @@ h1 {
   @apply opacity-100;
 }
 
-@keyframes .animate-fade-in {
+@keyframes fadeIn {
   from {
     opacity: 0;
   }
@@ -67,7 +67,7 @@ h1 {
   }
 }
 
-@keyframes .animate-fade-out {
+@keyframes fadeOut {
   from {
     opacity: 1;
   }
@@ -79,11 +79,9 @@ h1 {
 @keyframes zoomIn {
   from {
     transform: scale(0.7);
-    opacity: 0;
   }
   to {
     transform: scale(1);
-    opacity: 1;
   }
 }
 
