@@ -24,11 +24,11 @@ function App() {
       <Toasts />
       <div className="flex flex-col h-full max-h-full">
         <Navbar />
+        <DefaultView />
         <Routes>
           <Route path="/" element={<></>} />
           <Route path="/code/:elementId" element={<CodeView />} />
         </Routes>
-        <DefaultView />
       </div>
     </>
   )
