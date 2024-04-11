@@ -153,11 +153,15 @@ const CodeView = () => {
 
   const onHotkey = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (event.metaKey && event.key === "s") {
+      if ((event.metaKey || event.ctrlKey) && event.key === "s") {
         event.preventDefault()
 
         onSave()
-      } else if (event.metaKey && event.shiftKey && event.key === "f") {
+      } else if (
+        (event.metaKey || event.ctrlKey) &&
+        event.shiftKey &&
+        event.key === "f"
+      ) {
         event.preventDefault()
 
         onFormat()
