@@ -1,9 +1,4 @@
-import {
-  Route,
-  Routes,
-  createBrowserRouter,
-  useLocation,
-} from "react-router-dom"
+import { Route, Routes, useLocation } from "react-router-dom"
 import "./App.css"
 import Navbar from "./components/Navbar"
 import Toasts from "./components/Toasts"
@@ -15,17 +10,6 @@ import useShortcuts from "./hooks/useShortcuts"
 import { useMemo } from "react"
 
 openAIService.init()
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <></>,
-  },
-  {
-    path: "/code/:elementId",
-    element: <CodeView />,
-  },
-])
 
 function App() {
   const location = useLocation()
@@ -40,11 +24,11 @@ function App() {
       <Toasts />
       <div className="flex flex-col h-full max-h-full">
         <Navbar />
+        <DefaultView />
         <Routes>
           <Route path="/" element={<></>} />
           <Route path="/code/:elementId" element={<CodeView />} />
         </Routes>
-        <DefaultView />
       </div>
     </>
   )
