@@ -14,6 +14,7 @@ import { runCommands } from "../../services/interpreter/run"
 import { moveDelta } from "../../services/interpreter/builtin/moveDelta"
 import { crop } from "../../services/interpreter/builtin/crop"
 import { moveDeltaWithoutEmbedded } from "../../services/interpreter/builtin/moveDeltaWithoutEmbedded"
+import Sparkle from "../Sparkle"
 
 const MIN_ELEMENT_WIDTH = 16
 
@@ -306,6 +307,7 @@ const Clip = (props: { clip: TimelineElement }) => {
             left: `${draggedPosition}px`,
           }}
         >
+          {isSelected && <Sparkle className="ml-4" />}
           <ClipContent
             clip={clip}
             left={

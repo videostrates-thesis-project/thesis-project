@@ -6,6 +6,7 @@ import { ChatMessage } from "../types/chatMessage"
 import data from "@emoji-mart/data"
 import Picker from "@emoji-mart/react"
 import { useOnClickOutside } from "../hooks/useClickOutside"
+import Sparkle from "./Sparkle"
 
 type ChatProps = {
   onSend: (message: string) => void
@@ -248,7 +249,7 @@ const Chat = ({
       <div className="flex flex-col gap-2 w-full mt-auto p-2">
         {pendingChanges && <PendingChangesBanner />}
 
-        <div className="flex flex-row join w-full">
+        <div className="flex flex-row join w-full relative">
           {highlight.isEnabled && (
             <button
               className={clsx(
@@ -264,13 +265,14 @@ const Chat = ({
             rows={1}
             ref={textAreaRef}
             value={message}
-            placeholder="Ask the AI..."
+            placeholder="        Ask the AI..."
             className="input input-sm join-item input-bordered w-full max-h-32 min-h-8 text-left min-w-0 leading-7"
             onKeyDown={handleKeyDown}
             onChange={(e) => {
               setMessage(e.target.value)
             }}
           />
+          {!message && <Sparkle className="top-1 left-4" />}
           <button
             className={clsx(
               "btn btn-sm btn-accent join-item px-2 h-full min-w-0",
