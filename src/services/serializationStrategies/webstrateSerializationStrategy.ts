@@ -17,8 +17,10 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
     const parent = document.querySelector(
       `[embedded-clip-container="${clip.parentId ?? "root"}"]`
     )
-    if (!parent)
-      throw new Error("Parent with id '" + clip.parentId + "' not found")
+    if (!parent) {
+      console.error("Parent with id '" + clip.parentId + "' not found")
+      return
+    }
 
     // Add the element
     parent.innerHTML += html
