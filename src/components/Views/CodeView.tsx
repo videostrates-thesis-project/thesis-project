@@ -20,6 +20,21 @@ import { editCustomElement } from "../../services/interpreter/builtin/editCustom
 import { deleteStyle } from "../../services/interpreter/builtin/deleteStyle"
 import { createStyle } from "../../services/interpreter/builtin/createStyle"
 import clsx from "clsx"
+import { deleteAnimation } from "../../services/interpreter/builtin/deleteAnimation"
+import { createAnimation } from "../../services/interpreter/builtin/createAnimation"
+
+const serializeVideostrateStyles = (
+  styles: VideostrateStyle[],
+  isAnimation = false
+) => {
+  return styles
+    .map(
+      (style) =>
+        (isAnimation ? "@keyframes " : "") +
+        `${style.selector} { ${style.style} }`
+    )
+    .join("\n")
+}
 
 const CodeView = () => {
   const { elementId } = useParams()
@@ -27,6 +42,7 @@ const CodeView = () => {
   const [html, setHtml] = useState("")
   const [css, setCss] = useState("")
   const [oldCss, setOldCss] = useState<VideostrateStyle[]>([])
+  const [oldAnimations, setOldAnimations] = useState<VideostrateStyle[]>([])
   const [oldCssText, setOldCssText] = useState("")
   const [oldHtmlText, setOldHtmlText] = useState("")
   const [currentFileName, setCurrentFileName] = useState("")
@@ -58,10 +74,15 @@ const CodeView = () => {
     const filteredCss = parsedVideostrate.style.filter(
       (style) => document.querySelectorAll(style.selector).length > 0
     )
+    // Filter animation to see if they appear in anywhere in the filtered css
+    const filteredAnimations = parsedVideostrate.animations.filter((q) =>
+      filteredCss.some((c) => c.style.includes(q.selector))
+    )
+    setOldAnimations(filteredAnimations)
     setOldCss(filteredCss)
-    const serializedCss = filteredCss
-      .map((style) => `${style.selector} { ${style.style} }`)
-      .join("\n")
+    const serializedCss = serializeVideostrateStyles(filteredCss).concat(
+      serializeVideostrateStyles(filteredAnimations, true)
+    )
     const beautifiedCss = css_beautify(serializedCss, { indent_size: 4 })
     setCss(beautifiedCss)
     setOldCssText(beautifiedCss)
@@ -70,7 +91,12 @@ const CodeView = () => {
     setCurrentFileName(element.name + ".html")
 
     return element
-  }, [elementId, parsedVideostrate?.elements, parsedVideostrate.style])
+  }, [
+    elementId,
+    parsedVideostrate.animations,
+    parsedVideostrate?.elements,
+    parsedVideostrate.style,
+  ])
 
   const files: EditorFile[] = useMemo(() => {
     if (!element) return []
@@ -145,12 +171,16 @@ const CodeView = () => {
     runCommands(
       editCustomElement(elementId, html),
       ...oldCss.map((style) => deleteStyle(style.selector)),
+      ...oldAnimations.map((animation) => deleteAnimation(animation.selector)),
       ...parsedStyle.style.map((style) =>
         createStyle(style.selector, style.style)
+      ),
+      ...parsedStyle.animations.map((animation) =>
+        createAnimation(animation.selector, animation.style)
       )
     )
     navigate("/")
-  }, [css, elementId, html, navigate, oldCss])
+  }, [css, elementId, html, navigate, oldAnimations, oldCss])
 
   const onFormat = useCallback(() => {
     setHtml((prev) => html_beautify(prev, { indent_size: 4 }))
