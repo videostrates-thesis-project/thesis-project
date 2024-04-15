@@ -20,6 +20,7 @@ const DefaultChat = () => {
     pendingChanges,
     seek,
     addReactionToMessage,
+    resetMessages,
   } = useStore()
 
   const onSend = useCallback(
@@ -68,6 +69,10 @@ const DefaultChat = () => {
     [addReactionToMessage]
   )
 
+  const onStartNewconversation = useCallback(() => {
+    resetMessages()
+  }, [resetMessages])
+
   return (
     <div className="w-96 min-w-96">
       <Chat
@@ -75,6 +80,7 @@ const DefaultChat = () => {
         onSend={onSend}
         pendingChanges={pendingChanges}
         addEmoji={addEmoji}
+        onNewConversation={onStartNewconversation}
       />
     </div>
   )

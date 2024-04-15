@@ -277,6 +277,10 @@ const CodeView = () => {
     [quit]
   )
 
+  const startNewConversation = useCallback(() => {
+    setChatMessages([])
+  }, [])
+
   return (
     <div
       className={clsx(
@@ -320,6 +324,7 @@ const CodeView = () => {
                   },
                 }}
                 addEmoji={addEmoji}
+                onNewConversation={startNewConversation}
               />
             </div>
             <CodeEditor

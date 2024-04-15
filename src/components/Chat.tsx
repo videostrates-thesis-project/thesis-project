@@ -17,6 +17,7 @@ type ChatProps = {
     toggleHighlight?: () => void
   }
   addEmoji?: (id: string, reaction: string) => void
+  onNewConversation: () => void
 }
 
 const Chat = ({
@@ -25,6 +26,7 @@ const Chat = ({
   pendingChanges,
   highlight = { isEnabled: false, isHighlighted: false },
   addEmoji,
+  onNewConversation,
 }: ChatProps) => {
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
@@ -137,8 +139,27 @@ const Chat = ({
     [addEmoji]
   )
 
+  const startNewConversation = useCallback(() => {
+    if (
+      confirm(
+        "Are you sure you want to start a new conversation? Your message history will be lost."
+      )
+    ) {
+      onNewConversation()
+    }
+  }, [onNewConversation])
+
   return (
     <div className="flex flex-col h-full max-h-full bg-base-300 border-l border-neutral rounded">
+      <div className="flex flex-row w-full bg-base-100 p-2">
+        <button
+          className="ml-auto btn btn-xs btn-accent group text-xs"
+          onClick={startNewConversation}
+        >
+          <i className="bi bi-arrow-clockwise group-hover:animate-spin"></i>
+          Start new conversation
+        </button>
+      </div>
       <div className="pt-4 max-h-full overflow-y-auto overflow-x-hidden break-words break-all">
         {messages.map((msg, index) => (
           <div
