@@ -30,7 +30,7 @@ const AvailableImage = (props: { image: Image }) => {
       ),
       createOrUpdateStyle(
         ".image-full-cover",
-        "width: 100%; height: auto; object-fit: cover;"
+        "width: 100%; height: 100%; object-fit: cover; object-position: center;"
       )
     )
   }, [props.image.title, props.image.url, seek])
