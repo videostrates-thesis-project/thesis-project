@@ -93,6 +93,9 @@ export interface AppState {
 
   sideBarTab: SideBarTab
   setSideBarTab: (tab: SideBarTab) => void
+
+  showScriptTab: boolean
+  setShowScriptTab: (show: boolean) => void
 }
 
 export const useStore = create<AppState>()(
@@ -339,6 +342,8 @@ export const useStore = create<AppState>()(
       },
       sideBarTab: "clips" as const,
       setSideBarTab: (tab: SideBarTab) => set({ sideBarTab: tab }),
+      showScriptTab: true,
+      setShowScriptTab: (show: boolean) => set({ showScriptTab: show }),
     }),
     {
       name: "thesis-project-storage",
