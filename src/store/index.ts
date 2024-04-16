@@ -66,6 +66,9 @@ export interface AppState {
   selectedImportableCustomElement: CustomElement | null
   setSelectedImportableCustomElement: (element: CustomElement | null) => void
 
+  selectedChatMessage: ChatMessage | null
+  setSelectedChatMessage: (message: ChatMessage | null) => void
+
   chatMessages: ChatMessage[]
   addChatMessage: (message: ChatMessage) => ChatMessage[]
   addReactionToMessage: (id: string, reaction: string) => void
@@ -110,6 +113,7 @@ export const useStore = create<AppState>()(
           selectedImportableClipName: null,
           selectedImportableImage: null,
           selectedImportableCustomElement: null,
+          selectedChatMessage: null,
           chatMessages: [],
           currentMessages: [],
           pendingChanges: false,
@@ -231,6 +235,7 @@ export const useStore = create<AppState>()(
           selectedImportableClipName: null,
           selectedImportableImage: null,
           selectedImportableCustomElement: null,
+          selectedChatMessage: null,
         })
       },
       selectedClipId: null,
@@ -252,6 +257,11 @@ export const useStore = create<AppState>()(
       setSelectedImportableCustomElement: (element: CustomElement | null) => {
         get().clearSelection()
         set({ selectedImportableCustomElement: element })
+      },
+      selectedChatMessage: null,
+      setSelectedChatMessage: (message: ChatMessage | null) => {
+        get().clearSelection()
+        set({ selectedChatMessage: message })
       },
       chatMessages: [],
       addChatMessage: (message: ChatMessage) => {

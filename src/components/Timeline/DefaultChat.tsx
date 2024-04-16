@@ -15,6 +15,8 @@ const DefaultChat = () => {
     selectedImportableClipName,
     selectedImportableImage,
     selectedImportableCustomElement,
+    selectedChatMessage,
+    setSelectedChatMessage,
     addChatMessage,
     chatMessages,
     pendingChanges,
@@ -33,6 +35,7 @@ const DefaultChat = () => {
         selectedImportableClipName,
         selectedImportableImage,
         selectedImportableCustomElement,
+        selectedChatMessage,
         seek,
         message
       )
@@ -58,6 +61,7 @@ const DefaultChat = () => {
       selectedImportableClipName,
       selectedImportableImage,
       selectedImportableCustomElement,
+      selectedChatMessage,
     ]
   )
 
@@ -75,6 +79,10 @@ const DefaultChat = () => {
         onSend={onSend}
         pendingChanges={pendingChanges}
         addEmoji={addEmoji}
+        messageSelection={{
+          selectedChatMessage: selectedChatMessage,
+          setSelectedChatMessage: setSelectedChatMessage,
+        }}
       />
     </div>
   )
