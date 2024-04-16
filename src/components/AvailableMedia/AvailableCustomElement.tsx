@@ -6,7 +6,6 @@ import { WebstrateSerializationStrategy } from "../../services/serializationStra
 import { CustomElement } from "../../types/videoElement"
 import { runCommands } from "../../services/interpreter/run"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
-import useEditCommands from "../../hooks/useEditCommands"
 import clsx from "clsx"
 
 const AvailableCustomElement = (props: { element: CustomElement }) => {

@@ -27,7 +27,7 @@ const SearchClipsResults = (props: {
           const clip = clipsMetadata.find((clip) => clip.source === url)
           return (
             clip && (
-              <div className="flex flex-col gap-2 pb-2" key={clip.source}>
+              <div className="flex flex-col pb-2" key={clip.source}>
                 <div className="flex flex-row gap-2 items-center bg-base-100 rounded-lg mb-1">
                   <img
                     className="w-1/4 h-12 flex-grow-0 flex-shrink-0 object-cover"
@@ -40,30 +40,40 @@ const SearchClipsResults = (props: {
                 </div>
                 {result.map((match) => (
                   <div
-                    key={match.start + match.content}
-                    className="flex flex-col items-start mx-1 leading-4"
+                    key={match.start + match.text}
+                    className="flex flex-col items-start mx-1 leading-4 border-b border-neutral last:border-0"
                   >
-                    <div className="flex flex-row text-left w-full justify-between">
-                      <div className="flex flex-row text-left w-full">
-                        <span>
-                          <span className="mr-2 text-xs opacity-50 ">
-                            {formatTime(match.start)}
-                          </span>
+                    <div className="py-2 flex flex-row text-left w-full justify-between items-center">
+                      <div className="h-fit flex flex-col">
+                        <span className="mr-2 text-xs opacity-50 ">
+                          {formatTime(match.start)}
                         </span>
+                        <span className="mr-2 text-xs opacity-50 ">
+                          {formatTime(match.end)}
+                        </span>
+                      </div>
+                      <div className="flex flex-col gap-2 flex-grow">
+                        <span className="opacity-30">{match.before_text}</span>
                         <span
                           dangerouslySetInnerHTML={{
                             __html: sanitizeHtml(match.highlighted),
                           }}
                         />
+                        <span className="opacity-30">{match.after_text}</span>
                       </div>
-                      <button
-                        className="btn btn-sm btn-ghost"
-                        onClick={() =>
-                          onAddClip(clip.title, match.start, match.end)
-                        }
+                      <div
+                        className="tooltip tooltip-left"
+                        data-tip="Add matching part of the clip"
                       >
-                        <i className="bi bi-plus-lg text-lg text-accent ml-auto"></i>
-                      </button>
+                        <button
+                          className="btn btn-sm btn-ghost"
+                          onClick={() =>
+                            onAddClip(clip.title, match.start, match.end)
+                          }
+                        >
+                          <i className="bi bi-plus-lg text-lg text-accent ml-auto"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}

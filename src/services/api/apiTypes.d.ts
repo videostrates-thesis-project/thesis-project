@@ -63,7 +63,9 @@ interface SearchVideosRequest {
 interface SearchVideosResponse {
   [videoUrl: string]: [
     {
-      content: string
+      text: string
+      before_text: string
+      after_text: string
       highlighted: string
       start: number
       end: number
