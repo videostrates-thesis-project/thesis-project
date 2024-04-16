@@ -2,10 +2,10 @@ import { useCallback, useMemo } from "react"
 import { useStore } from "../../store"
 import DeleteMediaButton from "./DeleteMediaButton"
 import { Image } from "../../types/image"
-import useEditCommands from "../../hooks/useEditCommands"
 import clsx from "clsx"
 import { runCommands } from "../../services/interpreter/run"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
+import Sparkle from "../Sparkle"
 
 const AvailableImage = (props: { image: Image }) => {
   const { parsedVideostrate, seek, deleteAvailableImage } = useStore()
@@ -46,6 +46,7 @@ const AvailableImage = (props: { image: Image }) => {
         else setSelectedImportableImage(props.image)
       }}
     >
+      {isSelected && <Sparkle />}
       <img
         className="flex-shrink aspect-square object-cover"
         key={props.image.url}

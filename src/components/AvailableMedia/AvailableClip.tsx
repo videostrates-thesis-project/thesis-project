@@ -6,6 +6,7 @@ import { runCommands } from "../../services/interpreter/run"
 import { addClip } from "../../services/interpreter/builtin/addClip"
 import useEditCommands from "../../hooks/useEditCommands"
 import clsx from "clsx"
+import Sparkle from "../Sparkle"
 
 const AvailableClip = (props: { clip: VideoClip }) => {
   const { seek, deleteAvailableClip, parsedVideostrate } = useStore()
@@ -49,6 +50,7 @@ const AvailableClip = (props: { clip: VideoClip }) => {
             else setSelectedImportableClipName(props.clip.title)
           }}
         >
+          {isSelected && <Sparkle />}
           <img
             className="w-1/2 h-28 flex-grow-0 flex-shrink-0 object-cover"
             src={props.clip.thumbnailUrl}
