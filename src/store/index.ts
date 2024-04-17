@@ -69,6 +69,7 @@ export interface AppState {
   chatMessages: ChatMessage[]
   addChatMessage: (message: ChatMessage) => ChatMessage[]
   addReactionToMessage: (id: string, reaction: string) => void
+  resetMessages: () => void
 
   currentMessages: ChatCompletionMessageParam[]
   addMessage: (
@@ -92,6 +93,9 @@ export interface AppState {
 
   sideBarTab: SideBarTab
   setSideBarTab: (tab: SideBarTab) => void
+
+  showScriptTab: boolean
+  setShowScriptTab: (show: boolean) => void
 }
 
 export const useStore = create<AppState>()(
@@ -269,6 +273,9 @@ export const useStore = create<AppState>()(
           return { chatMessages: messages }
         })
       },
+      resetMessages: () => {
+        set({ chatMessages: [], currentMessages: [] })
+      },
       currentMessages: [],
       addMessage: (message: ChatCompletionMessageParam) => {
         set((state) => {
@@ -333,8 +340,10 @@ export const useStore = create<AppState>()(
           }
         })
       },
-      sideBarTab: "clips",
+      sideBarTab: "clips" as const,
       setSideBarTab: (tab: SideBarTab) => set({ sideBarTab: tab }),
+      showScriptTab: true,
+      setShowScriptTab: (show: boolean) => set({ showScriptTab: show }),
     }),
     {
       name: "thesis-project-storage",

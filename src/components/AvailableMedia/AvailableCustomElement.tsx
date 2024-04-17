@@ -6,8 +6,8 @@ import { WebstrateSerializationStrategy } from "../../services/serializationStra
 import { CustomElement } from "../../types/videoElement"
 import { runCommands } from "../../services/interpreter/run"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
-import useEditCommands from "../../hooks/useEditCommands"
 import clsx from "clsx"
+import Sparkle from "../Sparkle"
 
 const AvailableCustomElement = (props: { element: CustomElement }) => {
   const {
@@ -76,6 +76,7 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
         else setSelectedImportableCustomElement(props.element)
       }}
     >
+      {isSelected && <Sparkle />}
       <div
         className="w-full h-full overflow-hidden min-h-0 min-w-0"
         style={{ height: `${iframeContainerHeight}px` }}

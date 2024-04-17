@@ -20,6 +20,21 @@ import { editCustomElement } from "../../services/interpreter/builtin/editCustom
 import { deleteStyle } from "../../services/interpreter/builtin/deleteStyle"
 import { createStyle } from "../../services/interpreter/builtin/createStyle"
 import clsx from "clsx"
+import { deleteAnimation } from "../../services/interpreter/builtin/deleteAnimation"
+import { createAnimation } from "../../services/interpreter/builtin/createAnimation"
+
+const serializeVideostrateStyles = (
+  styles: VideostrateStyle[],
+  isAnimation = false
+) => {
+  return styles
+    .map(
+      (style) =>
+        (isAnimation ? "@keyframes " : "") +
+        `${style.selector} { ${style.style} }`
+    )
+    .join("\n")
+}
 
 const CodeView = () => {
   const { elementId } = useParams()
@@ -27,6 +42,7 @@ const CodeView = () => {
   const [html, setHtml] = useState("")
   const [css, setCss] = useState("")
   const [oldCss, setOldCss] = useState<VideostrateStyle[]>([])
+  const [oldAnimations, setOldAnimations] = useState<VideostrateStyle[]>([])
   const [oldCssText, setOldCssText] = useState("")
   const [oldHtmlText, setOldHtmlText] = useState("")
   const [currentFileName, setCurrentFileName] = useState("")
@@ -93,10 +109,14 @@ const CodeView = () => {
           .replaceAll("&gt;", " > ")
           .replaceAll("&amp;", " & "),
       }))
+    const filteredAnimations = parsedVideostrate.animations.filter((q) =>
+      filteredCss.some((c) => c.style.includes(q.selector))
+    )
+    setOldAnimations(filteredAnimations)
     setOldCss(filteredCss)
-    const serializedCss = filteredCss
-      .map((style) => `${style.selector} { ${style.style} }`)
-      .join("\n")
+    const serializedCss = serializeVideostrateStyles(filteredCss).concat(
+      serializeVideostrateStyles(filteredAnimations, true)
+    )
     const beautifiedCss = css_beautify(serializedCss, { indent_size: 4 })
     setCss(beautifiedCss)
     setOldCssText(beautifiedCss)
@@ -109,6 +129,7 @@ const CodeView = () => {
     availableClips,
     elementId,
     parsedVideostrate.clips,
+    parsedVideostrate.animations,
     parsedVideostrate?.elements,
     parsedVideostrate.style,
   ])
@@ -217,12 +238,16 @@ const CodeView = () => {
     runCommands(
       editCustomElement(elementId, newHtml),
       ...oldCss.map((style) => deleteStyle(style.selector)),
+      ...oldAnimations.map((animation) => deleteAnimation(animation.selector)),
       ...parsedStyle.style.map((style) =>
         createStyle(style.selector, style.style)
+      ),
+      ...parsedStyle.animations.map((animation) =>
+        createAnimation(animation.selector, animation.style)
       )
     )
     navigate("/")
-  }, [css, elementId, html, navigate, oldCss])
+  }, [css, elementId, html, navigate, oldAnimations, oldCss])
 
   const onFormat = useCallback(() => {
     setHtml((prev) => html_beautify(prev, { indent_size: 4 }))
@@ -349,6 +374,10 @@ const CodeView = () => {
     [quit]
   )
 
+  const startNewConversation = useCallback(() => {
+    setChatMessages([])
+  }, [])
+
   return (
     <div
       className={clsx(
@@ -392,6 +421,7 @@ const CodeView = () => {
                   },
                 }}
                 addEmoji={addEmoji}
+                onNewConversation={startNewConversation}
               />
             </div>
             <CodeEditor
