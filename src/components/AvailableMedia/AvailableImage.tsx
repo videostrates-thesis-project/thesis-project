@@ -50,6 +50,7 @@ const AvailableImage = (props: { image: Image }) => {
         else setSelectedImportableImage(props.image)
       }}
     >
+      {isSelected && <Sparkle />}
       <img
         className="flex-shrink aspect-square object-cover"
         key={props.image.url}

@@ -21,9 +21,11 @@ import { print } from "./print"
 import { renameElement } from "./renameElement"
 import { reposition } from "./reposition"
 import { setSpeed } from "./setSpeed"
+import { addCroppedClip } from "./addCroppedClip"
 
 const builtinFunctions = {
   add_clip: addClip,
+  add_cropped_clip: addCroppedClip,
   add_clip_to_element: addClipToElement,
   add_custom_element: addCustomElement,
   add_subtitle: addSubtitle,

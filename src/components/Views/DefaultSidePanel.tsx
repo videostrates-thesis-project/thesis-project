@@ -7,7 +7,7 @@ import AvailableImages from "../AvailableMedia/AvailableImages"
 import AvailableCustomElements from "../AvailableMedia/AvailableCustomElements"
 
 const DefaultSidePanel = () => {
-  const { sideBarTab, setSideBarTab } = useStore()
+  const { sideBarTab, setSideBarTab, showScriptTab } = useStore()
 
   const tabs = useMemo(() => {
     return [
@@ -26,32 +26,35 @@ const DefaultSidePanel = () => {
       {
         icon: "bi bi-code-slash",
         tab: "command",
+        hidden: !showScriptTab,
       },
-    ] as { icon: string; tab: SideBarTab }[]
-  }, [])
+    ] as { icon: string; tab: SideBarTab; hidden?: boolean }[]
+  }, [showScriptTab])
 
   return (
     <div className="flex flex-col w-96 min-w-96 border-r border-neutral bg-base-300">
       <ul className="menu menu-horizontal bg-base-100 p-0">
-        {tabs.map((t) => (
-          <li key={t.tab}>
-            <a
-              className={clsx(
-                "btn btn-ghost rounded-none",
-                t.tab === sideBarTab && "btn-active !bg-base-300"
-              )}
-              onClick={() => setSideBarTab(t.tab)}
-            >
-              <i
+        {tabs
+          .filter((t) => !t.hidden)
+          .map((t) => (
+            <li key={t.tab}>
+              <a
                 className={clsx(
-                  t.icon,
-                  "text-lg",
-                  t.tab === sideBarTab && "text-primary"
+                  "btn btn-ghost rounded-none",
+                  t.tab === sideBarTab && "btn-active !bg-base-300"
                 )}
-              />
-            </a>
-          </li>
-        ))}
+                onClick={() => setSideBarTab(t.tab)}
+              >
+                <i
+                  className={clsx(
+                    t.icon,
+                    "text-lg",
+                    t.tab === sideBarTab && "text-primary"
+                  )}
+                />
+              </a>
+            </li>
+          ))}
       </ul>
       <div className="flex flex-col p-4 w-full min-h-0 h-full overflow-y-auto">
         {sideBarTab === "clips" && <AvailableClips />}

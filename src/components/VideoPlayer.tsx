@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect } from "react"
 import { useStore } from "../store"
 import PlayerCommands from "../types/playerCommands"
 import PlayerControls from "./PlayerControls"
@@ -7,14 +7,12 @@ import useScaledIframe from "../hooks/useScaledIframe"
 function VideoPlayer(props: { videoPlayerUrl: string }) {
   const {
     videostrateUrl,
-    setVideostrateUrl,
     setParsedVideostrate,
     setPlaybackState,
     playing,
     setPlaying,
     seek,
   } = useStore()
-  const [url, setUrl] = useState(videostrateUrl)
 
   const {
     iframeRef,
@@ -99,31 +97,16 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
     }
   }, [loadVideo, setPlaybackState, setParsedVideostrate])
 
-  const onChangeUrl = useCallback(() => {
-    setVideostrateUrl(url)
+  useEffect(() => {
     controlPlayer(PlayerCommands.Load, {
-      url: url,
+      url: videostrateUrl,
       width: iframeWidth,
       height: iframeHeight,
     })
-    // Run this only when the URL changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url])
+  }, [controlPlayer, iframeHeight, iframeWidth, videostrateUrl])
 
   return (
     <div className="flex flex-col gap-2 w-full flex-grow p-2 min-h-0 min-w-0">
-      <div className="flex flex-row gap-4 w-full">
-        <input
-          type="text"
-          className="w-full input input-sm input-bordered text-white"
-          placeholder="Enter video URL"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-        />
-        <button className="btn btn-sm btn-accent" onClick={onChangeUrl}>
-          Change URL
-        </button>
-      </div>
       <div className="flex flex-col justify-center items-center w-full h-full min-h-0 min-w-0">
         <div
           className="w-full h-full overflow-hidden min-h-0 min-w-0"

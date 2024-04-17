@@ -8,6 +8,7 @@ import Picker from "@emoji-mart/react"
 import { useOnClickOutside } from "../hooks/useClickOutside"
 import { useStore } from "../store"
 import { useSelectionHint } from "../hooks/useSelectionHint"
+import Sparkle from "./Sparkle"
 
 type ChatProps = {
   onSend: (message: string) => void
@@ -24,6 +25,7 @@ type ChatProps = {
   }
   showSelection: boolean
   addEmoji?: (id: string, reaction: string) => void
+  onNewConversation: () => void
 }
 
 const Chat = ({
@@ -34,6 +36,7 @@ const Chat = ({
   messageSelection = undefined,
   showSelection = false,
   addEmoji,
+  onNewConversation,
 }: ChatProps) => {
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
@@ -84,13 +87,12 @@ const Chat = ({
   const onTrySend = useCallback(() => {
     setTypewriterIndex(null)
     setNewMessage(true)
-    messageSelection?.setSelectedChatMessage(null)
 
     onSend(message)
 
     setMessage("")
     setLoading(true)
-  }, [message, onSend, messageSelection])
+  }, [message, onSend])
 
   useEffect(() => {
     if (endRef.current) {
@@ -151,6 +153,16 @@ const Chat = ({
     [addEmoji]
   )
 
+  const startNewConversation = useCallback(() => {
+    if (
+      confirm(
+        "Are you sure you want to start a new conversation? Your message history will be lost."
+      )
+    ) {
+      onNewConversation()
+    }
+  }, [onNewConversation])
+
   const onSelectReply = useCallback(
     (msg: ChatMessage) => {
       if (messageSelection?.selectedChatMessage === msg) {
@@ -164,6 +176,15 @@ const Chat = ({
 
   return (
     <div className="flex flex-col h-full max-h-full bg-base-300 border-l border-neutral rounded">
+      <div className="flex flex-row w-full bg-base-100 p-2">
+        <button
+          className="ml-auto btn btn-xs btn-accent group text-xs"
+          onClick={startNewConversation}
+        >
+          <i className="bi bi-arrow-clockwise group-hover:animate-spin"></i>
+          Start new conversation
+        </button>
+      </div>
       <div className="pt-4 max-h-full overflow-y-auto overflow-x-hidden break-words break-all">
         {messages.map((msg, index) => (
           <div
@@ -346,7 +367,7 @@ const Chat = ({
           </div>
         )}
 
-        <div className="flex flex-row join w-full">
+        <div className="flex flex-row join w-full relative">
           {highlight.isEnabled && (
             <button
               className={clsx(
@@ -362,13 +383,14 @@ const Chat = ({
             rows={1}
             ref={textAreaRef}
             value={message}
-            placeholder="Ask the AI..."
+            placeholder="        Ask the AI..."
             className="input input-sm join-item input-bordered w-full max-h-32 min-h-8 text-left min-w-0 leading-7"
             onKeyDown={handleKeyDown}
             onChange={(e) => {
               setMessage(e.target.value)
             }}
           />
+          {!message && <Sparkle className="top-1 left-4" />}
           <button
             className={clsx(
               "btn btn-sm btn-accent join-item px-2 h-full min-w-0",

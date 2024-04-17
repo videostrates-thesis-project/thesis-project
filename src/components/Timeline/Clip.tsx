@@ -14,6 +14,7 @@ import { runCommands } from "../../services/interpreter/run"
 import { moveDelta } from "../../services/interpreter/builtin/moveDelta"
 import { crop } from "../../services/interpreter/builtin/crop"
 import { moveDeltaWithoutEmbedded } from "../../services/interpreter/builtin/moveDeltaWithoutEmbedded"
+import Sparkle from "../Sparkle"
 
 const MIN_ELEMENT_WIDTH = 16
 
@@ -23,7 +24,7 @@ const Clip = (props: { clip: TimelineElement }) => {
   const {
     selectedClipId,
     setSelectedClipId,
-    availableClips,
+    clipsMetadata,
     pendingChanges,
     addAvailableCustomElement,
   } = useStore()
@@ -73,8 +74,8 @@ const Clip = (props: { clip: TimelineElement }) => {
   )
 
   const clipMetadata = useMemo(
-    () => availableClips.find((c) => c.source === clip.source),
-    [availableClips, clip.source]
+    () => clipsMetadata.find((c) => c.source === clip.source),
+    [clipsMetadata, clip.source]
   )
 
   const maxRightCrop = useMemo(() => {
@@ -310,6 +311,7 @@ const Clip = (props: { clip: TimelineElement }) => {
             left: `${draggedPosition}px`,
           }}
         >
+          {isSelected && <Sparkle className="ml-4" />}
           <ClipContent
             clip={clip}
             left={
