@@ -108,6 +108,10 @@ class OpenAIService {
     console.log("[ChatGPT] Response", response)
     const message = response as ExecuteChanges*/
 
+    if (message?.script?.includes("generate_image(")) {
+      useStore.getState().setCurrentAsyncAction("Generating image...")
+    }
+
     const chatMessage: ChatCompletionMessageParam = {
       role: "assistant",
       content: JSON.stringify(message),
@@ -119,7 +123,10 @@ class OpenAIService {
       id: uuid(),
     })
 
-    if (message.script) (await runScript(message.script))?.asPendingChanges()
+    if (message.script) {
+      (await runScript(message.script))?.asPendingChanges()
+      useStore.getState().setCurrentAsyncAction(null)
+    }
   }
 
   async sendChatMessageToAzureBase<T>(
