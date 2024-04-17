@@ -19,6 +19,7 @@ interface UndoElement {
   time: string
   id: string
   parent: string
+  error?: string
   script: ExecutedScript
 }
 
@@ -91,6 +92,7 @@ export interface AppState {
   setPendingChanges: (unaccepted: boolean) => void
 
   archivedUndoStack: UndoElement[]
+  addToArchivedUndoStack: (script: UndoElement) => void
   undoStack: UndoElement[]
   popUndoStack: () => UndoElement | undefined
   addToUndoStack: (script: UndoElement, noArchiving?: boolean) => void
@@ -372,6 +374,13 @@ export const useStore = create<AppState>()(
           })
         }
         return lastElement
+      },
+      addToArchivedUndoStack: (script: UndoElement) => {
+        set((state) => {
+          return {
+            archivedUndoStack: [...state.archivedUndoStack, script],
+          }
+        })
       },
       addToUndoStack: (script: UndoElement, noArchiving: boolean = false) => {
         set((state) => {

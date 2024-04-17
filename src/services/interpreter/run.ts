@@ -20,6 +20,17 @@ export const runBase = async (
       .getState()
       .addToast("error", "Error processing script", (error as Error).message)
     useStore.getState().setParsedVideostrate(videoStrateBefore)
+    useStore.getState().addToArchivedUndoStack({
+      time: new Date().toISOString(),
+      id: uuid(),
+      parent: useStore.getState().undoStack.at(-1)?.id ?? "",
+      error: String(error),
+      script: {
+        text,
+        script: [],
+        parsedVideostrate: videoStrateBefore,
+      },
+    })
     return
   }
 
