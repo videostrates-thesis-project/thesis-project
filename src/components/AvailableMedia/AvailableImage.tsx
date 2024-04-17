@@ -7,6 +7,7 @@ import { runCommands } from "../../services/interpreter/run"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
 import Sparkle from "../Sparkle"
 import AddElementButton from "./AddElementButton"
+import ChatContextTooltip from "./ChatContextTooltip"
 
 const AvailableImage = (props: { image: Image }) => {
   const { parsedVideostrate, seek, deleteAvailableImage, isUiFrozen } =
@@ -46,34 +47,38 @@ const AvailableImage = (props: { image: Image }) => {
   )
 
   return (
-    <div
-      className={clsx(
-        "available-media relative flex flex-col w-[calc(50%-0.5rem)] rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer",
-        isSelected ? "!border-accent" : "border-base-100 hover:border-gray-300"
-      )}
-      onClick={() => {
-        if (isSelected) setSelectedImportableImage(null)
-        else setSelectedImportableImage(props.image)
-      }}
-    >
-      {isSelected && <Sparkle />}
-      <img
-        className="flex-shrink aspect-square object-cover"
-        key={props.image.url}
-        src={props.image.url}
-        alt={props.image.title}
-      />
-      <div className="flex flex-row justify-between items-center m-1">
-        <span className="overflow-hidden whitespace-nowrap text-ellipsis pl-1">
-          {props.image.title}
-        </span>
-        <AddElementButton onClick={addImage} time={seek} />
+    <ChatContextTooltip className="w-[calc(50%-0.5rem)]" selected={isSelected}>
+      <div
+        className={clsx(
+          "available-media relative flex flex-col  rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer",
+          isSelected
+            ? "!border-accent"
+            : "border-base-100 hover:border-gray-300"
+        )}
+        onClick={() => {
+          if (isSelected) setSelectedImportableImage(null)
+          else setSelectedImportableImage(props.image)
+        }}
+      >
+        {isSelected && <Sparkle />}
+        <img
+          className="flex-shrink aspect-square object-cover"
+          key={props.image.url}
+          src={props.image.url}
+          alt={props.image.title}
+        />
+        <div className="flex flex-row justify-between items-center m-1">
+          <span className="overflow-hidden whitespace-nowrap text-ellipsis pl-1">
+            {props.image.title}
+          </span>
+          <AddElementButton onClick={addImage} time={seek} />
+        </div>
+        <DeleteMediaButton
+          disabled={!canBeDeleted || isUiFrozen}
+          onClick={deleteImage}
+        />
       </div>
-      <DeleteMediaButton
-        disabled={!canBeDeleted || isUiFrozen}
-        onClick={deleteImage}
-      />
-    </div>
+    </ChatContextTooltip>
   )
 }
 

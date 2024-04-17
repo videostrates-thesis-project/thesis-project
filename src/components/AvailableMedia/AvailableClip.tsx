@@ -7,9 +7,11 @@ import { addClip } from "../../services/interpreter/builtin/addClip"
 import clsx from "clsx"
 import Sparkle from "../Sparkle"
 import AddElementButton from "./AddElementButton"
+import ChatContextTooltip from "./ChatContextTooltip"
 
 const AvailableClip = (props: { clip: VideoClip }) => {
-  const { seek, deleteAvailableClip, parsedVideostrate } = useStore()
+  const { seek, deleteAvailableClip, parsedVideostrate, isUiFrozen } =
+    useStore()
   const { selectedImportableClipName, setSelectedImportableClipName } =
     useStore()
 
@@ -19,8 +21,11 @@ const AvailableClip = (props: { clip: VideoClip }) => {
   )
 
   const canBeDeleted = useMemo(() => {
-    return !parsedVideostrate.clips.some((c) => c.source === props.clip.source)
-  }, [parsedVideostrate.clips, props.clip.source])
+    return (
+      !isUiFrozen &&
+      !parsedVideostrate.clips.some((c) => c.source === props.clip.source)
+    )
+  }, [isUiFrozen, parsedVideostrate.clips, props.clip.source])
 
   const addToTimeline = useCallback(
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -41,10 +46,7 @@ const AvailableClip = (props: { clip: VideoClip }) => {
   return (
     <>
       {props.clip.status === "CACHED" ? (
-        <div
-          className="h-full tooltip tooltip-bottom"
-          data-tip="Click to select as chat context"
-        >
+        <ChatContextTooltip className="w-full" selected={isSelected}>
           <div
             className={clsx(
               "h-28 available-media relative flex flex-row rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer",
@@ -86,11 +88,11 @@ const AvailableClip = (props: { clip: VideoClip }) => {
                 onClick={deleteClip}
               />
             </div>
+            <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteClip} />
           </div>
-          <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteClip} />
-        </div>
+        </ChatContextTooltip>
       ) : (
-        <div className="w-full h-28 flex justify-center items-center rounded-lg bg-base-100">
+        <div className="w-full h-28 min-h-28 flex-shrink-0 flex justify-center items-center rounded-lg bg-base-100">
           <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-solid border-current border-e-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div>
         </div>
       )}

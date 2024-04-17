@@ -9,6 +9,7 @@ import { addCustomElement } from "../../services/interpreter/builtin/addCustomEl
 import clsx from "clsx"
 import Sparkle from "../Sparkle"
 import AddElementButton from "./AddElementButton"
+import ChatContextTooltip from "./ChatContextTooltip"
 
 const AvailableCustomElement = (props: { element: CustomElement }) => {
   const {
@@ -75,43 +76,48 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
   }, [deleteAvailableCustomElement, props.element.id])
 
   return (
-    <div
-      className={clsx(
-        "available-media relative flex flex-col w-full h-60 rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer",
-        isSelected ? "!border-accent" : "border-base-100 hover:border-gray-300"
-      )}
-      onClick={() => {
-        if (isSelected) setSelectedImportableCustomElement(null)
-        else setSelectedImportableCustomElement(props.element)
-      }}
-    >
-      {isSelected && <Sparkle />}
+    <ChatContextTooltip className="w-full h-60" selected={isSelected}>
       <div
-        className="w-full h-full overflow-hidden min-h-0 min-w-0"
-        style={{ height: `${iframeContainerHeight}px` }}
+        className={clsx(
+          "available-media relative flex flex-col rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer",
+          isSelected
+            ? "!border-accent"
+            : "border-base-100 hover:border-gray-300"
+        )}
+        onClick={() => {
+          console.log("clicked")
+          if (isSelected) setSelectedImportableCustomElement(null)
+          else setSelectedImportableCustomElement(props.element)
+        }}
       >
-        <iframe
-          ref={iframeRef}
-          srcDoc={elementHtml}
-          className="relative"
-          style={{
-            width: `${iframeWidth}px`,
-            height: `${iframeHeight}px`,
-            scale: `${iframeScale}`,
-            left: `${iframeLeft}px`,
-            top: `${iframeTop}px`,
-          }}
-        ></iframe>
-      </div>
-      <div className="flex flex-row justify-between items-center m-1">
-        <span className="overflow-hidden whitespace-nowrap text-ellipsis pl-1">
-          {props.element.name}
-        </span>
+        {isSelected && <Sparkle />}
+        <div
+          className="w-full h-full overflow-hidden min-h-0 min-w-0"
+          style={{ height: `${iframeContainerHeight}px` }}
+        >
+          <iframe
+            ref={iframeRef}
+            srcDoc={elementHtml}
+            className="relative"
+            style={{
+              width: `${iframeWidth}px`,
+              height: `${iframeHeight}px`,
+              scale: `${iframeScale}`,
+              left: `${iframeLeft}px`,
+              top: `${iframeTop}px`,
+            }}
+          ></iframe>
+        </div>
+        <div className="flex flex-row justify-between items-center m-1">
+          <span className="overflow-hidden whitespace-nowrap text-ellipsis pl-1">
+            {props.element.name}
+          </span>
 
-        <AddElementButton onClick={addToTimeline} time={seek} />
+          <AddElementButton onClick={addToTimeline} time={seek} />
+        </div>
+        <DeleteMediaButton disabled={isUiFrozen} onClick={deleteElement} />
       </div>
-      <DeleteMediaButton disabled={isUiFrozen} onClick={deleteElement} />
-    </div>
+    </ChatContextTooltip>
   )
 }
 
