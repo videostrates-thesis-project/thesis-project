@@ -212,10 +212,11 @@ const Chat = ({
                   "chat-bubble text-left break-normal text-sm relative pb-4",
                   msg.role === "user" && "chat-bubble-primary"
                 )}
+                onClick={() => onSelectReply(msg)}
               >
                 <div
                   className={clsx(
-                    "absolute w-full h-full top-0 left-0 rounded-2xl",
+                    "absolute w-full h-full top-0 left-0 rounded-2xl pointer-events-none",
                     msg === messageSelection?.selectedChatMessage
                       ? "!border-accent border-2 radius-2"
                       : "border-0"
