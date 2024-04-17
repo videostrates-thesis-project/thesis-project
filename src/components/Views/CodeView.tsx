@@ -19,6 +19,22 @@ import { runCommands } from "../../services/interpreter/run"
 import { editCustomElement } from "../../services/interpreter/builtin/editCustomElement"
 import { deleteStyle } from "../../services/interpreter/builtin/deleteStyle"
 import { createStyle } from "../../services/interpreter/builtin/createStyle"
+import clsx from "clsx"
+import { deleteAnimation } from "../../services/interpreter/builtin/deleteAnimation"
+import { createAnimation } from "../../services/interpreter/builtin/createAnimation"
+
+const serializeVideostrateStyles = (
+  styles: VideostrateStyle[],
+  isAnimation = false
+) => {
+  return styles
+    .map(
+      (style) =>
+        (isAnimation ? "@keyframes " : "") +
+        `${style.selector} { ${style.style} }`
+    )
+    .join("\n")
+}
 
 const CodeView = () => {
   const { elementId } = useParams()
@@ -26,6 +42,7 @@ const CodeView = () => {
   const [html, setHtml] = useState("")
   const [css, setCss] = useState("")
   const [oldCss, setOldCss] = useState<VideostrateStyle[]>([])
+  const [oldAnimations, setOldAnimations] = useState<VideostrateStyle[]>([])
   const [oldCssText, setOldCssText] = useState("")
   const [oldHtmlText, setOldHtmlText] = useState("")
   const [currentFileName, setCurrentFileName] = useState("")
@@ -37,6 +54,7 @@ const CodeView = () => {
     useState<HTMLElement | null>(null)
   const [currentMatch, setCurrentMatch] = useState<EditorMatch | null>(null)
   const navigate = useNavigate()
+  const [isQuitting, setIsQuitting] = useState(false)
 
   const element = useMemo(() => {
     const element = parsedVideostrate?.elements.find(
@@ -56,10 +74,15 @@ const CodeView = () => {
     const filteredCss = parsedVideostrate.style.filter(
       (style) => document.querySelectorAll(style.selector).length > 0
     )
+    // Filter animation to see if they appear in anywhere in the filtered css
+    const filteredAnimations = parsedVideostrate.animations.filter((q) =>
+      filteredCss.some((c) => c.style.includes(q.selector))
+    )
+    setOldAnimations(filteredAnimations)
     setOldCss(filteredCss)
-    const serializedCss = filteredCss
-      .map((style) => `${style.selector} { ${style.style} }`)
-      .join("\n")
+    const serializedCss = serializeVideostrateStyles(filteredCss).concat(
+      serializeVideostrateStyles(filteredAnimations, true)
+    )
     const beautifiedCss = css_beautify(serializedCss, { indent_size: 4 })
     setCss(beautifiedCss)
     setOldCssText(beautifiedCss)
@@ -68,7 +91,12 @@ const CodeView = () => {
     setCurrentFileName(element.name + ".html")
 
     return element
-  }, [elementId, parsedVideostrate?.elements, parsedVideostrate.style])
+  }, [
+    elementId,
+    parsedVideostrate.animations,
+    parsedVideostrate?.elements,
+    parsedVideostrate.style,
+  ])
 
   const files: EditorFile[] = useMemo(() => {
     if (!element) return []
@@ -84,6 +112,10 @@ const CodeView = () => {
       },
     ]
   }, [css, element, html, oldCssText, oldHtmlText])
+
+  const isAnyModified = useMemo(() => {
+    return files.some((f) => f.isModified)
+  }, [files])
 
   const onEditorChange = useCallback(
     (code?: string) => {
@@ -139,12 +171,16 @@ const CodeView = () => {
     runCommands(
       editCustomElement(elementId, html),
       ...oldCss.map((style) => deleteStyle(style.selector)),
+      ...oldAnimations.map((animation) => deleteAnimation(animation.selector)),
       ...parsedStyle.style.map((style) =>
         createStyle(style.selector, style.style)
+      ),
+      ...parsedStyle.animations.map((animation) =>
+        createAnimation(animation.selector, animation.style)
       )
     )
     navigate("/")
-  }, [css, elementId, html, navigate, oldCss])
+  }, [css, elementId, html, navigate, oldAnimations, oldCss])
 
   const onFormat = useCallback(() => {
     setHtml((prev) => html_beautify(prev, { indent_size: 4 }))
@@ -153,11 +189,15 @@ const CodeView = () => {
 
   const onHotkey = useCallback(
     (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (event.metaKey && event.key === "s") {
+      if ((event.metaKey || event.ctrlKey) && event.key === "s") {
         event.preventDefault()
 
         onSave()
-      } else if (event.metaKey && event.shiftKey && event.key === "f") {
+      } else if (
+        (event.metaKey || event.ctrlKey) &&
+        event.shiftKey &&
+        event.key === "f"
+      ) {
         event.preventDefault()
 
         onFormat()
@@ -229,7 +269,7 @@ const CodeView = () => {
     setDiff(false)
   }, [beforeAssistantCss, beforeAssistantHtml])
 
-  const onHighlight = useCallback((element: HTMLElement) => {
+  const onHighlight = useCallback((element: HTMLElement | null) => {
     setHighlightedElement(element)
   }, [])
 
@@ -243,55 +283,100 @@ const CodeView = () => {
     )
   }, [])
 
+  const quit = useCallback(() => {
+    if (
+      isAnyModified &&
+      !window.confirm("Are you sure you want to leave? Changes will be lost.")
+    ) {
+      return
+    }
+    setIsQuitting(true)
+    setTimeout(() => {
+      navigate("/")
+      setIsQuitting(false)
+    }, 300)
+  }, [isAnyModified, navigate])
+
+  const onOutsideClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      e.preventDefault()
+      if (e.target === e.currentTarget) {
+        quit()
+      }
+    },
+    [quit]
+  )
+
+  const startNewConversation = useCallback(() => {
+    setChatMessages([])
+  }, [])
+
   return (
-    <div className="grid grid-cols-2" onKeyDown={onHotkey}>
-      {!element && (
-        <div className="flex flex-col p-10 m-auto text-2xl font-bold gap-4">
-          Element not found or cannot be edited.
-          <button className="btn btn-primary" onClick={onBack}>
-            Back
-          </button>
-        </div>
+    <div
+      className={clsx(
+        "animate-fade-in absolute top-0 left-0 right-0 bottom-0 bg-black/60 flex justify-center items-center z-10 backdrop-blur-sm",
+        isQuitting && "animate-fade-out"
       )}
-      {element && (
-        <>
-          <div className="flex flex-col">
-            <Browser
-              html={displayedHtml}
-              highlight={onHighlight}
-              isHighlighting={true}
-            />
-            <Chat
-              messages={chatMessages}
-              onSend={onSend}
-              highlight={{
-                isEnabled: true,
-                isHighlighted: highlightedElement !== null,
-                toggleHighlight: () => {
-                  setHighlightedElement(null)
-                },
-              }}
-              addEmoji={addEmoji}
-            />
+      onClick={onOutsideClick}
+    >
+      <div
+        className={clsx(
+          "animate-zoom-in grid grid-cols-2 w-11/12 h-11/12 z-10 bg-base-300",
+          isQuitting && "animate-zoom-out"
+        )}
+        onKeyDown={onHotkey}
+      >
+        {!element && (
+          <div className="flex flex-col p-10 m-auto text-2xl font-bold gap-4">
+            Element not found or cannot be edited.
+            <button className="btn btn-primary" onClick={onBack}>
+              Back
+            </button>
           </div>
-          <CodeEditor
-            code={currentCode}
-            originalCode={originalCode}
-            language={currentLanguage}
-            onChange={onEditorChange}
-            files={files}
-            currentFileName={currentFileName}
-            onChangeTab={onChangeTab}
-            onSave={onSave}
-            onFormat={onFormat}
-            diff={diff}
-            onAccept={onAccept}
-            onReject={onReject}
-            highlightedElement={highlightedElement}
-            onMatchesFound={onMatchesFound}
-          />
-        </>
-      )}
+        )}
+        {element && (
+          <>
+            <div className="flex flex-col">
+              <Browser
+                html={displayedHtml}
+                highlight={onHighlight}
+                isHighlighting={true}
+                highlightedElement={highlightedElement}
+              />
+              <Chat
+                messages={chatMessages}
+                onSend={onSend}
+                highlight={{
+                  isEnabled: true,
+                  isHighlighted: highlightedElement !== null,
+                  toggleHighlight: () => {
+                    setHighlightedElement(null)
+                  },
+                }}
+                addEmoji={addEmoji}
+                onNewConversation={startNewConversation}
+              />
+            </div>
+            <CodeEditor
+              code={currentCode}
+              originalCode={originalCode}
+              language={currentLanguage}
+              onChange={onEditorChange}
+              files={files}
+              currentFileName={currentFileName}
+              onChangeTab={onChangeTab}
+              onSave={onSave}
+              onFormat={onFormat}
+              diff={diff}
+              onAccept={onAccept}
+              onReject={onReject}
+              highlightedElement={highlightedElement}
+              onMatchesFound={onMatchesFound}
+              onQuit={quit}
+            />
+          </>
+        )}
+      </div>
     </div>
   )
 }

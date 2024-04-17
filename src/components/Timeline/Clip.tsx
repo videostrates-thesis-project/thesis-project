@@ -14,6 +14,7 @@ import { runCommands } from "../../services/interpreter/run"
 import { moveDelta } from "../../services/interpreter/builtin/moveDelta"
 import { crop } from "../../services/interpreter/builtin/crop"
 import { moveDeltaWithoutEmbedded } from "../../services/interpreter/builtin/moveDeltaWithoutEmbedded"
+import Sparkle from "../Sparkle"
 
 const MIN_ELEMENT_WIDTH = 16
 
@@ -23,9 +24,10 @@ const Clip = (props: { clip: TimelineElement }) => {
   const {
     selectedClipId,
     setSelectedClipId,
-    availableClips,
+    clipsMetadata,
     pendingChanges,
     addAvailableCustomElement,
+    isUiFrozen,
   } = useStore()
 
   const minLeftCrop = useMemo(
@@ -71,8 +73,8 @@ const Clip = (props: { clip: TimelineElement }) => {
   )
 
   const clipMetadata = useMemo(
-    () => availableClips.find((c) => c.source === clip.source),
-    [availableClips, clip.source]
+    () => clipsMetadata.find((c) => c.source === clip.source),
+    [clipsMetadata, clip.source]
   )
 
   const maxRightCrop = useMemo(() => {
@@ -307,6 +309,7 @@ const Clip = (props: { clip: TimelineElement }) => {
             left: `${draggedPosition}px`,
           }}
         >
+          {isSelected && <Sparkle className="ml-4" />}
           <ClipContent
             clip={clip}
             left={
@@ -314,9 +317,10 @@ const Clip = (props: { clip: TimelineElement }) => {
                 <div
                   className={clsx(
                     "cursor-e-resize bg-accent h-full overflow-clip flex items-center justify-center gap-1 transition-opacity",
-                    handleWidth
+                    handleWidth,
+                    isUiFrozen && "cursor-not-allowed"
                   )}
-                  draggable={true}
+                  draggable={!isUiFrozen}
                   onDrag={onDragLeft}
                   onDragStart={(e) => {
                     onDragLeftStart(e)
@@ -331,9 +335,10 @@ const Clip = (props: { clip: TimelineElement }) => {
             center={
               <div
                 className={clsx(
-                  "w-full flex-shrink min-w-0 text-left transition-all px-1 flex items-center"
+                  "w-full flex-shrink min-w-0 text-left transition-all px-1 flex items-center",
+                  isUiFrozen && "cursor-not-allowed"
                 )}
-                draggable={true}
+                draggable={!isUiFrozen}
                 onDrag={onDrag}
                 onDragStart={(e) => {
                   onDragStart(e)
@@ -351,9 +356,10 @@ const Clip = (props: { clip: TimelineElement }) => {
                 <div
                   className={clsx(
                     "cursor-e-resize bg-accent h-full overflow-clip flex items-center justify-center gap-1 transition-opacity",
-                    handleWidth
+                    handleWidth,
+                    isUiFrozen && "cursor-not-allowed"
                   )}
-                  draggable={true}
+                  draggable={!isUiFrozen}
                   onDrag={onDragRight}
                   onDragStart={(e) => {
                     onDragRightStart(e)
@@ -372,6 +378,7 @@ const Clip = (props: { clip: TimelineElement }) => {
           position={menuPosition}
           visible={isVisible}
           onClose={hideMenu}
+          disabled={isUiFrozen}
         />
       </div>
     </>

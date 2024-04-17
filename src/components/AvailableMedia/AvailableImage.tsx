@@ -5,10 +5,12 @@ import { Image } from "../../types/image"
 import clsx from "clsx"
 import { runCommands } from "../../services/interpreter/run"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
+import Sparkle from "../Sparkle"
 import AddElementButton from "./AddElementButton"
 
 const AvailableImage = (props: { image: Image }) => {
-  const { parsedVideostrate, seek, deleteAvailableImage } = useStore()
+  const { parsedVideostrate, seek, deleteAvailableImage, isUiFrozen } =
+    useStore()
   const { selectedImportableImage, setSelectedImportableImage } = useStore()
 
   const isSelected = useMemo(
@@ -54,6 +56,7 @@ const AvailableImage = (props: { image: Image }) => {
         else setSelectedImportableImage(props.image)
       }}
     >
+      {isSelected && <Sparkle />}
       <img
         className="flex-shrink aspect-square object-cover"
         key={props.image.url}
@@ -66,7 +69,10 @@ const AvailableImage = (props: { image: Image }) => {
         </span>
         <AddElementButton onClick={addImage} time={seek} />
       </div>
-      <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteImage} />
+      <DeleteMediaButton
+        disabled={!canBeDeleted || isUiFrozen}
+        onClick={deleteImage}
+      />
     </div>
   )
 }

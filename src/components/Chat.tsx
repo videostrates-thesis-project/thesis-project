@@ -6,6 +6,8 @@ import { ChatMessage } from "../types/chatMessage"
 import data from "@emoji-mart/data"
 import Picker from "@emoji-mart/react"
 import { useOnClickOutside } from "../hooks/useClickOutside"
+import Sparkle from "./Sparkle"
+import { useStore } from "../store"
 
 type ChatProps = {
   onSend: (message: string) => void
@@ -17,6 +19,7 @@ type ChatProps = {
     toggleHighlight?: () => void
   }
   addEmoji?: (id: string, reaction: string) => void
+  onNewConversation: () => void
 }
 
 const Chat = ({
@@ -25,7 +28,9 @@ const Chat = ({
   pendingChanges,
   highlight = { isEnabled: false, isHighlighted: false },
   addEmoji,
+  onNewConversation,
 }: ChatProps) => {
+  const { currentAsyncAction } = useStore()
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
   const endRef = useRef<HTMLDivElement>(null)
@@ -137,8 +142,27 @@ const Chat = ({
     [addEmoji]
   )
 
+  const startNewConversation = useCallback(() => {
+    if (
+      confirm(
+        "Are you sure you want to start a new conversation? Your message history will be lost."
+      )
+    ) {
+      onNewConversation()
+    }
+  }, [onNewConversation])
+
   return (
     <div className="flex flex-col h-full max-h-full bg-base-300 border-l border-neutral rounded">
+      <div className="flex flex-row w-full bg-base-100 p-2">
+        <button
+          className="ml-auto btn btn-xs btn-accent group text-xs"
+          onClick={startNewConversation}
+        >
+          <i className="bi bi-arrow-clockwise group-hover:animate-spin"></i>
+          Start new conversation
+        </button>
+      </div>
       <div className="pt-4 max-h-full overflow-y-auto overflow-x-hidden break-words break-all">
         {messages.map((msg, index) => (
           <div
@@ -157,7 +181,14 @@ const Chat = ({
               {msg.role === "assistant" &&
               typewriterIndex === index &&
               newMessage ? (
-                <Typewriter text={msg.content} minSpeed={5} maxSpeed={40} />
+                currentAsyncAction ? (
+                  <div className="flex flex-row gap-1 opacity-75 items-center">
+                    <i className="bi bi-arrow-clockwise animate-spin text-lg"></i>
+                    {currentAsyncAction}
+                  </div>
+                ) : (
+                  <Typewriter text={msg.content} minSpeed={5} maxSpeed={40} />
+                )
               ) : (
                 msg.content
               )}
@@ -166,7 +197,7 @@ const Chat = ({
                 <div
                   onClick={(event) => openReactionSelector(msg.id, event)}
                   className={clsx(
-                    "animate-shrink text-[1.2rem] absolute right-2 -bottom-4 bg-neutral rounded-full border-base-300 border-2 flex justify-center items-center cursor-pointer hover:text-white transition-all"
+                    "animate-shrink text-[1.2rem] absolute right-2 -bottom-5 bg-neutral rounded-full border-base-300 border-2 flex justify-center items-center cursor-pointer hover:text-white transition-all"
                   )}
                   style={{
                     paddingTop: "2px",
@@ -248,7 +279,7 @@ const Chat = ({
       <div className="flex flex-col gap-2 w-full mt-auto p-2">
         {pendingChanges && <PendingChangesBanner />}
 
-        <div className="flex flex-row join w-full">
+        <div className="flex flex-row join w-full relative">
           {highlight.isEnabled && (
             <button
               className={clsx(
@@ -264,13 +295,18 @@ const Chat = ({
             rows={1}
             ref={textAreaRef}
             value={message}
-            placeholder="Ask the AI..."
+            placeholder="        Ask the AI..."
             className="input input-sm join-item input-bordered w-full max-h-32 min-h-8 text-left min-w-0 leading-7"
             onKeyDown={handleKeyDown}
             onChange={(e) => {
               setMessage(e.target.value)
             }}
           />
+          {!message && (
+            <Sparkle
+              className={clsx("top-1 left-4", highlight.isEnabled && "left-14")}
+            />
+          )}
           <button
             className={clsx(
               "btn btn-sm btn-accent join-item px-2 h-full min-w-0",

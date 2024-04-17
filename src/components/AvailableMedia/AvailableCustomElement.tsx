@@ -7,6 +7,7 @@ import { CustomElement } from "../../types/videoElement"
 import { runCommands } from "../../services/interpreter/run"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
 import clsx from "clsx"
+import Sparkle from "../Sparkle"
 import AddElementButton from "./AddElementButton"
 
 const AvailableCustomElement = (props: { element: CustomElement }) => {
@@ -19,8 +20,12 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
     iframeHeight,
     iframeContainerHeight,
   } = useScaledIframe()
-  const { serializedVideostrate, deleteAvailableCustomElement, seek } =
-    useStore()
+  const {
+    serializedVideostrate,
+    deleteAvailableCustomElement,
+    seek,
+    isUiFrozen,
+  } = useStore()
   const {
     selectedImportableCustomElement,
     setSelectedImportableCustomElement,
@@ -80,6 +85,7 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
         else setSelectedImportableCustomElement(props.element)
       }}
     >
+      {isSelected && <Sparkle />}
       <div
         className="w-full h-full overflow-hidden min-h-0 min-w-0"
         style={{ height: `${iframeContainerHeight}px` }}
@@ -104,7 +110,7 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
 
         <AddElementButton onClick={addToTimeline} time={seek} />
       </div>
-      <DeleteMediaButton disabled={false} onClick={deleteElement} />
+      <DeleteMediaButton disabled={isUiFrozen} onClick={deleteElement} />
     </div>
   )
 }

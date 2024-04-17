@@ -1,18 +1,22 @@
 import { useMemo } from "react"
 import formatTime from "../../utils/formatTime"
 import { useStore } from "../../store"
+import clsx from "clsx"
 
 const AddElementButton = (props: {
   onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
   time: number
 }) => {
-  const { seek } = useStore()
+  const { seek, isUiFrozen } = useStore()
   const formattedSeekTime = useMemo(() => {
     return formatTime(seek)
   }, [seek])
   return (
     <button
-      className="btn btn-sm btn-ghost add-element-button relative right-0"
+      className={clsx(
+        "btn btn-sm btn-ghost add-element-button relative right-0",
+        isUiFrozen && "pointer-events-none btn-disabled"
+      )}
       onClick={props.onClick}
     >
       <div className="button-content text-xs">

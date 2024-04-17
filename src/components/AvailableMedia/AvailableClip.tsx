@@ -5,6 +5,7 @@ import DeleteMediaButton from "./DeleteMediaButton"
 import { runCommands } from "../../services/interpreter/run"
 import { addClip } from "../../services/interpreter/builtin/addClip"
 import clsx from "clsx"
+import Sparkle from "../Sparkle"
 import AddElementButton from "./AddElementButton"
 
 const AvailableClip = (props: { clip: VideoClip }) => {
@@ -46,7 +47,7 @@ const AvailableClip = (props: { clip: VideoClip }) => {
         >
           <div
             className={clsx(
-              "available-media relative flex flex-row rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer  h-full",
+              "h-28 available-media relative flex flex-row rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer",
               isSelected
                 ? "!border-accent"
                 : "border-base-100 hover:border-gray-300"
@@ -57,22 +58,36 @@ const AvailableClip = (props: { clip: VideoClip }) => {
               else setSelectedImportableClipName(props.clip.title)
             }}
           >
+            {isSelected && <Sparkle />}
             <img
-              className="w-1/2 h-28 flex-grow-0 flex-shrink-0 object-cover"
+              className="w-1/2 h-full flex-grow-0 flex-shrink-0 object-cover"
               src={props.clip.thumbnailUrl}
             />
+            {props.clip.indexingState?.state !== "Processed" && (
+              <div className="absolute top-0 left-0 w-1/2 h-full bg-black bg-opacity-70 flex flex-row justify-center items-center">
+                <div className="text-base">
+                  Indexing...{" "}
+                  {props.clip.indexingState?.progress &&
+                    `${props.clip.indexingState?.progress}%`}
+                </div>
+              </div>
+            )}
 
-            <div className="p-2 w-1/2 h-full flex flex-col justify-between flex-grow-1 flex-shrink-0 text-left">
+            <div className="p-2 flex flex-col w-1/2 h-full justify-between flex-grow-1 flex-shrink-0 text-left">
               <div className="overflow-hidden whitespace-nowrap text-ellipsis">
                 {props.clip.title}
               </div>
               <div>{props.clip.length ?? "?"} seconds</div>
-              <div className="relative -right-1 -bottom-1  w-full flex justify-end items-end mt-auto">
+              <div className="relative -right-2 -bottom-1 flex-grow w-full flex justify-end items-end">
                 <AddElementButton onClick={addToTimeline} time={seek} />
               </div>
+              <DeleteMediaButton
+                disabled={!canBeDeleted}
+                onClick={deleteClip}
+              />
             </div>
-            <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteClip} />
           </div>
+          <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteClip} />
         </div>
       ) : (
         <div className="w-full h-28 flex justify-center items-center rounded-lg bg-base-100">
