@@ -16,7 +16,7 @@ export const addCroppedClip = (
     throw new Error("[add_cropped_clip] Start time must be a number")
   }
   if (typeof relativeEnd !== "number") {
-    throw new Error("[add_cropped_clip] Start time must be a number")
+    throw new Error("[add_cropped_clip] End time must be a number")
   }
 
   const returnFn = () => {
