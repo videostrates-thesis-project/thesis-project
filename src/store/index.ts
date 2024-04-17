@@ -101,6 +101,9 @@ export interface AppState {
 
   currentAsyncAction: string | null
   setCurrentAsyncAction: (action: string | null) => void
+
+  isUiFrozen: boolean
+  setIsUiFrozen: (frozen: boolean) => void
 }
 
 export const useStore = create<AppState>()(
@@ -380,6 +383,8 @@ export const useStore = create<AppState>()(
       currentAsyncAction: null,
       setCurrentAsyncAction: (action: string | null) =>
         set({ currentAsyncAction: action }),
+      isUiFrozen: false,
+      setIsUiFrozen: (frozen: boolean) => set({ isUiFrozen: frozen }),
     }),
     {
       name: "thesis-project-storage",

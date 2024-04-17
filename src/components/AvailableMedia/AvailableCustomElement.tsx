@@ -19,8 +19,12 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
     iframeHeight,
     iframeContainerHeight,
   } = useScaledIframe()
-  const { serializedVideostrate, deleteAvailableCustomElement, seek } =
-    useStore()
+  const {
+    serializedVideostrate,
+    deleteAvailableCustomElement,
+    seek,
+    isUiFrozen,
+  } = useStore()
   const {
     selectedImportableCustomElement,
     setSelectedImportableCustomElement,
@@ -99,11 +103,17 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
           {props.element.name}
         </span>
 
-        <button onClick={addToTimeline} className="btn btn-sm btn-ghost w-fit">
+        <button
+          onClick={addToTimeline}
+          className={clsx(
+            "btn btn-sm w-fit",
+            isUiFrozen ? "btn-disabled" : "btn-ghost"
+          )}
+        >
           <i className="bi bi-plus-lg text-lg text-accent"></i>
         </button>
       </div>
-      <DeleteMediaButton disabled={false} onClick={deleteElement} />
+      <DeleteMediaButton disabled={isUiFrozen} onClick={deleteElement} />
     </div>
   )
 }

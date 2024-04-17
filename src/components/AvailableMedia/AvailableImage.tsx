@@ -8,7 +8,8 @@ import { addCustomElement } from "../../services/interpreter/builtin/addCustomEl
 import Sparkle from "../Sparkle"
 
 const AvailableImage = (props: { image: Image }) => {
-  const { parsedVideostrate, seek, deleteAvailableImage } = useStore()
+  const { parsedVideostrate, seek, deleteAvailableImage, isUiFrozen } =
+    useStore()
   const { selectedImportableImage, setSelectedImportableImage } = useStore()
 
   const isSelected = useMemo(
@@ -58,11 +59,20 @@ const AvailableImage = (props: { image: Image }) => {
           {props.image.title}
         </span>
 
-        <button className="btn btn-sm btn-ghost w-fit" onClick={addImage}>
+        <button
+          className={clsx(
+            "btn btn-sm w-fit",
+            isUiFrozen ? "btn-disabled opacity-50" : "btn-ghost"
+          )}
+          onClick={addImage}
+        >
           <i className="bi bi-plus-lg text-lg text-accent"></i>
         </button>
       </div>
-      <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteImage} />
+      <DeleteMediaButton
+        disabled={!canBeDeleted || isUiFrozen}
+        onClick={deleteImage}
+      />
     </div>
   )
 }

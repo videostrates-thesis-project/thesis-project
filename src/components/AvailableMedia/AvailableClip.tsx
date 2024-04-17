@@ -8,7 +8,8 @@ import clsx from "clsx"
 import Sparkle from "../Sparkle"
 
 const AvailableClip = (props: { clip: VideoClip }) => {
-  const { seek, deleteAvailableClip, parsedVideostrate } = useStore()
+  const { seek, deleteAvailableClip, parsedVideostrate, isUiFrozen } =
+    useStore()
   const { selectedImportableClipName, setSelectedImportableClipName } =
     useStore()
 
@@ -70,12 +71,21 @@ const AvailableClip = (props: { clip: VideoClip }) => {
             </div>
             <div>{props.clip.length ?? "?"} seconds</div>
             <div className="relative -right-2 -bottom-1 flex-grow w-full flex justify-end items-end">
-              <button className="btn btn-sm btn-ghost" onClick={addToTimeline}>
+              <button
+                className={clsx(
+                  "btn btn-sm",
+                  isUiFrozen ? "btn-disabled opacity-50 " : "btn-ghost"
+                )}
+                onClick={addToTimeline}
+              >
                 <i className="bi bi-plus-lg text-lg text-accent"></i>
               </button>
             </div>
           </div>
-          <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteClip} />
+          <DeleteMediaButton
+            disabled={!canBeDeleted || isUiFrozen}
+            onClick={deleteClip}
+          />
         </div>
       ) : (
         <div className="w-full h-28 flex justify-center items-center rounded-lg bg-base-100">
