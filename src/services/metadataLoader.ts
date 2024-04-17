@@ -1,4 +1,5 @@
 import { RawMetadata } from "../types/videoClip"
+import { META_MAX_API } from "../envVariables"
 
 export const getClipMetadata = async (
   clipSource: string,
@@ -16,9 +17,7 @@ const fetchMetamaxMetadata = async (
   metamaxRealm: string,
   method: "GET" | "PUT"
 ) => {
-  const metamaxApi: string =
-    import.meta.env.VITE_META_MAX_API || "https://stream.cavi.au.dk/cache/api/"
-  const requestUrl = `${metamaxApi}/${metamaxRealm}/entity?url=${clipSource}`
+  const requestUrl = `${META_MAX_API}/${metamaxRealm}/entity?url=${clipSource}`
   const response = await fetch(requestUrl, { method: method })
   return await response.json()
 }

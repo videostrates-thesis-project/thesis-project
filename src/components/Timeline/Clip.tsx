@@ -24,7 +24,7 @@ const Clip = (props: { clip: TimelineElement }) => {
   const {
     selectedClipId,
     setSelectedClipId,
-    availableClips,
+    clipsMetadata,
     pendingChanges,
     addAvailableCustomElement,
   } = useStore()
@@ -72,8 +72,8 @@ const Clip = (props: { clip: TimelineElement }) => {
   )
 
   const clipMetadata = useMemo(
-    () => availableClips.find((c) => c.source === clip.source),
-    [availableClips, clip.source]
+    () => clipsMetadata.find((c) => c.source === clip.source),
+    [clipsMetadata, clip.source]
   )
 
   const maxRightCrop = useMemo(() => {

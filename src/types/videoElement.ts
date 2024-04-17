@@ -1,7 +1,7 @@
 export type VideoElementType = "video" | "subtitle" | "custom"
+import { TIME_DECIMALS_PRECISION } from "../envVariables"
 
-const precision =
-  10 ** ((import.meta.env.VITE_TIME_DECIMALS_PRECISION as number) || 0)
+const precision = 10 ** TIME_DECIMALS_PRECISION
 
 export interface VideoElementProps {
   id: string

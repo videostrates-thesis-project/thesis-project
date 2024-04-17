@@ -4,7 +4,6 @@ import VideoClip from "../../types/videoClip"
 import DeleteMediaButton from "./DeleteMediaButton"
 import { runCommands } from "../../services/interpreter/run"
 import { addClip } from "../../services/interpreter/builtin/addClip"
-import useEditCommands from "../../hooks/useEditCommands"
 import clsx from "clsx"
 import Sparkle from "../Sparkle"
 
@@ -55,6 +54,15 @@ const AvailableClip = (props: { clip: VideoClip }) => {
             className="w-1/2 h-28 flex-grow-0 flex-shrink-0 object-cover"
             src={props.clip.thumbnailUrl}
           />
+          {props.clip.indexingState?.state !== "Processed" && (
+            <div className="absolute top-0 left-0 w-1/2 h-full bg-black bg-opacity-70 flex flex-row justify-center items-center">
+              <div className="text-base">
+                Indexing...{" "}
+                {props.clip.indexingState?.progress &&
+                  `${props.clip.indexingState?.progress}%`}
+              </div>
+            </div>
+          )}
 
           <div className="p-2 flex flex-col w-1/2 h-full flex-grow-0 flex-shrink-0 text-left">
             <div className="overflow-hidden whitespace-nowrap text-ellipsis">

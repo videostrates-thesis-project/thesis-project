@@ -58,6 +58,10 @@ h1 {
   @apply opacity-100;
 }
 
+mark {
+  @apply bg-primary;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
