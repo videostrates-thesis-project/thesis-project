@@ -14,20 +14,24 @@ const DefaultSidePanel = () => {
       {
         icon: "bi bi-cassette",
         tab: "clips",
+        tooltip: "Clips",
       },
       {
         icon: "bi bi-image",
         tab: "images",
+        tooltip: "Images",
       },
       {
         icon: "bi bi-star",
         tab: "custom-elements",
+        tooltip: "Custom Elements",
       },
       {
         icon: "bi bi-code-slash",
         tab: "command",
+        tooltip: "Commander",
       },
-    ] as { icon: string; tab: SideBarTab }[]
+    ] as { icon: string; tab: SideBarTab; tooltip: string }[]
   }, [])
 
   return (
@@ -35,21 +39,23 @@ const DefaultSidePanel = () => {
       <ul className="menu menu-horizontal bg-base-100 p-0">
         {tabs.map((t) => (
           <li key={t.tab}>
-            <a
-              className={clsx(
-                "btn btn-ghost rounded-none",
-                t.tab === sideBarTab && "btn-active !bg-base-300"
-              )}
-              onClick={() => setSideBarTab(t.tab)}
-            >
-              <i
+            <div className="tooltip p-0" data-tip={t.tooltip}>
+              <a
                 className={clsx(
-                  t.icon,
-                  "text-lg",
-                  t.tab === sideBarTab && "text-primary"
+                  "btn btn-ghost rounded-none",
+                  t.tab === sideBarTab && "btn-active !bg-base-300"
                 )}
-              />
-            </a>
+                onClick={() => setSideBarTab(t.tab)}
+              >
+                <i
+                  className={clsx(
+                    t.icon,
+                    "text-lg",
+                    t.tab === sideBarTab && "text-primary"
+                  )}
+                />
+              </a>
+            </div>
           </li>
         ))}
       </ul>

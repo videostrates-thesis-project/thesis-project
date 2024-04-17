@@ -5,20 +5,28 @@ const DeleteMediaButton = (props: {
   disabled: boolean
 }) => {
   return (
-    <button
+    <div
       className={clsx(
-        "remove-button opacity-0 absolute right-1 top-1 btn btn-sm btn-neutral transition-opacity",
-        props.disabled && "pointer-events-none btn-disabled"
+        "absolute right-1 top-1",
+        !props.disabled && "tooltip tooltip-left"
       )}
-      onClick={props.onClick}
+      data-tip="Delete from library"
     >
-      <i
+      <button
         className={clsx(
-          "bi bi-trash text-lg text-error",
-          props.disabled && "text-slate-500 opacity-70"
+          "remove-button opacity-0 btn btn-sm btn-neutral transition-opacity",
+          props.disabled && "pointer-events-none btn-disabled"
         )}
-      ></i>
-    </button>
+        onClick={props.onClick}
+      >
+        <i
+          className={clsx(
+            "bi bi-trash text-lg text-error",
+            props.disabled && "text-slate-500 opacity-70"
+          )}
+        ></i>
+      </button>
+    </div>
   )
 }
 

@@ -41,33 +41,38 @@ const AvailableClip = (props: { clip: VideoClip }) => {
     <>
       {props.clip.status === "CACHED" ? (
         <div
-          className={clsx(
-            "available-media relative flex flex-row rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer",
-            isSelected
-              ? "!border-accent"
-              : "border-base-100 hover:border-gray-300"
-          )}
-          key={props.clip.source}
-          onClick={() => {
-            if (isSelected) setSelectedImportableClipName(null)
-            else setSelectedImportableClipName(props.clip.title)
-          }}
+          className="tooltip tooltip-bottom"
+          data-tip="Click to select as chat context"
         >
-          <img
-            className="w-1/2 h-28 flex-grow-0 flex-shrink-0 object-cover"
-            src={props.clip.thumbnailUrl}
-          />
+          <div
+            className={clsx(
+              "available-media relative flex flex-row rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer",
+              isSelected
+                ? "!border-accent"
+                : "border-base-100 hover:border-gray-300"
+            )}
+            key={props.clip.source}
+            onClick={() => {
+              if (isSelected) setSelectedImportableClipName(null)
+              else setSelectedImportableClipName(props.clip.title)
+            }}
+          >
+            <img
+              className="w-1/2 h-28 flex-grow-0 flex-shrink-0 object-cover"
+              src={props.clip.thumbnailUrl}
+            />
 
-          <div className="p-2 flex flex-col w-1/2 h-full flex-grow-0 flex-shrink-0 text-left">
-            <div className="overflow-hidden whitespace-nowrap text-ellipsis">
-              {props.clip.title}
+            <div className="p-2 flex flex-col w-1/2 h-full flex-grow-0 flex-shrink-0 text-left">
+              <div className="overflow-hidden whitespace-nowrap text-ellipsis">
+                {props.clip.title}
+              </div>
+              <div>{props.clip.length ?? "?"} seconds</div>
+              <div className="relative -right-1 -bottom-1 flex-grow w-full flex justify-end items-end">
+                <AddElementButton onClick={addToTimeline} time={seek} />
+              </div>
             </div>
-            <div>{props.clip.length ?? "?"} seconds</div>
-            <div className="relative -right-1 -bottom-1 flex-grow w-full flex justify-end items-end">
-              <AddElementButton onClick={addToTimeline} time={seek} />
-            </div>
+            <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteClip} />
           </div>
-          <DeleteMediaButton disabled={!canBeDeleted} onClick={deleteClip} />
         </div>
       ) : (
         <div className="w-full h-28 flex justify-center items-center rounded-lg bg-base-100">
