@@ -41,12 +41,12 @@ const AvailableClip = (props: { clip: VideoClip }) => {
     <>
       {props.clip.status === "CACHED" ? (
         <div
-          className="tooltip tooltip-bottom"
+          className="h-full tooltip tooltip-bottom"
           data-tip="Click to select as chat context"
         >
           <div
             className={clsx(
-              "available-media relative flex flex-row rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer",
+              "available-media relative flex flex-row rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer  h-full",
               isSelected
                 ? "!border-accent"
                 : "border-base-100 hover:border-gray-300"
@@ -62,12 +62,12 @@ const AvailableClip = (props: { clip: VideoClip }) => {
               src={props.clip.thumbnailUrl}
             />
 
-            <div className="p-2 flex flex-col w-1/2 h-full flex-grow-0 flex-shrink-0 text-left">
+            <div className="p-2 w-1/2 h-full flex flex-col justify-between flex-grow-1 flex-shrink-0 text-left">
               <div className="overflow-hidden whitespace-nowrap text-ellipsis">
                 {props.clip.title}
               </div>
               <div>{props.clip.length ?? "?"} seconds</div>
-              <div className="relative -right-1 -bottom-1 flex-grow w-full flex justify-end items-end">
+              <div className="relative -right-1 -bottom-1  w-full flex justify-end items-end mt-auto">
                 <AddElementButton onClick={addToTimeline} time={seek} />
               </div>
             </div>
