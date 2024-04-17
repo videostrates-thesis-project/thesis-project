@@ -23,6 +23,12 @@ interface UndoElement {
   script: ExecutedScript
 }
 
+interface MessageInformation {
+  time: string
+  activeUndoElementId: string
+  message: ChatCompletionMessageParam
+}
+
 export interface AppState {
   videostrateUrl: string
   setVideostrateUrl: (url: string) => void
@@ -81,12 +87,10 @@ export interface AppState {
   addReactionToMessage: (id: string, reaction: string) => void
   resetMessages: () => void
 
-  archivedMessages: { time: string; message: ChatCompletionMessageParam }[]
+  archivedMessages: MessageInformation[]
 
-  currentMessages: { time: string; message: ChatCompletionMessageParam }[]
-  addMessage: (
-    message: ChatCompletionMessageParam
-  ) => { time: string; message: ChatCompletionMessageParam }[]
+  currentMessages: MessageInformation[]
+  addMessage: (message: ChatCompletionMessageParam) => MessageInformation[]
 
   pendingChanges: boolean
   setPendingChanges: (unaccepted: boolean) => void
@@ -357,7 +361,11 @@ export const useStore = create<AppState>()(
           return {
             currentMessages: [
               ...currentMessages,
-              { time: new Date().toISOString(), message },
+              {
+                time: new Date().toISOString(),
+                activeUndoElementId: get().undoStack.at(-1)?.id ?? "",
+                message,
+              },
             ],
           }
         })
