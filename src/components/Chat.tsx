@@ -7,6 +7,7 @@ import data from "@emoji-mart/data"
 import Picker from "@emoji-mart/react"
 import { useOnClickOutside } from "../hooks/useClickOutside"
 import Sparkle from "./Sparkle"
+import { useStore } from "../store"
 
 type ChatProps = {
   onSend: (message: string) => void
@@ -29,6 +30,7 @@ const Chat = ({
   addEmoji,
   onNewConversation,
 }: ChatProps) => {
+  const { currentAsyncAction } = useStore()
   const [message, setMessage] = useState("")
   const [loading, setLoading] = useState(false)
   const endRef = useRef<HTMLDivElement>(null)
@@ -179,7 +181,14 @@ const Chat = ({
               {msg.role === "assistant" &&
               typewriterIndex === index &&
               newMessage ? (
-                <Typewriter text={msg.content} minSpeed={5} maxSpeed={40} />
+                currentAsyncAction ? (
+                  <div className="flex flex-row gap-1 opacity-75 items-center">
+                    <i className="bi bi-arrow-clockwise animate-spin text-lg"></i>
+                    {currentAsyncAction}
+                  </div>
+                ) : (
+                  <Typewriter text={msg.content} minSpeed={5} maxSpeed={40} />
+                )
               ) : (
                 msg.content
               )}
@@ -188,7 +197,7 @@ const Chat = ({
                 <div
                   onClick={(event) => openReactionSelector(msg.id, event)}
                   className={clsx(
-                    "animate-shrink text-[1.2rem] absolute right-2 -bottom-4 bg-neutral rounded-full border-base-300 border-2 flex justify-center items-center cursor-pointer hover:text-white transition-all"
+                    "animate-shrink text-[1.2rem] absolute right-2 -bottom-5 bg-neutral rounded-full border-base-300 border-2 flex justify-center items-center cursor-pointer hover:text-white transition-all"
                   )}
                   style={{
                     paddingTop: "2px",
@@ -293,7 +302,11 @@ const Chat = ({
               setMessage(e.target.value)
             }}
           />
-          {!message && <Sparkle className="top-1 left-4" />}
+          {!message && (
+            <Sparkle
+              className={clsx("top-1 left-4", highlight.isEnabled && "left-14")}
+            />
+          )}
           <button
             className={clsx(
               "btn btn-sm btn-accent join-item px-2 h-full min-w-0",

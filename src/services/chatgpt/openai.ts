@@ -74,31 +74,34 @@ class OpenAIService {
   }
 
   async sendDefaultChatMessageToAzure(text: string) {
-    const userMessage: ChatCompletionMessageParam = {
-      role: "user",
-      content: text,
-    }
-    if (
-      useStore
-        .getState()
-        .currentMessages.filter((m) => m.message.role === "system").length === 0
-    ) {
-      const systemMessage: ChatCompletionMessageParam = {
-        role: "system",
-        content: instructions,
+    useStore.getState().setIsUiFrozen(true)
+    try {
+      const userMessage: ChatCompletionMessageParam = {
+        role: "user",
+        content: text,
       }
-      useStore.getState().addMessage(systemMessage)
-    }
-    const messages = useStore.getState().addMessage(userMessage)
+      if (
+        useStore
+          .getState()
+          .currentMessages.filter((m) => m.message.role === "system").length ===
+        0
+      ) {
+        const systemMessage: ChatCompletionMessageParam = {
+          role: "system",
+          content: instructions,
+        }
+        useStore.getState().addMessage(systemMessage)
+      }
+      const messages = useStore.getState().addMessage(userMessage)
 
-    const message = await this.sendChatMessageToAzureBase<ExecuteChanges>(
-      "mirrorverse-gpt-4-turbo",
-      messages.map((m) => m.message),
-      "execute_changes",
-      executeChangesFunction
-    )
+      const message = await this.sendChatMessageToAzureBase<ExecuteChanges>(
+        "mirrorverse-gpt-4-turbo",
+        messages.map((m) => m.message),
+        "execute_changes",
+        executeChangesFunction
+      )
 
-    /*console.log(messages)
+      /*console.log(messages)
     const response = await azureFunctionRequest({
       model: "mirrorverse-gpt-4-turbo",
       messages: messages,
@@ -109,18 +112,29 @@ class OpenAIService {
     console.log("[ChatGPT] Response", response)
     const message = response as ExecuteChanges*/
 
-    const chatMessage: ChatCompletionMessageParam = {
-      role: "assistant",
-      content: JSON.stringify(message),
-    }
-    useStore.getState().addMessage(chatMessage)
-    useStore.getState().addChatMessage({
-      role: "assistant",
-      content: message.explanation,
-      id: uuid(),
-    })
+      if (message?.script?.includes("generate_image(")) {
+        useStore.getState().setCurrentAsyncAction("Generating image...")
+      }
 
-    if (message.script) (await runScript(message.script))?.asPendingChanges()
+      const chatMessage: ChatCompletionMessageParam = {
+        role: "assistant",
+        content: JSON.stringify(message),
+      }
+      useStore.getState().addMessage(chatMessage)
+      useStore.getState().addChatMessage({
+        role: "assistant",
+        content: message.explanation,
+        id: uuid(),
+      })
+
+      if (message.script) {
+        // eslint-disable-next-line prettier/prettier
+        (await runScript(message.script))?.asPendingChanges()
+        useStore.getState().setCurrentAsyncAction(null)
+      }
+    } finally {
+      useStore.getState().setIsUiFrozen(false)
+    }
   }
 
   async sendChatMessageToAzureBase<T>(
