@@ -200,12 +200,7 @@ const Chat = ({
             <div className="flex justify-center items-center">
               {messageSelection && msg.role === "user" && (
                 <button
-                  className={clsx(
-                    "btn btn-ghost btn-sm w-8 mr-2",
-                    msg === messageSelection?.selectedChatMessage
-                      ? "!border-accent border-2"
-                      : "border-0"
-                  )}
+                  className="btn btn-ghost btn-sm w-8 mr-2"
                   onClick={() => onSelectReply(msg)}
                 >
                   <i className="bi bi-reply text-lg text-neutral-content" />
@@ -218,6 +213,15 @@ const Chat = ({
                   msg.role === "user" && "chat-bubble-primary"
                 )}
               >
+                <div
+                  className={clsx(
+                    "absolute w-full h-full top-0 left-0 rounded-2xl",
+                    msg === messageSelection?.selectedChatMessage
+                      ? "!border-accent border-2 radius-2"
+                      : "border-0"
+                  )}
+                ></div>
+
                 {msg.role === "assistant" &&
                 typewriterIndex === index &&
                 newMessage ? (
@@ -291,12 +295,7 @@ const Chat = ({
 
               {messageSelection && msg.role === "assistant" && (
                 <button
-                  className={clsx(
-                    "btn btn-ghost btn-sm w-8 ml-2",
-                    msg === messageSelection?.selectedChatMessage
-                      ? "!border-accent border-2"
-                      : "border-0"
-                  )}
+                  className="btn btn-ghost btn-sm w-8 ml-2"
                   onClick={() => onSelectReply(msg)}
                 >
                   <i className="bi bi-reply text-lg text-neutral-content" />
@@ -329,10 +328,8 @@ const Chat = ({
 
         {showSelection && selectionHint && (
           <div className="flex flex-row items-center h-8 w-full bg-base-100 rounded-lg text-gray-500">
-            <div className="p-2 text-sm w-full text-left">
-              {selectionHint.length > 43
-                ? selectionHint.slice(0, 43) + "..."
-                : selectionHint}
+            <div className="p-2 text-sm w-full text-left overflow-hidden whitespace-nowrap text-ellipsis">
+              {selectionHint}
             </div>
 
             <button
