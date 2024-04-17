@@ -30,7 +30,7 @@ const Commander = () => {
     if (e.key === "ArrowUp") {
       e.preventDefault() // Prevents moving the cursor to the beginning of the line
       if (undoStack.length > 0) {
-        setCurrentCommand(undoStack[undoStack.length - 1].text)
+        setCurrentCommand(undoStack[undoStack.length - 1].script.text)
       }
     }
     if (e.key === "Enter" && !e.shiftKey) {
@@ -49,7 +49,7 @@ const Commander = () => {
       <div className="flex flex-col font-mono overflow-y-auto overflow-x-hidden mb-4">
         {undoStack.map((command, i) => (
           <div key={i} className="flex flex-col bg-neutral rounded p-2 mt-2">
-            {command.text
+            {command.script.text
               .split("\n")
               .filter((l) => l)
               .map((line, j) => (

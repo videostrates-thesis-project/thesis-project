@@ -2,15 +2,24 @@ import { useCallback } from "react"
 import { useStore } from "../store"
 
 const useLogger = () => {
-  const { archivedMessages, currentMessages, undoStack } = useStore()
+  const { archivedMessages, currentMessages, archivedUndoStack } = useStore()
   const exportLogs = useCallback(() => {
-    const messageHistory = archivedMessages
-      .concat(currentMessages)
+    const messageHistory = [...archivedMessages, ...currentMessages]
       .map((m) => JSON.stringify(m))
       .join("\n")
-    console.log(undoStack)
     downloadStringAsFile(messageHistory, "chat_logs.json", "application/json")
-  }, [archivedMessages, currentMessages, undoStack])
+
+    const currentState = JSON.stringify({
+      currentUndoId: useStore.getState().undoStack.at(-1)?.id ?? "",
+      parsedVideostrate: useStore.getState().parsedVideostrate,
+    })
+    const undoHistory =
+      archivedUndoStack.map((u) => JSON.stringify(u)).join("\n") +
+      "\n" +
+      currentState
+
+    downloadStringAsFile(undoHistory, "undo_logs.json", "application/json")
+  }, [archivedMessages, archivedUndoStack, currentMessages])
 
   const downloadStringAsFile = (
     content: string,

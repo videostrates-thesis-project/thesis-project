@@ -15,6 +15,12 @@ const TOAST_LENGTH = 5000
 const DEFAULT_IMAGE_TITLE = "Image"
 const DEFAULT_CLIP_TITLE = "Clip"
 
+interface UndoElement {
+  id: string
+  parent: string
+  script: ExecutedScript
+}
+
 export interface AppState {
   videostrateUrl: string
   setVideostrateUrl: (url: string) => void
@@ -83,13 +89,14 @@ export interface AppState {
   pendingChanges: boolean
   setPendingChanges: (unaccepted: boolean) => void
 
-  undoStack: ExecutedScript[]
-  setUndoStack: (stack: ExecutedScript[]) => void
-  addToUndoStack: (script: ExecutedScript) => void
+  archivedUndoStack: UndoElement[]
+  undoStack: UndoElement[]
+  popUndoStack: () => UndoElement | undefined
+  addToUndoStack: (script: UndoElement, noArchiving?: boolean) => void
 
-  redoStack: ExecutedScript[]
-  setRedoStack: (stack: ExecutedScript[]) => void
-  addToRedoStack: (script: ExecutedScript) => void
+  redoStack: UndoElement[]
+  setRedoStack: (stack: UndoElement[]) => void
+  addToRedoStack: (script: UndoElement) => void
 
   toasts: Toast[]
   addToast: (type: ToastType, title: string, description: string) => void
@@ -347,18 +354,33 @@ export const useStore = create<AppState>()(
         })
         return get().currentMessages
       },
+      archivedUndoStack: [],
       undoStack: [],
-      setUndoStack: (stack: ExecutedScript[]) => set({ undoStack: stack }),
-      addToUndoStack: (script: ExecutedScript) =>
+      popUndoStack: () => {
+        const undoStack = get().undoStack
+        const lastElement = undoStack.pop()
+        if (lastElement) {
+          set({
+            undoStack,
+          })
+        }
+        return lastElement
+      },
+      addToUndoStack: (script: UndoElement, noArchiving: boolean = false) => {
         set((state) => {
+          const archivedUndoStack = noArchiving
+            ? state.archivedUndoStack
+            : [...state.archivedUndoStack, script]
           return {
             undoStack: [...state.undoStack, script],
+            archivedUndoStack,
             redoStack: [],
           }
-        }),
+        })
+      },
       redoStack: [],
-      setRedoStack: (stack: ExecutedScript[]) => set({ redoStack: stack }),
-      addToRedoStack: (script: ExecutedScript) => {
+      setRedoStack: (stack: UndoElement[]) => set({ redoStack: stack }),
+      addToRedoStack: (script: UndoElement) => {
         set((state) => {
           return {
             redoStack: [...state.redoStack, script],

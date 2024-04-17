@@ -1,6 +1,7 @@
 import { useStore } from "../../store"
 import { ExecutedFunction, ExecutedScript } from "./executedScript"
 import { parse } from "./parser"
+import { v4 as uuid } from "uuid"
 
 export const runBase = async (
   runCallback: () => Promise<ExecutedFunction[]>,
@@ -27,7 +28,12 @@ export const runBase = async (
     script: functions,
     parsedVideostrate: videoStrateBefore,
   }
-  useStore.getState().addToUndoStack(executedScript)
+  const undoElement = {
+    id: uuid(),
+    parent: useStore.getState().undoStack.at(-1)?.id ?? "",
+    script: executedScript,
+  }
+  useStore.getState().addToUndoStack(undoElement)
 
   return {
     asPendingChanges: () => useStore.getState().setPendingChanges(true),
