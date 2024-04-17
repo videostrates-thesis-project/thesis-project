@@ -1,4 +1,4 @@
-export type VideoElementType = "video" | "subtitle" | "custom"
+export type VideoElementType = "video" | "custom"
 import { TIME_DECIMALS_PRECISION } from "../envVariables"
 
 const precision = 10 ** TIME_DECIMALS_PRECISION
