@@ -83,6 +83,7 @@ const DefaultChat = () => {
           selectedChatMessage: selectedChatMessage,
           setSelectedChatMessage: setSelectedChatMessage,
         }}
+        showSelection={true}
       />
     </div>
   )

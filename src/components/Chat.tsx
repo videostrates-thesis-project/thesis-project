@@ -6,6 +6,8 @@ import { ChatMessage } from "../types/chatMessage"
 import data from "@emoji-mart/data"
 import Picker from "@emoji-mart/react"
 import { useOnClickOutside } from "../hooks/useClickOutside"
+import { useStore } from "../store"
+import { useSelectionHint } from "../hooks/useSelectionHint"
 
 type ChatProps = {
   onSend: (message: string) => void
@@ -20,6 +22,7 @@ type ChatProps = {
     selectedChatMessage: ChatMessage | null
     setSelectedChatMessage: (msg: ChatMessage | null) => void
   }
+  showSelection: boolean
   addEmoji?: (id: string, reaction: string) => void
 }
 
@@ -29,6 +32,7 @@ const Chat = ({
   pendingChanges,
   highlight = { isEnabled: false, isHighlighted: false },
   messageSelection = undefined,
+  showSelection = false,
   addEmoji,
 }: ChatProps) => {
   const [message, setMessage] = useState("")
@@ -43,6 +47,10 @@ const Chat = ({
     top: "0px",
     left: "0px",
   })
+
+  const { selectionHint } = useSelectionHint()
+
+  const { clearSelection } = useStore()
 
   const reactionRef = useRef<HTMLDivElement>(null)
 
@@ -295,7 +303,28 @@ const Chat = ({
       <div className="flex flex-col gap-2 w-full mt-auto p-2">
         {pendingChanges && <PendingChangesBanner />}
 
-        {messageSelection && messageSelection.selectedChatMessage && (
+        {showSelection && selectionHint && (
+          <div className="flex flex-row items-center h-8 w-full bg-base-100 rounded-lg text-gray-500">
+            {/* <div className="rounded-none rounded-l-lg  rotate-180 h-full w-8">
+              <i className="bi bi-reply"></i>
+            </div> */}
+
+            <div className="p-2 text-sm w-full text-left">
+              {selectionHint.length > 43
+                ? selectionHint.slice(0, 43) + "..."
+                : selectionHint}
+            </div>
+
+            <button
+              className="btn btn-sm btn-error rounded-none rounded-r-lg w-9"
+              onClick={() => clearSelection()}
+            >
+              <i className="bi bi-x"></i>
+            </button>
+          </div>
+        )}
+
+        {messageSelection?.selectedChatMessage && (
           <div className="flex flex-row items-center h-8 w-full bg-base-100 rounded-lg text-gray-500">
             <div className="rounded-none rounded-l-lg  rotate-180 h-full w-8">
               <i className="bi bi-reply"></i>
@@ -309,7 +338,7 @@ const Chat = ({
             </div>
 
             <button
-              className="btn btn-sm btn-error rounded-none rounded-r-lg"
+              className="btn btn-sm btn-error rounded-none rounded-r-lg  w-9"
               onClick={() => messageSelection.setSelectedChatMessage(null)}
             >
               <i className="bi bi-x"></i>
