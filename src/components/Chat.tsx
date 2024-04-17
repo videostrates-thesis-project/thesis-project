@@ -222,6 +222,13 @@ const Chat = ({
                   )}
                 ></div>
 
+                {msg == messageSelection?.selectedChatMessage && (
+                  <Sparkle
+                    useDefaultClasses={false}
+                    className="absolute top-0 right-0 z-10 pointer-events-none m-1 opacity-50"
+                  />
+                )}
+
                 {msg.role === "assistant" &&
                 typewriterIndex === index &&
                 newMessage ? (
