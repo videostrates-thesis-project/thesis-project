@@ -73,10 +73,12 @@ export interface AppState {
   addReactionToMessage: (id: string, reaction: string) => void
   resetMessages: () => void
 
-  currentMessages: ChatCompletionMessageParam[]
+  archivedMessages: { time: string; message: ChatCompletionMessageParam }[]
+
+  currentMessages: { time: string; message: ChatCompletionMessageParam }[]
   addMessage: (
     message: ChatCompletionMessageParam
-  ) => ChatCompletionMessageParam[]
+  ) => { time: string; message: ChatCompletionMessageParam }[]
 
   pendingChanges: boolean
   setPendingChanges: (unaccepted: boolean) => void
@@ -105,7 +107,7 @@ export const useStore = create<AppState>()(
     (set, get) => ({
       videostrateUrl: "https://demo.webstrates.net/evil-jellyfish-8/",
       setVideostrateUrl: (url: string) =>
-        set({
+        set((state) => ({
           videostrateUrl: url,
           availableClips: [],
           clipsMetadata: [],
@@ -119,11 +121,14 @@ export const useStore = create<AppState>()(
           selectedImportableCustomElement: null,
           chatMessages: [],
           currentMessages: [],
+          archivedMessages: state.archivedMessages.concat(
+            state.currentMessages
+          ),
           pendingChanges: false,
           undoStack: [],
           redoStack: [],
           toasts: [],
-        }),
+        })),
       fileName: "Untitled Videostrate",
       setFileName: (name: string) => set({ fileName: name }),
       parsedVideostrate: new ParsedVideostrate([], []),
@@ -304,15 +309,22 @@ export const useStore = create<AppState>()(
         })
       },
       resetMessages: () => {
-        set({ chatMessages: [], currentMessages: [] })
+        set((state) => ({
+          archivedMessages: state.archivedMessages.concat(
+            state.currentMessages
+          ),
+          chatMessages: [],
+          currentMessages: [],
+        }))
       },
+      archivedMessages: [],
       currentMessages: [],
       addMessage: (message: ChatCompletionMessageParam) => {
         set((state) => {
           const currentMessages = state.currentMessages
           // Find the last message where role = 'user'
           const lastUserMessageIndex = currentMessages
-            .map((m) => m.role)
+            .map((m) => m.message.role)
             .lastIndexOf("user")
           const chatLastUserMessageIndex = state.chatMessages
             .map((m) => m.role)
@@ -322,12 +334,15 @@ export const useStore = create<AppState>()(
             .lastIndexOf("user", chatLastUserMessageIndex - 1)
           const lastUserMessage = currentMessages[lastUserMessageIndex]
           if (state.chatMessages[secondLastUserMessageIndex]?.content) {
-            lastUserMessage.content =
+            lastUserMessage.message.content =
               state.chatMessages[secondLastUserMessageIndex]?.content
           }
 
           return {
-            currentMessages: [...currentMessages, message],
+            currentMessages: [
+              ...currentMessages,
+              { time: new Date().toISOString(), message },
+            ],
           }
         })
         return get().currentMessages
