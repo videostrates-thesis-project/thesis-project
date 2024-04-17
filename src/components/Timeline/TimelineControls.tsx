@@ -5,13 +5,15 @@ import { runCommands } from "../../services/interpreter/run"
 import { deleteElement as deleteElementCommand } from "../../services/interpreter/builtin/deleteElement"
 import useEditCommands from "../../hooks/useEditCommands"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
+import clsx from "clsx"
 
 const TimelineControls = (props: {
   zoomIn: (step: number) => void
   zoomOut: (step: number) => void
   zoomToFit: () => void
 }) => {
-  const { parsedVideostrate, playbackState, selectedClipId, seek } = useStore()
+  const { parsedVideostrate, playbackState, selectedClipId, isUiFrozen, seek } =
+    useStore()
   const { execute, moveLayerDown, moveLayerUp } = useEditCommands()
   const playbackTime = useTimeStamp(playbackState.time)
   const fullTime = useTimeStamp(parsedVideostrate.length)
@@ -49,17 +51,35 @@ const TimelineControls = (props: {
         {selectedClipId && (
           <>
             <div className="tooltip" data-tip="Move up">
-              <button className="btn btn-sm btn-ghost" onClick={moveUp}>
+              <button
+                className={clsx(
+                  "btn btn-sm",
+                  isUiFrozen ? "btn-disabled" : "btn-ghost"
+                )}
+                onClick={moveUp}
+              >
                 <i className="bi bi-layer-forward text-lg"></i>
               </button>
             </div>
             <div className="tooltip" data-tip="Move down">
-              <button className="btn btn-sm btn-ghost" onClick={moveDown}>
+              <button
+                className={clsx(
+                  "btn btn-sm",
+                  isUiFrozen ? "btn-disabled" : "btn-ghost"
+                )}
+                onClick={moveDown}
+              >
                 <i className="bi bi-layer-backward text-lg"></i>
               </button>
             </div>
             <div className="tooltip" data-tip="Delete">
-              <button className="btn btn-sm btn-ghost" onClick={deleteElement}>
+              <button
+                className={clsx(
+                  "btn btn-sm",
+                  isUiFrozen ? "btn-disabled" : "btn-ghost"
+                )}
+                onClick={deleteElement}
+              >
                 <i className="bi bi-trash text-lg"></i>
               </button>
             </div>
