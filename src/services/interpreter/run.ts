@@ -29,6 +29,7 @@ export const runBase = async (
     parsedVideostrate: videoStrateBefore,
   }
   const undoElement = {
+    time: new Date().toISOString(),
     id: uuid(),
     parent: useStore.getState().undoStack.at(-1)?.id ?? "",
     script: executedScript,

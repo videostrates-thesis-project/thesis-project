@@ -16,6 +16,7 @@ const DEFAULT_IMAGE_TITLE = "Image"
 const DEFAULT_CLIP_TITLE = "Clip"
 
 interface UndoElement {
+  time: string
   id: string
   parent: string
   script: ExecutedScript
