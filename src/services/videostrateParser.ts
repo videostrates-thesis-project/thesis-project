@@ -5,7 +5,6 @@ import {
   VideoElement,
   VideoElementType,
 } from "../types/videoElement"
-import { v4 as uuid } from "uuid"
 import { parseStyle } from "./parser/parseStyle"
 
 let allElements: VideoElement[] = []

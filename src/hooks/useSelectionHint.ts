@@ -5,14 +5,14 @@ const useSelectionHint = () => {
   const [selectionHint, setSelectionHint] = useState<string | null>(null)
 
   const {
-    selectedClipId,
+    selectedClip,
     selectedImportableClipName,
     selectedImportableImage,
     selectedImportableCustomElement,
   } = useStore()
 
   useEffect(() => {
-    if (selectedClipId) setSelectionHint(`Clip: ${selectedClipId}`)
+    if (selectedClip) setSelectionHint(`Clip: ${selectedClip.name}`)
     else if (selectedImportableClipName)
       setSelectionHint(`Importable clip: ${selectedImportableClipName}`)
     else if (selectedImportableImage)
@@ -23,7 +23,7 @@ const useSelectionHint = () => {
       )
     else setSelectionHint(null)
   }, [
-    selectedClipId,
+    selectedClip,
     selectedImportableClipName,
     selectedImportableImage,
     selectedImportableCustomElement,

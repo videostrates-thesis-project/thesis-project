@@ -7,7 +7,11 @@ import VideoClip, { IndexingState, RawMetadata } from "../types/videoClip"
 import { ChatMessage } from "../types/chatMessage"
 import { Image } from "../types/image"
 import { v4 as uuid } from "uuid"
-import { CustomElement, VideoClipElement } from "../types/videoElement"
+import {
+  CustomElement,
+  VideoClipElement,
+  VideoElement,
+} from "../types/videoElement"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 import { ExecutedScript } from "../services/interpreter/executedScript"
 
@@ -56,8 +60,8 @@ export interface AppState {
 
   clearSelection: () => void
 
-  selectedClipId: string | null
-  setSelectedClipId: (id: string | null) => void
+  selectedClip: VideoElement | null
+  setSelectedClip: (clip: VideoElement | null) => void
 
   selectedImportableClipName: string | null
   setSelectedImportableClipName: (name: string | null) => void
@@ -116,7 +120,7 @@ export const useStore = create<AppState>()(
           seek: 0,
           playing: false,
           playbackState: { frame: 0, time: 0 },
-          selectedClipId: null,
+          selectedClip: null,
           selectedImportableClipName: null,
           selectedImportableImage: null,
           selectedImportableCustomElement: null,
@@ -265,17 +269,17 @@ export const useStore = create<AppState>()(
       },
       clearSelection: () => {
         set({
-          selectedClipId: null,
+          selectedClip: null,
           selectedImportableClipName: null,
           selectedImportableImage: null,
           selectedImportableCustomElement: null,
           selectedChatMessage: null,
         })
       },
-      selectedClipId: null,
-      setSelectedClipId: (id: string | null) => {
+      selectedClip: null,
+      setSelectedClip: (clip: VideoElement | null) => {
         get().clearSelection()
-        set({ selectedClipId: id })
+        set({ selectedClip: clip })
       },
       selectedImportableClipName: null,
       setSelectedImportableClipName: (name: string | null) => {

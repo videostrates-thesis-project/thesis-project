@@ -22,8 +22,8 @@ const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
   const timeline = useContext(TimelineContext)
   const {
-    selectedClipId,
-    setSelectedClipId,
+    selectedClip,
+    setSelectedClip,
     clipsMetadata,
     pendingChanges,
     addAvailableCustomElement,
@@ -244,8 +244,8 @@ const Clip = (props: { clip: TimelineElement }) => {
   )
 
   const isSelected = useMemo(
-    () => selectedClipId === clip.id,
-    [selectedClipId, clip.id]
+    () => selectedClip?.id === clip.id,
+    [selectedClip, clip.id]
   )
 
   const handleWidth = useMemo(
@@ -342,7 +342,7 @@ const Clip = (props: { clip: TimelineElement }) => {
                 onDrag={onDrag}
                 onDragStart={(e) => {
                   onDragStart(e)
-                  setSelectedClipId(clip.id)
+                  setSelectedClip(clip)
                 }}
                 onDragEnd={onDragMoveEnd}
               >

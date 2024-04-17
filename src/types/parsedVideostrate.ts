@@ -216,8 +216,8 @@ export class ParsedVideostrate {
   }
 
   public deleteElementById(elementId: string) {
-    if (useStore.getState().selectedClipId === elementId) {
-      useStore.getState().setSelectedClipId(null)
+    if (useStore.getState().selectedClip?.id === elementId) {
+      useStore.getState().setSelectedClip(null)
     }
     this.all = this.all.filter(
       (c) =>

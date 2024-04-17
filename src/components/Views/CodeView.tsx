@@ -355,6 +355,8 @@ const CodeView = () => {
                 }}
                 addEmoji={addEmoji}
                 onNewConversation={startNewConversation}
+                pendingChanges={false}
+                showSelection={false}
               />
             </div>
             <CodeEditor
