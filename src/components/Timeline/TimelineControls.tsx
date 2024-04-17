@@ -4,13 +4,14 @@ import { useStore } from "../../store"
 import { runCommands } from "../../services/interpreter/run"
 import { deleteElement as deleteElementCommand } from "../../services/interpreter/builtin/deleteElement"
 import useEditCommands from "../../hooks/useEditCommands"
+import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
 
 const TimelineControls = (props: {
   zoomIn: (step: number) => void
   zoomOut: (step: number) => void
   zoomToFit: () => void
 }) => {
-  const { parsedVideostrate, playbackState, selectedClipId } = useStore()
+  const { parsedVideostrate, playbackState, selectedClipId, seek } = useStore()
   const { execute, moveLayerDown, moveLayerUp } = useEditCommands()
   const playbackTime = useTimeStamp(playbackState.time)
   const fullTime = useTimeStamp(parsedVideostrate.length)
@@ -29,9 +30,22 @@ const TimelineControls = (props: {
     runCommands(deleteElementCommand(selectedClipId))
   }, [selectedClipId])
 
+  const createElement = useCallback(() => {
+    runCommands(addCustomElement("New element", "", seek, seek + 10))
+  }, [seek])
+
   return (
     <div className="flex flex-row text-lg bg-base-300 border-y border-neutral p-2 ">
       <div className="w-1/3 text-left">
+        {!selectedClipId && (
+          <>
+            <div className="tooltip" data-tip="Create custom element">
+              <button className="btn btn-sm btn-ghost" onClick={createElement}>
+                <i className="bi bi-plus-lg text-lg"></i>
+              </button>
+            </div>
+          </>
+        )}
         {selectedClipId && (
           <>
             <div className="tooltip" data-tip="Move up">
