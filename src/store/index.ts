@@ -101,6 +101,11 @@ export const useStore = create<AppState>()(
       setVideostrateUrl: (url: string) =>
         set({
           videostrateUrl: url,
+          fileName:
+            url
+              .split("/")
+              .filter((s) => s)
+              .pop() || "Untitled Videostrate",
           availableClips: [],
           availableImages: [],
           seek: 0,
