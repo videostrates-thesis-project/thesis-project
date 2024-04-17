@@ -303,7 +303,9 @@ const Chat = ({
             }}
           />
           {!message && (
-            <Sparkle className={clsx("top-1 left-4", highlight && "left-14")} />
+            <Sparkle
+              className={clsx("top-1 left-4", highlight.isEnabled && "left-14")}
+            />
           )}
           <button
             className={clsx(
