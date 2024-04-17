@@ -77,7 +77,7 @@ const CodeView = () => {
         const availableClip = availableClips.find(
           (c) => c.source === clip.source
         )
-        const html = `<video id="${clip.id}" clip-name="${availableClip?.title}" class="composited" style="min-width: 0%"><source src="${clip.source}" /></video>`
+        const html = `<video id="${clip.id}" clip-name="${availableClip?.title}" class="composited" style="min-width: 0; width: 100%; height: 100%;"><source src="${clip.source}" /></video>`
         el.innerHTML += html
       })
       if (clips.length > 0) {

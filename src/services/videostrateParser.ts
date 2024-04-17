@@ -154,7 +154,16 @@ const parseElement = (element: ChildNode) => {
     })
     allElements.push(clip)
   } else {
-    console.log(htmlElement.innerHTML)
+    const htmlCopy = htmlElement.cloneNode(true) as HTMLElement
+
+    htmlCopy
+      .querySelectorAll("[embedded-clip-container]")
+      .forEach((element) => {
+        element.innerHTML = ""
+      })
+
+    const content = htmlCopy.innerHTML
+
     const videoElement = new CustomElement({
       name: htmlElement.getAttribute("custom-element-name") ?? "",
       start: parseFloat(htmlElement.getAttribute("data-start") ?? "0"),
@@ -162,7 +171,7 @@ const parseElement = (element: ChildNode) => {
       type: determineType(htmlElement),
       nodeType: htmlElement.nodeName.toLowerCase(),
       id: htmlElement.id.length > 0 ? htmlElement.id : uuid(),
-      content: htmlElement.innerHTML,
+      content: content,
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,
       layer: parseInt(htmlElement.style.zIndex || "0"),
