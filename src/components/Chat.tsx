@@ -302,7 +302,9 @@ const Chat = ({
               setMessage(e.target.value)
             }}
           />
-          {!message && <Sparkle className="top-1 left-4" />}
+          {!message && (
+            <Sparkle className={clsx("top-1 left-4", highlight && "left-14")} />
+          )}
           <button
             className={clsx(
               "btn btn-sm btn-accent join-item px-2 h-full min-w-0",
