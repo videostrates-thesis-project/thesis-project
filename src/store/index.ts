@@ -98,6 +98,12 @@ export interface AppState {
 
   showScriptTab: boolean
   setShowScriptTab: (show: boolean) => void
+
+  currentAsyncAction: string | null
+  setCurrentAsyncAction: (action: string | null) => void
+
+  isUiFrozen: boolean
+  setIsUiFrozen: (frozen: boolean) => void
 }
 
 export const useStore = create<AppState>()(
@@ -374,6 +380,11 @@ export const useStore = create<AppState>()(
       setSideBarTab: (tab: SideBarTab) => set({ sideBarTab: tab }),
       showScriptTab: true,
       setShowScriptTab: (show: boolean) => set({ showScriptTab: show }),
+      currentAsyncAction: null,
+      setCurrentAsyncAction: (action: string | null) =>
+        set({ currentAsyncAction: action }),
+      isUiFrozen: false,
+      setIsUiFrozen: (frozen: boolean) => set({ isUiFrozen: frozen }),
     }),
     {
       name: "thesis-project-storage",
