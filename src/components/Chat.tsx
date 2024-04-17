@@ -87,12 +87,15 @@ const Chat = ({
   const onTrySend = useCallback(() => {
     setTypewriterIndex(null)
     setNewMessage(true)
+    if (messageSelection?.selectedChatMessage) {
+      messageSelection?.setSelectedChatMessage(null)
+    }
 
     onSend(message)
 
     setMessage("")
     setLoading(true)
-  }, [message, onSend])
+  }, [message, onSend, messageSelection])
 
   useEffect(() => {
     if (endRef.current) {
@@ -326,10 +329,6 @@ const Chat = ({
 
         {showSelection && selectionHint && (
           <div className="flex flex-row items-center h-8 w-full bg-base-100 rounded-lg text-gray-500">
-            {/* <div className="rounded-none rounded-l-lg  rotate-180 h-full w-8">
-              <i className="bi bi-reply"></i>
-            </div> */}
-
             <div className="p-2 text-sm w-full text-left">
               {selectionHint.length > 43
                 ? selectionHint.slice(0, 43) + "..."
