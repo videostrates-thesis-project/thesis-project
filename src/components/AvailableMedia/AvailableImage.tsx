@@ -6,6 +6,7 @@ import clsx from "clsx"
 import { runCommands } from "../../services/interpreter/run"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
 import { createOrUpdateStyle } from "../../services/interpreter/builtin/createOrUpdateStyle"
+import Sparkle from "../Sparkle"
 
 const AvailableImage = (props: { image: Image }) => {
   const { parsedVideostrate, seek, deleteAvailableImage } = useStore()
