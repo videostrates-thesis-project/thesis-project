@@ -22,7 +22,7 @@ export const addClip = (clipName: string, start: number, end?: number) => {
       const clipId = parsedVideostrate.addClip(
         availableClip,
         start,
-        end ?? start + 10
+        end ?? start + (availableClip.length ?? 10)
       )
       useStore.getState().setParsedVideostrate(parsedVideostrate)
 
