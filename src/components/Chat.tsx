@@ -355,11 +355,8 @@ const Chat = ({
               <i className="bi bi-reply"></i>
             </div>
 
-            <div className="p-2 text-sm w-full text-left">
-              {messageSelection.selectedChatMessage.content.length > 43
-                ? messageSelection.selectedChatMessage.content.slice(0, 43) +
-                  "..."
-                : messageSelection.selectedChatMessage.content}
+            <div className="p-2 text-sm w-full text-left overflow-hidden whitespace-nowrap text-ellipsis">
+              {messageSelection.selectedChatMessage.content}
             </div>
 
             <button
