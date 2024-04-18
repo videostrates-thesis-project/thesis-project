@@ -1,7 +1,6 @@
 import { addClip } from "./addClip"
 import { addClipToElement } from "./addClipToElement"
 import { addCustomElement } from "./addCustomElement"
-import { addSubtitle } from "./addSubtitle"
 import { assignClass } from "./assignClass"
 import { removeClass } from "./removeClass"
 import { moveLayer } from "./moveLayer"
@@ -28,7 +27,6 @@ const builtinFunctions = {
   add_cropped_clip: addCroppedClip,
   add_clip_to_element: addClipToElement,
   add_custom_element: addCustomElement,
-  add_subtitle: addSubtitle,
   assign_class: assignClass,
   remove_class: removeClass,
   move_layer: moveLayer,

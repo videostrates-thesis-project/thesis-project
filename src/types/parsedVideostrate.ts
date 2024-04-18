@@ -258,6 +258,7 @@ export class ParsedVideostrate {
   }
 
   private static cleanTree = (element: HTMLElement) => {
+    if (!element) return element
     if (element?.childNodes) {
       element.childNodes.forEach(
         (childNode) => (childNode = this.cleanTree(childNode as HTMLElement))
@@ -287,10 +288,10 @@ export class ParsedVideostrate {
     const document = parser.parseFromString(content, "text/html")
     let htmlElement = document.body.firstChild as HTMLElement
     htmlElement = ParsedVideostrate.cleanTree(htmlElement)
-    const parent = htmlElement.parentNode
+    const parent = htmlElement?.parentNode
     const wrapper = document.createElement("div")
     parent?.replaceChild(wrapper, htmlElement)
-    wrapper.appendChild(htmlElement)
+    if (htmlElement) wrapper.appendChild(htmlElement)
 
     const newId = ParsedVideostrate.generateElementId()
     const layer = Math.max(...this.all.map((e) => e.layer)) + 1

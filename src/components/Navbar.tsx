@@ -61,6 +61,7 @@ const Navbar = () => {
             type="text"
             value={fileName}
             onChange={(e) => setFileName(e.target.value)}
+            readOnly
           />
         </div>
       </nav>

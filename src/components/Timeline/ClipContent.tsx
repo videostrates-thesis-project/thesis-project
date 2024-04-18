@@ -12,7 +12,7 @@ const ClipContent = (props: {
   right?: ReactElement | false
 }) => {
   const { clip } = props
-  const { selectedClip, setSelectedClip } = useStore()
+  const { selectedClip, setSelectedClip, isUiFrozen } = useStore()
   const ref = useRef<HTMLDivElement>(null)
 
   const isSelected = useMemo(
@@ -63,7 +63,8 @@ const ClipContent = (props: {
           ? "opacity-30 border-transparent"
           : isSelected
             ? "!border-accent border-x-0 cursor-pointer"
-            : "border-base-100 cursor-pointer hover:border-gray-300"
+            : "border-base-100 cursor-pointer hover:border-gray-300",
+        isUiFrozen && "cursor-not-allowed"
       )}
       onClick={() => {
         if (selectedClip?.id === clip.id) setSelectedClip(null)

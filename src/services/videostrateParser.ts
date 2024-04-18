@@ -3,7 +3,6 @@ import {
   CustomElement,
   VideoClipElement,
   VideoElement,
-  VideoElementType,
 } from "../types/videoElement"
 import { parseStyle } from "./parser/parseStyle"
 
@@ -78,8 +77,7 @@ const parseElement = (element: ChildNode) => {
     !htmlElement?.classList ||
     !htmlElement.classList.contains("composited") ||
     isRootVideoContainer ||
-    isCustomVideoContainer ||
-    htmlElement.classList.contains("subtitles")
+    isCustomVideoContainer
   )
     return
 
@@ -161,7 +159,7 @@ const parseElement = (element: ChildNode) => {
       name: htmlElement.getAttribute("custom-element-name") ?? "",
       start: parseFloat(htmlElement.getAttribute("data-start") ?? "0"),
       end: parseFloat(htmlElement.getAttribute("data-end") ?? "0"),
-      type: determineType(htmlElement),
+      type: "custom",
       nodeType: htmlElement.nodeName.toLowerCase(),
       id:
         htmlElement.id.length > 0
@@ -175,10 +173,4 @@ const parseElement = (element: ChildNode) => {
     })
     allElements.push(videoElement)
   }
-}
-
-const determineType = (element: HTMLElement): VideoElementType => {
-  if (element.classList.contains("subtitle")) return "subtitle"
-
-  return "custom"
 }

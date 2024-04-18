@@ -125,15 +125,6 @@ function crop(clip_id: string, relative_start: number, relative_end: number): nu
 function set_speed(clip_id: string, speed: number): number
 
 /**
- * Adds a piece of subtitle to the timeline.
- * @param {text} text of the subtitle
- * @param {absolute_start} when the subtitle starts displaying in the timeline, in seconds
- * @param {absolute_end} when the subtitle stops displaying in the timeline, in seconds
- * @returns {string} the id of the new subtitle
- */
-function add_subtitle(text: string, absolute_start: number, absolute_end: number): string
-
-/**
  * Adds a custom html element to the timeline.
  *      DO NOT explicitly include clips in the element. An embedded clip can be added to an embedded clip container using the add_clip_to_element function.
  * @param {element_name} the name of the element, e.g. "Cat table", short, max 20 characters

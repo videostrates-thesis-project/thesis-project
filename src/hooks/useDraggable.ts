@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
+import { useStore } from "../store"
 
 const useDraggable = (initPosX: number, minPosX?: number, maxPosX?: number) => {
+  const { isUiFrozen } = useStore()
   const [startDragPosition, setStartDragPosition] = useState(0)
   const [draggedPosition, setDraggedPosition] = useState(initPosX)
   const [emptyDragImage, setEmptyDragImage] = useState<HTMLImageElement | null>(
@@ -21,11 +23,14 @@ const useDraggable = (initPosX: number, minPosX?: number, maxPosX?: number) => {
   }, [])
 
   const onDragStart = (e: React.DragEvent) => {
+    if (isUiFrozen) return
+
     e.dataTransfer.setDragImage(emptyDragImage!, 10, 10)
     setStartDragPosition(e.clientX - initPosX)
   }
 
   const onDrag = (e: React.DragEvent) => {
+    if (isUiFrozen) return 0
     // Sometimes the clientX is 0 for unknown reasons - it causes a jump in the dragged position.
     //It can ignored since the user has no possibility to drag the element to the left edge of the screen.
     if (e.clientX === 0) return 0
