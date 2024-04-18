@@ -257,7 +257,7 @@ class OpenAIService {
 
     addReactionToMessage(
       messages[lastUserMessageIndex].id,
-      reaction?.slice(0, 2) ?? ""
+      reaction?.slice(0, 3) ?? ""
     )
   }
 
