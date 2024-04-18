@@ -64,6 +64,7 @@ const Navbar = () => {
             readOnly
           />
         </div>
+        <div className="navbar-end"></div>
       </nav>
     </>
   )
