@@ -139,3 +139,14 @@ mark {
 .animate-slide-out {
   animation: slideOut 0.3s ease-out forwards;
 }
+
+.add-element-button .button-content {
+  width: 0px;
+  transition: width 0.2s;
+  overflow: hidden;
+}
+
+.add-element-button:hover .button-content {
+  width: 99px;
+  transition: width 0.2s;
+}
