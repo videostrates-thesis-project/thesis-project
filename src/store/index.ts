@@ -87,15 +87,12 @@ export interface AppState {
   addReactionToMessage: (id: string, reaction: string) => void
   resetMessages: () => void
 
-  archivedMessages: MessageInformation[]
-
   currentMessages: MessageInformation[]
   addMessage: (message: ChatCompletionMessageParam) => MessageInformation[]
 
   pendingChanges: boolean
   setPendingChanges: (unaccepted: boolean) => void
 
-  archivedUndoStack: UndoElement[]
   addToArchivedUndoStack: (script: UndoElement) => void
   undoStack: UndoElement[]
   popUndoStack: () => UndoElement | undefined
@@ -127,7 +124,7 @@ export const useStore = create<AppState>()(
     (set, get) => ({
       videostrateUrl: "https://demo.webstrates.net/evil-jellyfish-8/",
       setVideostrateUrl: (url: string) =>
-        set((state) => ({
+        set({
           videostrateUrl: url,
           availableClips: [],
           clipsMetadata: [],
@@ -141,14 +138,11 @@ export const useStore = create<AppState>()(
           selectedImportableCustomElement: null,
           chatMessages: [],
           currentMessages: [],
-          archivedMessages: state.archivedMessages.concat(
-            state.currentMessages
-          ),
           pendingChanges: false,
           undoStack: [],
           redoStack: [],
           toasts: [],
-        })),
+        }),
       fileName: "Untitled Videostrate",
       setFileName: (name: string) => set({ fileName: name }),
       parsedVideostrate: new ParsedVideostrate([], []),
@@ -329,15 +323,11 @@ export const useStore = create<AppState>()(
         })
       },
       resetMessages: () => {
-        set((state) => ({
-          archivedMessages: state.archivedMessages.concat(
-            state.currentMessages
-          ),
+        set({
           chatMessages: [],
           currentMessages: [],
-        }))
+        })
       },
-      archivedMessages: [],
       currentMessages: [],
       addMessage: (message: ChatCompletionMessageParam) => {
         set((state) => {
@@ -358,20 +348,22 @@ export const useStore = create<AppState>()(
               state.chatMessages[secondLastUserMessageIndex]?.content
           }
 
+          const newMessage = {
+            time: new Date().toISOString(),
+            activeUndoElementId: get().undoStack.at(-1)?.id ?? "",
+            message,
+          }
+          const archivedMessages = localStorage.getItem("chatMessages") ?? ""
+          const newArchivedMessages =
+            archivedMessages + "\n" + JSON.stringify(newMessage)
+          localStorage.setItem("chatMessages", newArchivedMessages)
+
           return {
-            currentMessages: [
-              ...currentMessages,
-              {
-                time: new Date().toISOString(),
-                activeUndoElementId: get().undoStack.at(-1)?.id ?? "",
-                message,
-              },
-            ],
+            currentMessages: [...currentMessages, newMessage],
           }
         })
         return get().currentMessages
       },
-      archivedUndoStack: [],
       undoStack: [],
       popUndoStack: () => {
         const undoStack = get().undoStack
@@ -384,20 +376,23 @@ export const useStore = create<AppState>()(
         return lastElement
       },
       addToArchivedUndoStack: (script: UndoElement) => {
-        set((state) => {
-          return {
-            archivedUndoStack: [...state.archivedUndoStack, script],
-          }
-        })
+        const archivedUndoStack =
+          localStorage.getItem("archivedUndoStack") ?? ""
+        const newArchivedUndoStack =
+          archivedUndoStack + "\n" + JSON.stringify(script)
+        localStorage.setItem("archivedUndoStack", newArchivedUndoStack)
       },
       addToUndoStack: (script: UndoElement, noArchiving: boolean = false) => {
         set((state) => {
-          const archivedUndoStack = noArchiving
-            ? state.archivedUndoStack
-            : [...state.archivedUndoStack, script]
+          if (!noArchiving) {
+            const archivedUndoStack =
+              localStorage.getItem("archivedUndoStack") ?? ""
+            const newArchivedUndoStack =
+              archivedUndoStack + "\n" + JSON.stringify(script)
+            localStorage.setItem("archivedUndoStack", newArchivedUndoStack)
+          }
           return {
             undoStack: [...state.undoStack, script],
-            archivedUndoStack,
             redoStack: [],
           }
         })
