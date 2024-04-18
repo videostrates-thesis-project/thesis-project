@@ -5,6 +5,7 @@ import { Image } from "../../types/image"
 import clsx from "clsx"
 import { runCommands } from "../../services/interpreter/run"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
+import { createOrUpdateStyle } from "../../services/interpreter/builtin/createOrUpdateStyle"
 import Sparkle from "../Sparkle"
 import AddElementButton from "./AddElementButton"
 import ChatContextTooltip from "./ChatContextTooltip"
@@ -29,9 +30,13 @@ const AvailableImage = (props: { image: Image }) => {
       runCommands(
         addCustomElement(
           props.image.title,
-          `<img src="${props.image.url}" alt="${props.image.title}" />`,
+          `<img src="${props.image.url}" alt="${props.image.title}" class="image-full-cover"/>`,
           seek,
           seek + 20
+        ),
+        createOrUpdateStyle(
+          ".image-full-cover",
+          "width: 100%; height: 100%; object-fit: cover; object-position: center;"
         )
       )
     },

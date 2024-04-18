@@ -3,13 +3,16 @@ import SparkleImage from "../assets/sparkles.svg"
 
 type SparkleProps = {
   className?: string
+  useDefaultClasses?: boolean
 }
 
-const Sparkle = ({ className }: SparkleProps) => {
+const Sparkle = ({ className, useDefaultClasses = true }: SparkleProps) => {
   return (
     <div
       className={clsx(
-        "absolute top-0 left-0 z-10 pointer-events-none",
+        useDefaultClasses
+          ? "absolute top-0 left-0 z-10 pointer-events-none"
+          : "",
         className
       )}
     >

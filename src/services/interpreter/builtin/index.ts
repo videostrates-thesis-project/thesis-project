@@ -2,6 +2,7 @@ import { addClip } from "./addClip"
 import { addClipToElement } from "./addClipToElement"
 import { addCustomElement } from "./addCustomElement"
 import { assignClass } from "./assignClass"
+import { removeClass } from "./removeClass"
 import { moveLayer } from "./moveLayer"
 import { createAnimation } from "./createAnimation"
 import { createOrUpdateStyle } from "./createOrUpdateStyle"
@@ -27,6 +28,7 @@ const builtinFunctions = {
   add_clip_to_element: addClipToElement,
   add_custom_element: addCustomElement,
   assign_class: assignClass,
+  remove_class: removeClass,
   move_layer: moveLayer,
   create_animation: createAnimation,
   create_or_update_style: createOrUpdateStyle,

@@ -4,7 +4,6 @@ import {
   VideoClipElement,
   VideoElement,
 } from "../types/videoElement"
-import { v4 as uuid } from "uuid"
 import { parseStyle } from "./parser/parseStyle"
 
 let allElements: VideoElement[] = []
@@ -143,7 +142,10 @@ const parseElement = (element: ChildNode) => {
         (htmlElement.children.item(0) as HTMLElement).getAttribute("src") ?? "",
       type: "video",
       nodeType: "video",
-      id: htmlElement.id.length > 0 ? htmlElement.id : uuid(),
+      id:
+        htmlElement.id.length > 0
+          ? htmlElement.id
+          : ParsedVideostrate.generateElementId(),
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,
       layer: parseInt(htmlElement.style.zIndex || "0"),
@@ -159,7 +161,10 @@ const parseElement = (element: ChildNode) => {
       end: parseFloat(htmlElement.getAttribute("data-end") ?? "0"),
       type: "custom",
       nodeType: htmlElement.nodeName.toLowerCase(),
-      id: htmlElement.id.length > 0 ? htmlElement.id : uuid(),
+      id:
+        htmlElement.id.length > 0
+          ? htmlElement.id
+          : ParsedVideostrate.generateElementId(),
       content: htmlElement.innerHTML,
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,

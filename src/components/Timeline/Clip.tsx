@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo } from "react"
+import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { TimelineElement } from "../../hooks/useTimelineElements"
 import ClipContent from "./ClipContent"
 import { useStore } from "../../store"
@@ -22,13 +22,15 @@ const Clip = (props: { clip: TimelineElement }) => {
   const { clip } = props
   const timeline = useContext(TimelineContext)
   const {
-    selectedClipId,
-    setSelectedClipId,
+    selectedClip,
+    setSelectedClip,
     clipsMetadata,
     pendingChanges,
     addAvailableCustomElement,
     isUiFrozen,
   } = useStore()
+
+  const [optionsBtnVisible, setOptionsBtnVisible] = useState<boolean>(false)
 
   const minLeftCrop = useMemo(
     () =>
@@ -233,6 +235,7 @@ const Clip = (props: { clip: TimelineElement }) => {
 
   const onMouseOver = useCallback(
     (e: React.MouseEvent) => {
+      setOptionsBtnVisible(true)
       setPosition({
         x: e.clientX,
         y: window.innerHeight - e.clientY,
@@ -242,8 +245,8 @@ const Clip = (props: { clip: TimelineElement }) => {
   )
 
   const isSelected = useMemo(
-    () => selectedClipId === clip.id,
-    [selectedClipId, clip.id]
+    () => selectedClip?.id === clip.id,
+    [selectedClip, clip.id]
   )
 
   const handleWidth = useMemo(
@@ -301,6 +304,7 @@ const Clip = (props: { clip: TimelineElement }) => {
           onMouseOver={() => setDetails(clip.edits?.map((e) => e.description))}
           onMouseMove={onMouseOver}
           onMouseLeave={() => {
+            setOptionsBtnVisible(false)
             setDetails(undefined)
           }}
           onContextMenu={showMenu}
@@ -342,7 +346,7 @@ const Clip = (props: { clip: TimelineElement }) => {
                 onDrag={onDrag}
                 onDragStart={(e) => {
                   onDragStart(e)
-                  setSelectedClipId(clip.id)
+                  setSelectedClip(clip)
                 }}
                 onDragEnd={onDragMoveEnd}
               >
@@ -372,6 +376,28 @@ const Clip = (props: { clip: TimelineElement }) => {
               )
             }
           />
+          <div
+            className={clsx(
+              "absolute -top-4 -right-2 h-7 w-7 m-0",
+              (optionsBtnVisible || isVisible) && clip.type === "custom"
+                ? "visible"
+                : "hidden"
+            )}
+          >
+            <button
+              className="btn btn-sm h-full w-full px-1 rounded-md bg-gray-800 bg-opacity-90 hover:bg-gray-700 border-1 hover:bg-opacity-90 border-gray-700 hover:border-gray-800"
+              onClick={(e) => {
+                if (isVisible) {
+                  hideMenu()
+                } else {
+                  showMenu(e)
+                }
+              }}
+              onMouseDown={(e) => e.stopPropagation()}
+            >
+              <i className="bi bi-three-dots-vertical"></i>
+            </button>
+          </div>
         </div>
         <ContextMenu
           items={menuItems}

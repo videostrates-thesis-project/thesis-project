@@ -7,7 +7,7 @@ import { undo } from "../services/interpreter/undo"
 import { redo } from "../services/interpreter/redo"
 
 const useShortcuts = (enabled: boolean) => {
-  const { selectedClipId } = useStore()
+  const { selectedClip } = useStore()
   const { moveLayerDown, moveLayerUp, execute } = useEditCommands()
   const throttledMoveLayerDown = useThrottledFunction(
     (selectedClipId: string) => execute(moveLayerDown(selectedClipId))
@@ -22,13 +22,13 @@ const useShortcuts = (enabled: boolean) => {
     (event: KeyboardEvent) => {
       switch (event.key) {
         case "Delete":
-          if (selectedClipId) execute(deleteElement(selectedClipId))
+          if (selectedClip) execute(deleteElement(selectedClip.id))
           break
         case "ArrowDown":
-          if (selectedClipId) throttledMoveLayerDown(selectedClipId)
+          if (selectedClip) throttledMoveLayerDown(selectedClip.id)
           break
         case "ArrowUp":
-          if (selectedClipId) throttledMoveLayerUp(selectedClipId)
+          if (selectedClip) throttledMoveLayerUp(selectedClip.id)
           break
         case "z":
         case "Z":
@@ -56,7 +56,7 @@ const useShortcuts = (enabled: boolean) => {
     },
     [
       execute,
-      selectedClipId,
+      selectedClip,
       throttledMoveLayerDown,
       throttledMoveLayerUp,
       throttledRedo,

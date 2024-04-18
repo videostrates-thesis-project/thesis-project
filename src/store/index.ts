@@ -7,7 +7,11 @@ import VideoClip, { IndexingState, RawMetadata } from "../types/videoClip"
 import { ChatMessage } from "../types/chatMessage"
 import { Image } from "../types/image"
 import { v4 as uuid } from "uuid"
-import { CustomElement, VideoClipElement } from "../types/videoElement"
+import {
+  CustomElement,
+  VideoClipElement,
+  VideoElement,
+} from "../types/videoElement"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 import { ExecutedScript } from "../services/interpreter/executedScript"
 
@@ -56,8 +60,8 @@ export interface AppState {
 
   clearSelection: () => void
 
-  selectedClipId: string | null
-  setSelectedClipId: (id: string | null) => void
+  selectedClip: VideoElement | null
+  setSelectedClip: (clip: VideoElement | null) => void
 
   selectedImportableClipName: string | null
   setSelectedImportableClipName: (name: string | null) => void
@@ -67,6 +71,9 @@ export interface AppState {
 
   selectedImportableCustomElement: CustomElement | null
   setSelectedImportableCustomElement: (element: CustomElement | null) => void
+
+  selectedChatMessage: ChatMessage | null
+  setSelectedChatMessage: (message: ChatMessage | null) => void
 
   chatMessages: ChatMessage[]
   addChatMessage: (message: ChatMessage) => ChatMessage[]
@@ -124,10 +131,11 @@ export const useStore = create<AppState>()(
           seek: 0,
           playing: false,
           playbackState: { frame: 0, time: 0 },
-          selectedClipId: null,
+          selectedClip: null,
           selectedImportableClipName: null,
           selectedImportableImage: null,
           selectedImportableCustomElement: null,
+          selectedChatMessage: null,
           chatMessages: [],
           currentMessages: [],
           pendingChanges: false,
@@ -148,7 +156,7 @@ export const useStore = create<AppState>()(
           }, state.availableClips)
 
           const availableImages = parsed.images.reduce((acc, img) => {
-            return concatAvailableImage(acc, img)
+            return concatAvailableImage(acc, img, true)
           }, state.availableImages)
 
           return {
@@ -233,7 +241,11 @@ export const useStore = create<AppState>()(
       addAvailableImage: (image: Image) => {
         set((state) => {
           return {
-            availableImages: concatAvailableImage(state.availableImages, image),
+            availableImages: concatAvailableImage(
+              state.availableImages,
+              image,
+              true
+            ),
           }
         })
       },
@@ -247,7 +259,7 @@ export const useStore = create<AppState>()(
       availableCustomElements: [],
       addAvailableCustomElement: (element: CustomElement) => {
         const newElement = element.clone()
-        newElement.id = uuid()
+        newElement.id = ParsedVideostrate.generateElementId()
         set((state) => {
           return {
             availableCustomElements: [
@@ -268,16 +280,17 @@ export const useStore = create<AppState>()(
       },
       clearSelection: () => {
         set({
-          selectedClipId: null,
+          selectedClip: null,
           selectedImportableClipName: null,
           selectedImportableImage: null,
           selectedImportableCustomElement: null,
+          selectedChatMessage: null,
         })
       },
-      selectedClipId: null,
-      setSelectedClipId: (id: string | null) => {
+      selectedClip: null,
+      setSelectedClip: (clip: VideoElement | null) => {
         get().clearSelection()
-        set({ selectedClipId: id })
+        set({ selectedClip: clip })
       },
       selectedImportableClipName: null,
       setSelectedImportableClipName: (name: string | null) => {
@@ -293,6 +306,11 @@ export const useStore = create<AppState>()(
       setSelectedImportableCustomElement: (element: CustomElement | null) => {
         get().clearSelection()
         set({ selectedImportableCustomElement: element })
+      },
+      selectedChatMessage: null,
+      setSelectedChatMessage: (message: ChatMessage | null) => {
+        get().clearSelection()
+        set({ selectedChatMessage: message })
       },
       chatMessages: [],
       addChatMessage: (message: ChatMessage) => {
@@ -481,7 +499,11 @@ const concatAvailableClips = (
   return [...availableClips, { source, title: newTitle }]
 }
 
-const concatAvailableImage = (availableImages: Image[], image: Image) => {
+const concatAvailableImage = (
+  availableImages: Image[],
+  image: Image,
+  insertAtBeginning: boolean = false
+) => {
   if (availableImages.some((i) => i.url === image.url)) return availableImages
 
   image.title = image.title || DEFAULT_IMAGE_TITLE
@@ -494,7 +516,8 @@ const concatAvailableImage = (availableImages: Image[], image: Image) => {
     newTitle = `${image.title} ${index++}`
   }
   image.title = newTitle
-  return [...availableImages, image]
+  if (insertAtBeginning) return [image, ...availableImages]
+  else return [...availableImages, image]
 }
 
 const getUpdatedMetadata = (
