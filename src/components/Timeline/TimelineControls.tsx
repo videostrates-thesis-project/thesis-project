@@ -10,29 +10,33 @@ const TimelineControls = (props: {
   zoomOut: (step: number) => void
   zoomToFit: () => void
 }) => {
-  const { parsedVideostrate, playbackState, selectedClipId } = useStore()
+  const { parsedVideostrate, playbackState, selectedClip } = useStore()
   const { execute, moveLayerDown, moveLayerUp } = useEditCommands()
   const playbackTime = useTimeStamp(playbackState.time)
   const fullTime = useTimeStamp(parsedVideostrate.length)
 
   const moveUp = useCallback(() => {
-    execute(moveLayerUp(selectedClipId!))
-  }, [execute, moveLayerUp, selectedClipId])
+    if (selectedClip?.id) {
+      execute(moveLayerUp(selectedClip?.id))
+    }
+  }, [execute, moveLayerUp, selectedClip])
 
   const moveDown = useCallback(() => {
-    execute(moveLayerDown(selectedClipId!))
-  }, [execute, moveLayerDown, selectedClipId])
+    if (selectedClip?.id) {
+      execute(moveLayerDown(selectedClip?.id))
+    }
+  }, [execute, moveLayerDown, selectedClip])
 
   const deleteElement = useCallback(() => {
-    if (!selectedClipId) return
-
-    runCommands(deleteElementCommand(selectedClipId))
-  }, [selectedClipId])
+    if (selectedClip?.id) {
+      runCommands(deleteElementCommand(selectedClip?.id))
+    }
+  }, [selectedClip])
 
   return (
     <div className="flex flex-row text-lg bg-base-300 border-y border-neutral p-2 ">
       <div className="w-1/3 text-left">
-        {selectedClipId && (
+        {selectedClip?.id && (
           <>
             <div className="tooltip" data-tip="Move up">
               <button className="btn btn-sm btn-ghost" onClick={moveUp}>
