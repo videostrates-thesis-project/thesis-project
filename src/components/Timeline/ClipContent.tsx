@@ -19,6 +19,7 @@ const ClipContent = (props: {
     () =>
       (!props.isOldClip && selectedClip?.id === clip.id) ||
       (clip.type == "video" &&
+        (clip as VideoClipElement).containerElementId &&
         (clip as VideoClipElement).containerElementId === selectedClip?.id),
     [props.isOldClip, selectedClip, clip]
   )
