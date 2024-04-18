@@ -47,7 +47,7 @@ const AvailableImage = (props: { image: Image }) => {
   )
 
   return (
-    <ChatContextTooltip className="w-[calc(50%-0.5rem)]" selected={isSelected}>
+    <ChatContextTooltip className="w-full" selected={isSelected}>
       <div
         className={clsx(
           "available-media relative flex flex-col  rounded-lg overflow-clip bg-base-100 border-2 cursor-pointer",
@@ -62,7 +62,7 @@ const AvailableImage = (props: { image: Image }) => {
       >
         {isSelected && <Sparkle />}
         <img
-          className="flex-shrink aspect-square object-cover"
+          className="flex-shrink aspect-video object-cover"
           key={props.image.url}
           src={props.image.url}
           alt={props.image.title}
