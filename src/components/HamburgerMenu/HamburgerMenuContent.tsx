@@ -1,14 +1,35 @@
-import { useCallback, useState } from "react"
-import { useStore } from "../../store"
+import { useCallback, useMemo, useState } from "react"
+import { AiProvider, useStore } from "../../store"
 
 const HamburgerMenuContent = () => {
-  const { videostrateUrl, setVideostrateUrl, setShowScriptTab, showScriptTab } =
-    useStore()
+  const {
+    videostrateUrl,
+    setVideostrateUrl,
+    setShowScriptTab,
+    showScriptTab,
+    aiProvider,
+    setAiProvider,
+  } = useStore()
   const [url, setUrl] = useState(videostrateUrl)
 
   const onChangeUrl = useCallback(() => {
     setVideostrateUrl(url)
   }, [setVideostrateUrl, url])
+
+  const aiProviderItems = useMemo(() => {
+    return [
+      {
+        value: "openai",
+        label: "OpenAI",
+        isSelected: aiProvider === "openai",
+      },
+      {
+        value: "azure",
+        label: "Azure",
+        isSelected: aiProvider === "azure",
+      },
+    ] as { value: AiProvider; label: string; isSelected: boolean }[]
+  }, [aiProvider])
 
   return (
     <>
@@ -35,6 +56,24 @@ const HamburgerMenuContent = () => {
           />
           <span className="label-text ml-2">Show script tab</span>
         </label>
+      </div>
+      <div className="flex flex-col justify-center items-center">
+        <p className="text-gray-400">AI provider</p>
+        <div className="dropdown">
+          <div tabIndex={0} role="button" className="btn m-1">
+            {aiProviderItems.find((q) => q.isSelected)?.label}
+          </div>
+          <ul
+            tabIndex={0}
+            className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+          >
+            {aiProviderItems.map((item) => (
+              <li key={item.value}>
+                <a onClick={() => setAiProvider(item.value)}>{item.label}</a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </>
   )

@@ -31,6 +31,21 @@ class OpenAIService {
     this.thread = await openai.beta.threads.create()
   }
 
+  async sendChatMessage(text: string) {
+    const provider = useStore.getState().aiProvider
+
+    switch (provider) {
+      case "openai":
+        await this.sendChatMessageToOpenAi(text)
+        break
+      case "azure":
+        await this.sendDefaultChatMessageToAzure(text)
+        break
+      default:
+        throw new Error(`Unknown AI provider: ${provider}`)
+    }
+  }
+
   /**
    * @deprecated Use `sendChatMessage` instead.
    */
@@ -156,60 +171,73 @@ class OpenAIService {
    * @deprecated Use `sendChatMessage` to use our local pythonb backend instead.
    */
   async sendChatMessageToOpenAi(text: string) {
-    const userMessage: ChatCompletionMessageParam = {
-      role: "user",
-      content: text,
-    }
-    if (
-      useStore.getState().currentMessages.filter((m) => m.role === "system")
-        .length === 0
-    ) {
-      const systemMessage: ChatCompletionMessageParam = {
-        role: "system",
-        content: instructions,
+    try {
+      useStore.getState().setIsUiFrozen(true)
+      const userMessage: ChatCompletionMessageParam = {
+        role: "user",
+        content: text,
       }
-      useStore.getState().addMessage(systemMessage)
+      if (
+        useStore.getState().currentMessages.filter((m) => m.role === "system")
+          .length === 0
+      ) {
+        const systemMessage: ChatCompletionMessageParam = {
+          role: "system",
+          content: instructions,
+        }
+        useStore.getState().addMessage(systemMessage)
+      }
+      const messages = useStore.getState().addMessage(userMessage)
+
+      const response = await openai.chat.completions.create({
+        model: "gpt-4-0125-preview",
+        messages: messages,
+        tool_choice: {
+          type: "function",
+          function: { name: "execute_changes" },
+        },
+        tools: [executeChangesFunction],
+      })
+
+      console.log("[ChatGPT] Response", response)
+      if (response?.choices.length === 0)
+        throw new Error("[ChatGPT] No response")
+      const choice = response.choices[0]
+      if (choice.message.tool_calls?.length === 0)
+        throw new Error("[ChatGPT] No tool calls")
+      const toolCall = choice.message.tool_calls?.[0]
+      if (!toolCall?.function?.arguments)
+        throw new Error("[ChatGPT] No function arguments")
+
+      const messageString = toolCall?.function.arguments
+      const message = JSON.parse(messageString) as ExecuteChanges
+      if (!message.explanation)
+        throw new Error("[ChatGPT] No script explanation in response")
+      if (typeof message.explanation !== "string")
+        throw new Error("[ChatGPT] Script is not a string")
+
+      if (message?.script?.includes("generate_image(")) {
+        useStore.getState().setCurrentAsyncAction("Generating image...")
+      }
+
+      const chatMessage: ChatCompletionMessageParam = {
+        role: "assistant",
+        content: JSON.stringify(message),
+      }
+      useStore.getState().addMessage(chatMessage)
+      useStore.getState().addChatMessage({
+        role: "assistant",
+        content: message.explanation,
+        id: uuid(),
+      })
+
+      if (message.script) {
+        (await runScript(message.script))?.asPendingChanges()
+        useStore.getState().setCurrentAsyncAction(null)
+      }
+    } finally {
+      useStore.getState().setIsUiFrozen(false)
     }
-    const messages = useStore.getState().addMessage(userMessage)
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4-0125-preview",
-      messages: messages,
-      tool_choice: { type: "function", function: { name: "execute_changes" } },
-      tools: [executeChangesFunction],
-    })
-
-    console.log("[ChatGPT] Response", response)
-    if (response?.choices.length === 0) throw new Error("[ChatGPT] No response")
-    const choice = response.choices[0]
-    if (choice.message.tool_calls?.length === 0)
-      throw new Error("[ChatGPT] No tool calls")
-    const toolCall = choice.message.tool_calls?.[0]
-    if (!toolCall?.function?.arguments)
-      throw new Error("[ChatGPT] No function arguments")
-
-    const messageString = toolCall?.function.arguments
-    const message = JSON.parse(messageString) as ExecuteChanges
-    if (!message.explanation)
-      throw new Error("[ChatGPT] No script explanation in response")
-    if (
-      typeof message.script !== "string" ||
-      typeof message.explanation !== "string"
-    )
-      throw new Error("[ChatGPT] Script or explanation not a string")
-
-    const chatMessage: ChatCompletionMessageParam = {
-      role: "assistant",
-      content: JSON.stringify(message),
-    }
-    useStore.getState().addMessage(chatMessage)
-    useStore.getState().addChatMessage({
-      role: "assistant",
-      content: message.explanation,
-      id: uuid(),
-    })
-
-    if (message.script) (await runScript(message.script))?.asPendingChanges()
   }
 
   async sendChatMessageForReaction(

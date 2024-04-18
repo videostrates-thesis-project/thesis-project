@@ -310,7 +310,7 @@ const Chat = ({
           <button
             className={clsx(
               "btn btn-sm btn-accent join-item px-2 h-full min-w-0",
-              !message && "btn-disabled"
+              (!message || loading) && "btn-disabled"
             )}
             onClick={onTrySend}
           >

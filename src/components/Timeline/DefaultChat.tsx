@@ -37,7 +37,13 @@ const DefaultChat = () => {
         seek,
         message
       )
-      openAIService.sendDefaultChatMessageToAzure(prompt)
+      openAIService.sendChatMessage(prompt).catch((error) => {
+        addChatMessage({
+          role: "assistant",
+          content: "There was an error processing your request: " + error,
+          id: uuid(),
+        })
+      })
       const latestMessage: ChatMessage = {
         role: "user",
         content: message,
