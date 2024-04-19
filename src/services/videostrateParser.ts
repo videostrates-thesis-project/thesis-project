@@ -3,9 +3,7 @@ import {
   CustomElement,
   VideoClipElement,
   VideoElement,
-  VideoElementType,
 } from "../types/videoElement"
-import { v4 as uuid } from "uuid"
 import { parseStyle } from "./parser/parseStyle"
 
 let allElements: VideoElement[] = []
@@ -79,8 +77,7 @@ const parseElement = (element: ChildNode) => {
     !htmlElement?.classList ||
     !htmlElement.classList.contains("composited") ||
     isRootVideoContainer ||
-    isCustomVideoContainer ||
-    htmlElement.classList.contains("subtitles")
+    isCustomVideoContainer
   )
     return
 
@@ -145,7 +142,10 @@ const parseElement = (element: ChildNode) => {
         (htmlElement.children.item(0) as HTMLElement).getAttribute("src") ?? "",
       type: "video",
       nodeType: "video",
-      id: htmlElement.id.length > 0 ? htmlElement.id : uuid(),
+      id:
+        htmlElement.id.length > 0
+          ? htmlElement.id
+          : ParsedVideostrate.generateElementId(),
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,
       layer: parseInt(htmlElement.style.zIndex || "0"),
@@ -168,10 +168,13 @@ const parseElement = (element: ChildNode) => {
       name: htmlElement.getAttribute("custom-element-name") ?? "",
       start: parseFloat(htmlElement.getAttribute("data-start") ?? "0"),
       end: parseFloat(htmlElement.getAttribute("data-end") ?? "0"),
-      type: determineType(htmlElement),
+      type: "custom",
       nodeType: htmlElement.nodeName.toLowerCase(),
-      id: htmlElement.id.length > 0 ? htmlElement.id : uuid(),
       content: content,
+      id:
+        htmlElement.id.length > 0
+          ? htmlElement.id
+          : ParsedVideostrate.generateElementId(),
       offset: parseFloat(htmlElement.getAttribute("data-offset") ?? "0"),
       outerHtml: htmlElement.outerHTML,
       layer: parseInt(htmlElement.style.zIndex || "0"),
@@ -179,10 +182,4 @@ const parseElement = (element: ChildNode) => {
     })
     allElements.push(videoElement)
   }
-}
-
-const determineType = (element: HTMLElement): VideoElementType => {
-  if (element.classList.contains("subtitle")) return "subtitle"
-
-  return "custom"
 }

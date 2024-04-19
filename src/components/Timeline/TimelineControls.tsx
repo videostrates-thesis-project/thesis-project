@@ -4,48 +4,86 @@ import { useStore } from "../../store"
 import { runCommands } from "../../services/interpreter/run"
 import { deleteElement as deleteElementCommand } from "../../services/interpreter/builtin/deleteElement"
 import useEditCommands from "../../hooks/useEditCommands"
+import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
+import clsx from "clsx"
 
 const TimelineControls = (props: {
   zoomIn: (step: number) => void
   zoomOut: (step: number) => void
   zoomToFit: () => void
 }) => {
-  const { parsedVideostrate, playbackState, selectedClipId } = useStore()
+  const { parsedVideostrate, playbackState, selectedClip, isUiFrozen, seek } =
+    useStore()
   const { execute, moveLayerDown, moveLayerUp } = useEditCommands()
   const playbackTime = useTimeStamp(playbackState.time)
   const fullTime = useTimeStamp(parsedVideostrate.length)
 
   const moveUp = useCallback(() => {
-    execute(moveLayerUp(selectedClipId!))
-  }, [execute, moveLayerUp, selectedClipId])
+    if (selectedClip?.id) {
+      execute(moveLayerUp(selectedClip?.id))
+    }
+  }, [execute, moveLayerUp, selectedClip])
 
   const moveDown = useCallback(() => {
-    execute(moveLayerDown(selectedClipId!))
-  }, [execute, moveLayerDown, selectedClipId])
+    if (selectedClip?.id) {
+      execute(moveLayerDown(selectedClip?.id))
+    }
+  }, [execute, moveLayerDown, selectedClip])
 
   const deleteElement = useCallback(() => {
-    if (!selectedClipId) return
+    if (selectedClip?.id) {
+      runCommands(deleteElementCommand(selectedClip?.id))
+    }
+  }, [selectedClip])
 
-    runCommands(deleteElementCommand(selectedClipId))
-  }, [selectedClipId])
+  const createElement = useCallback(() => {
+    runCommands(addCustomElement("New element", "", seek, seek + 10))
+  }, [seek])
 
   return (
     <div className="flex flex-row text-lg bg-base-300 border-y border-neutral p-2 ">
       <div className="w-1/3 text-left">
-        {selectedClipId && (
+        {!selectedClip?.id && (
+          <>
+            <div className="tooltip" data-tip="Create custom element">
+              <button className="btn btn-sm btn-ghost" onClick={createElement}>
+                <i className="bi bi-plus-lg text-lg"></i>
+              </button>
+            </div>
+          </>
+        )}
+        {selectedClip?.id && (
           <>
             <div className="tooltip" data-tip="Move up">
-              <button className="btn btn-sm btn-ghost" onClick={moveUp}>
+              <button
+                className={clsx(
+                  "btn btn-sm",
+                  isUiFrozen ? "btn-disabled" : "btn-ghost"
+                )}
+                onClick={moveUp}
+              >
                 <i className="bi bi-layer-forward text-lg"></i>
               </button>
             </div>
             <div className="tooltip" data-tip="Move down">
-              <button className="btn btn-sm btn-ghost" onClick={moveDown}>
+              <button
+                className={clsx(
+                  "btn btn-sm",
+                  isUiFrozen ? "btn-disabled" : "btn-ghost"
+                )}
+                onClick={moveDown}
+              >
                 <i className="bi bi-layer-backward text-lg"></i>
               </button>
             </div>
             <div className="tooltip" data-tip="Delete">
-              <button className="btn btn-sm btn-ghost" onClick={deleteElement}>
+              <button
+                className={clsx(
+                  "btn btn-sm",
+                  isUiFrozen ? "btn-disabled" : "btn-ghost"
+                )}
+                onClick={deleteElement}
+              >
                 <i className="bi bi-trash text-lg"></i>
               </button>
             </div>

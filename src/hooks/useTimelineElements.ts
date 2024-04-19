@@ -78,7 +78,7 @@ export class TimelineElement extends VideoElement {
 }
 
 export const useTimelineElements = (widthPerSecond: number) => {
-  const { parsedVideostrate, availableClips } = useStore()
+  const { parsedVideostrate, clipsMetadata: clipsMetadata } = useStore()
   const [layers, setLayers] = useState<TimelineElement[][]>([])
   const {
     previousVideostrate,
@@ -89,7 +89,7 @@ export const useTimelineElements = (widthPerSecond: number) => {
 
   const getElementDetails = useCallback(
     (element: VideoElement) => {
-      const clipMetadata = availableClips.find(
+      const clipMetadata = clipsMetadata.find(
         (c) => c.source === (element as VideoClipElement).source
       )
       return new TimelineElement({
@@ -105,7 +105,7 @@ export const useTimelineElements = (widthPerSecond: number) => {
         containerElementId: (element as VideoClipElement).containerElementId,
       })
     },
-    [availableClips, widthPerSecond]
+    [clipsMetadata, widthPerSecond]
   )
 
   // Precalculate position of the elements

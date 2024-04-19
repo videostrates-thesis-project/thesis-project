@@ -1,3 +1,4 @@
+import { ChatMessage } from "../../types/chatMessage"
 import { Image } from "../../types/image"
 import VideoClip from "../../types/videoClip"
 import { CustomElement } from "../../types/videoElement"
@@ -90,6 +91,16 @@ const buildHighlightPrompt = (
   ).trim()
 }
 
+const buildSelectedMessagePrompt = (
+  selectedChatMessage: ChatMessage | null
+) => {
+  if (selectedChatMessage !== null) {
+    return `The user replies to the following message sent by the ${selectedChatMessage.role}: "${selectedChatMessage.content}".`
+  } else {
+    return ""
+  }
+}
+
 export const buildAssistantMessage = (
   clips: VideoClip[],
   style: string,
@@ -98,6 +109,7 @@ export const buildAssistantMessage = (
   selectedImportableClipName: string | null,
   selectedImportableImage: Image | null,
   selectedImportableCustomElement: CustomElement | null,
+  selectedChatMessage: ChatMessage | null,
   seek: number,
   prompt: string
 ) => {
@@ -109,21 +121,25 @@ export const buildAssistantMessage = (
     seek
   )
 
+  const selectedMessagePrompt = buildSelectedMessagePrompt(selectedChatMessage)
+
   return `List of available clips:
-    ${clips
-      .map(
-        (clip, index) =>
-          `${index + 1}. "${clip.title}", ${clip.length}, "${clip.source}"`
-      )
-      .join("\n    ")}
-    
-    HTML code:
-    ${html}
+${clips
+  .map(
+    (clip, index) =>
+      `${index + 1}. "${clip.title}", ${clip.length}, "${clip.source}"`
+  )
+  .join("\n    ")}
 
-    CSS code:
-    ${style}
+HTML code:
+${html}
 
-    ${highlightPrompt}
+CSS code:
+${style}
 
-    The user input is: "${prompt}"`
+${highlightPrompt}
+
+${selectedMessagePrompt}
+
+The user input is: "${prompt}"`
 }

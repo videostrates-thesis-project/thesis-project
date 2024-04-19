@@ -1,8 +1,8 @@
 import { addClip } from "./addClip"
 import { addClipToElement } from "./addClipToElement"
 import { addCustomElement } from "./addCustomElement"
-import { addSubtitle } from "./addSubtitle"
 import { assignClass } from "./assignClass"
+import { removeClass } from "./removeClass"
 import { moveLayer } from "./moveLayer"
 import { createAnimation } from "./createAnimation"
 import { createOrUpdateStyle } from "./createOrUpdateStyle"
@@ -20,13 +20,15 @@ import { print } from "./print"
 import { renameElement } from "./renameElement"
 import { reposition } from "./reposition"
 import { setSpeed } from "./setSpeed"
+import { addCroppedClip } from "./addCroppedClip"
 
 const builtinFunctions = {
   add_clip: addClip,
+  add_cropped_clip: addCroppedClip,
   add_clip_to_element: addClipToElement,
   add_custom_element: addCustomElement,
-  add_subtitle: addSubtitle,
   assign_class: assignClass,
+  remove_class: removeClass,
   move_layer: moveLayer,
   create_animation: createAnimation,
   create_or_update_style: createOrUpdateStyle,

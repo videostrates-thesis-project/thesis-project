@@ -5,6 +5,7 @@ type ContextMenuProps = {
   position: { x: number; y: number }
   visible: boolean
   onClose: () => void
+  disabled?: boolean
 }
 
 const ContextMenu = ({
@@ -12,6 +13,7 @@ const ContextMenu = ({
   position,
   visible,
   onClose,
+  disabled,
 }: ContextMenuProps) => {
   const [mouseLeaveTimeout, setMouseLeaveTimeout] = useState<NodeJS.Timeout>()
 
@@ -40,11 +42,13 @@ const ContextMenu = ({
         {items.map((item, index) => (
           <li
             key={index}
-            className="cursor-pointer"
+            className={disabled ? "disabled" : "cursor-pointer"}
             onClick={() => {
+              if (disabled) return
               item.action()
               onClose()
             }}
+            onMouseDown={(e) => e.stopPropagation()}
           >
             <a>{item.label}</a>
           </li>

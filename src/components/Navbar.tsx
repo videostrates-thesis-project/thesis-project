@@ -61,13 +61,10 @@ const Navbar = () => {
             type="text"
             value={fileName}
             onChange={(e) => setFileName(e.target.value)}
+            readOnly
           />
         </div>
-        <div className="navbar-end">
-          <button className="btn btn-accent btn-sm">
-            <i className="bi bi-download text-lg"></i> Export
-          </button>
-        </div>
+        <div className="navbar-end"></div>
       </nav>
     </>
   )

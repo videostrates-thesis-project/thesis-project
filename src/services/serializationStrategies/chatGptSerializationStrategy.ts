@@ -9,7 +9,7 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
 
     const availableClip = useStore
       .getState()
-      .availableClips.find((c) => c.source === clip.source)
+      .clipsMetadata.find((c) => c.source === clip.source)
     const html = `<div id="${clip.id}" element-type="embedded-clip" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "") ?? ""}" layer="${clip.layer}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}" src="${clip.source}"></div>`
 
     // Find the parent element
@@ -31,7 +31,7 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
 
       const availableClip = useStore
         .getState()
-        .availableClips.find((c) => c.source === clip.source)
+        .clipsMetadata.find((c) => c.source === clip.source)
       return `<div id="${clip.id}" element-type="clip" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "") ?? ""}" layer="${clip.layer}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}" src="${clip.source}"></div>`
     } else {
       if (!(element as CustomElement).content)

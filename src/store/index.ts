@@ -3,11 +3,15 @@ import { createJSONStorage, persist } from "zustand/middleware"
 import { ParsedVideostrate } from "../types/parsedVideostrate"
 import { PlaybackState } from "../types/playbackState"
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
-import VideoClip, { RawMetadata } from "../types/videoClip"
+import VideoClip, { IndexingState, RawMetadata } from "../types/videoClip"
 import { ChatMessage } from "../types/chatMessage"
 import { Image } from "../types/image"
 import { v4 as uuid } from "uuid"
-import { CustomElement, VideoClipElement } from "../types/videoElement"
+import {
+  CustomElement,
+  VideoClipElement,
+  VideoElement,
+} from "../types/videoElement"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 import { ExecutedScript } from "../services/interpreter/executedScript"
 
@@ -39,9 +43,11 @@ export interface AppState {
   seek: number
   setSeek: (seek: number) => void
 
-  availableClips: VideoClip[]
+  availableClips: { source: string; title: string }[]
+  clipsMetadata: VideoClip[]
   addAvailableClip: (source: string, title?: string) => void
   updateClipMetadata: (source: string, metadata: RawMetadata) => void
+  updateIndexingState: (indexingState: { [url: string]: IndexingState }) => void
   deleteAvailableClip: (source: string) => void
 
   availableImages: Image[]
@@ -54,8 +60,8 @@ export interface AppState {
 
   clearSelection: () => void
 
-  selectedClipId: string | null
-  setSelectedClipId: (id: string | null) => void
+  selectedClip: VideoElement | null
+  setSelectedClip: (clip: VideoElement | null) => void
 
   selectedImportableClipName: string | null
   setSelectedImportableClipName: (name: string | null) => void
@@ -65,6 +71,9 @@ export interface AppState {
 
   selectedImportableCustomElement: CustomElement | null
   setSelectedImportableCustomElement: (element: CustomElement | null) => void
+
+  selectedChatMessage: ChatMessage | null
+  setSelectedChatMessage: (message: ChatMessage | null) => void
 
   chatMessages: ChatMessage[]
   addChatMessage: (message: ChatMessage) => ChatMessage[]
@@ -96,6 +105,12 @@ export interface AppState {
 
   showScriptTab: boolean
   setShowScriptTab: (show: boolean) => void
+
+  currentAsyncAction: string | null
+  setCurrentAsyncAction: (action: string | null) => void
+
+  isUiFrozen: boolean
+  setIsUiFrozen: (frozen: boolean) => void
 }
 
 export const useStore = create<AppState>()(
@@ -105,15 +120,22 @@ export const useStore = create<AppState>()(
       setVideostrateUrl: (url: string) =>
         set({
           videostrateUrl: url,
+          fileName:
+            url
+              .split("/")
+              .filter((s) => s)
+              .pop() || "Untitled Videostrate",
           availableClips: [],
+          clipsMetadata: [],
           availableImages: [],
           seek: 0,
           playing: false,
           playbackState: { frame: 0, time: 0 },
-          selectedClipId: null,
+          selectedClip: null,
           selectedImportableClipName: null,
           selectedImportableImage: null,
           selectedImportableCustomElement: null,
+          selectedChatMessage: null,
           chatMessages: [],
           currentMessages: [],
           pendingChanges: false,
@@ -134,14 +156,18 @@ export const useStore = create<AppState>()(
           }, state.availableClips)
 
           const availableImages = parsed.images.reduce((acc, img) => {
-            return concatAvailableImage(acc, img)
+            return concatAvailableImage(acc, img, true)
           }, state.availableImages)
 
           return {
             parsedVideostrate: parsed.clone(),
             serializedVideostrate: { html, css: style },
             pendingChanges: false,
-            availableClips,
+            availableClips: availableClips,
+            clipsMetadata: getUpdatedMetadata(
+              state.clipsMetadata,
+              availableClips
+            ),
             availableImages,
           }
         }),
@@ -156,13 +182,19 @@ export const useStore = create<AppState>()(
       metamaxRealm: null,
       setMetamaxRealm: (realm: string) => set({ metamaxRealm: realm }),
       availableClips: [],
+      clipsMetadata: [],
       addAvailableClip: (source: string, title?: string) => {
         set((state) => {
+          const availableClips = concatAvailableClips(
+            state.clipsMetadata,
+            source,
+            title
+          )
           return {
-            availableClips: concatAvailableClips(
-              state.availableClips,
-              source,
-              title
+            availableClips,
+            clipsMetadata: getUpdatedMetadata(
+              state.clipsMetadata,
+              availableClips
             ),
           }
         })
@@ -170,18 +202,35 @@ export const useStore = create<AppState>()(
       updateClipMetadata: (source: string, metadata: RawMetadata) => {
         set((state) => {
           if (metadata.status === "UNCACHED") return state
-          const clips = state.availableClips.map((clip) => {
+          const clips = state.clipsMetadata.map((clip) => {
             if (clip.source === source) {
               return clip.updateMetadata(metadata)
             }
             return clip
           })
-          return { availableClips: clips }
+          return { clipsMetadata: clips }
+        })
+      },
+      updateIndexingState: (indexingState: {
+        [url: string]: IndexingState
+      }) => {
+        set((state) => {
+          const clips = state.clipsMetadata.map((clip) => {
+            const state = indexingState[clip.source]
+            if (state) {
+              return clip.updateIndexingState(state)
+            }
+            return clip
+          })
+          return { clipsMetadata: clips }
         })
       },
       deleteAvailableClip: (source: string) => {
         set((state) => {
           return {
+            clipsMetadata: state.clipsMetadata.filter(
+              (clip) => clip.source !== source
+            ),
             availableClips: state.availableClips.filter(
               (clip) => clip.source !== source
             ),
@@ -192,7 +241,11 @@ export const useStore = create<AppState>()(
       addAvailableImage: (image: Image) => {
         set((state) => {
           return {
-            availableImages: concatAvailableImage(state.availableImages, image),
+            availableImages: concatAvailableImage(
+              state.availableImages,
+              image,
+              true
+            ),
           }
         })
       },
@@ -206,7 +259,7 @@ export const useStore = create<AppState>()(
       availableCustomElements: [],
       addAvailableCustomElement: (element: CustomElement) => {
         const newElement = element.clone()
-        newElement.id = uuid()
+        newElement.id = ParsedVideostrate.generateElementId()
         set((state) => {
           return {
             availableCustomElements: [
@@ -227,16 +280,17 @@ export const useStore = create<AppState>()(
       },
       clearSelection: () => {
         set({
-          selectedClipId: null,
+          selectedClip: null,
           selectedImportableClipName: null,
           selectedImportableImage: null,
           selectedImportableCustomElement: null,
+          selectedChatMessage: null,
         })
       },
-      selectedClipId: null,
-      setSelectedClipId: (id: string | null) => {
+      selectedClip: null,
+      setSelectedClip: (clip: VideoElement | null) => {
         get().clearSelection()
-        set({ selectedClipId: id })
+        set({ selectedClip: clip })
       },
       selectedImportableClipName: null,
       setSelectedImportableClipName: (name: string | null) => {
@@ -252,6 +306,11 @@ export const useStore = create<AppState>()(
       setSelectedImportableCustomElement: (element: CustomElement | null) => {
         get().clearSelection()
         set({ selectedImportableCustomElement: element })
+      },
+      selectedChatMessage: null,
+      setSelectedChatMessage: (message: ChatMessage | null) => {
+        get().clearSelection()
+        set({ selectedChatMessage: message })
       },
       chatMessages: [],
       addChatMessage: (message: ChatMessage) => {
@@ -344,6 +403,11 @@ export const useStore = create<AppState>()(
       setSideBarTab: (tab: SideBarTab) => set({ sideBarTab: tab }),
       showScriptTab: true,
       setShowScriptTab: (show: boolean) => set({ showScriptTab: show }),
+      currentAsyncAction: null,
+      setCurrentAsyncAction: (action: string | null) =>
+        set({ currentAsyncAction: action }),
+      isUiFrozen: false,
+      setIsUiFrozen: (frozen: boolean) => set({ isUiFrozen: frozen }),
     }),
     {
       name: "thesis-project-storage",
@@ -384,6 +448,17 @@ export const useStore = create<AppState>()(
                   offset: c._offset,
                 })
               })
+            case "clipsMetadata":
+              return (value as VideoClip[]).map((c) => {
+                return new VideoClip(
+                  c.source,
+                  c.title,
+                  c.status,
+                  c.length,
+                  c.thumbnailUrl,
+                  c.indexingState
+                )
+              })
             case "toasts":
               return []
             case "seek":
@@ -405,10 +480,10 @@ export const useStore = create<AppState>()(
 )
 
 const concatAvailableClips = (
-  availableClips: VideoClip[],
+  availableClips: { source: string; title: string }[],
   source: string,
   title?: string
-) => {
+): { source: string; title: string }[] => {
   if (availableClips.some((clip) => clip.source === source))
     return availableClips
 
@@ -421,10 +496,14 @@ const concatAvailableClips = (
   ) {
     newTitle = `${title} ${index++}`
   }
-  return [...availableClips, new VideoClip(source, newTitle)]
+  return [...availableClips, { source, title: newTitle }]
 }
 
-const concatAvailableImage = (availableImages: Image[], image: Image) => {
+const concatAvailableImage = (
+  availableImages: Image[],
+  image: Image,
+  insertAtBeginning: boolean = false
+) => {
   if (availableImages.some((i) => i.url === image.url)) return availableImages
 
   image.title = image.title || DEFAULT_IMAGE_TITLE
@@ -437,5 +516,17 @@ const concatAvailableImage = (availableImages: Image[], image: Image) => {
     newTitle = `${image.title} ${index++}`
   }
   image.title = newTitle
-  return [...availableImages, image]
+  if (insertAtBeginning) return [image, ...availableImages]
+  else return [...availableImages, image]
+}
+
+const getUpdatedMetadata = (
+  clipsMetadata: VideoClip[],
+  availableClips: { source: string; title: string }[]
+) => {
+  return availableClips.map((clip) => {
+    const metadata = clipsMetadata.find((c) => c.source === clip.source)
+    if (metadata) return metadata
+    else return new VideoClip(clip.source, clip.title)
+  })
 }

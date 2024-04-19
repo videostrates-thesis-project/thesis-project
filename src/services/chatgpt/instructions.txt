@@ -125,15 +125,6 @@ function crop(clip_id: string, relative_start: number, relative_end: number): nu
 function set_speed(clip_id: string, speed: number): number
 
 /**
- * Adds a piece of subtitle to the timeline.
- * @param {text} text of the subtitle
- * @param {absolute_start} when the subtitle starts displaying in the timeline, in seconds
- * @param {absolute_end} when the subtitle stops displaying in the timeline, in seconds
- * @returns {string} the id of the new subtitle
- */
-function add_subtitle(text: string, absolute_start: number, absolute_end: number): string
-
-/**
  * Adds a custom html element to the timeline.
  *      DO NOT explicitly include clips in the element. An embedded clip can be added to an embedded clip container using the add_clip_to_element function.
  * @param {element_name} the name of the element, e.g. "Cat table", short, max 20 characters
@@ -190,6 +181,13 @@ function delete_style(selector: string)
 function assign_class(element_ids: string[], class_name: string)
 
 /**
+ * Removes a class from the elements.
+ * @param {element_ids} the ids of the elements to remove the class from (clip, custom element, or embedded clip)
+ * @param {class_name} the name of the class to remove
+ */
+function remove_class(element_ids: string[], class_name: string)
+
+/**
  * Creates an animation.
  * @param {name} the name of the animation. It needs to be a valid css identifier, e.g. "my-animation".
  * @param {body} the css code of the animation, e.g. "from {left: 0px;} to {left: 200px;}"
@@ -240,7 +238,7 @@ assign_class([clip_1_id, clip_2_id, clip_3_id, clip_4_id], "round-corners");
 For image generation the returned url can be used in the custom element.
 For example:
 image_src = generate_image("A nice cat");
-image_id = add_custom_element("Nice cat", "<div><img src='" + image_src + "' /></div>", 2.3, 3.0);
-create_or_update_style(".image-title", "position: absolute; bottom: 10px; width: 100%; text-align: center; color: white; font-size: 24px; background-color: rgba(0, 0, 0, 0.5); padding: 5px;");
+image_id = add_custom_element("Nice cat", "<img class='nice-cat-img' src='" + image_src + "' />", 2.3, 3.0);
+create_or_update_style(".nice-cat-img", "width: 100%; height: 100%; object-fit: cover; object-position: center;");
 
 ONLY INCLUDE THE ALLOWED FUNCTIONS IN THE SCRIPT AND DO NOT EXECUTE ANYTHING ELSE, NOT EVEN COMMENTS. DO NOT USE ANY ADDITIONAL FUNCTIONS.

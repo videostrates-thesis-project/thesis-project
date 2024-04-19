@@ -10,11 +10,13 @@ import { ChatMessage } from "../../types/chatMessage"
 const DefaultChat = () => {
   const {
     parsedVideostrate,
-    availableClips,
-    selectedClipId,
+    clipsMetadata,
+    selectedClip,
     selectedImportableClipName,
     selectedImportableImage,
     selectedImportableCustomElement,
+    selectedChatMessage,
+    setSelectedChatMessage,
     addChatMessage,
     chatMessages,
     pendingChanges,
@@ -27,13 +29,14 @@ const DefaultChat = () => {
     (message: string) => {
       const serialized = serializeVideostrate(parsedVideostrate, "chatGPT")
       const prompt = buildAssistantMessage(
-        availableClips,
+        clipsMetadata,
         serialized.style,
         serialized.html,
-        selectedClipId,
+        selectedClip?.id ?? null,
         selectedImportableClipName,
         selectedImportableImage,
         selectedImportableCustomElement,
+        selectedChatMessage,
         seek,
         message
       )
@@ -51,14 +54,15 @@ const DefaultChat = () => {
     },
     [
       addChatMessage,
-      availableClips,
+      clipsMetadata,
       chatMessages,
       parsedVideostrate,
       seek,
-      selectedClipId,
+      selectedClip?.id,
       selectedImportableClipName,
       selectedImportableImage,
       selectedImportableCustomElement,
+      selectedChatMessage,
     ]
   )
 
@@ -80,6 +84,11 @@ const DefaultChat = () => {
         onSend={onSend}
         pendingChanges={pendingChanges}
         addEmoji={addEmoji}
+        messageSelection={{
+          selectedChatMessage: selectedChatMessage,
+          setSelectedChatMessage: setSelectedChatMessage,
+        }}
+        showSelection={true}
         onNewConversation={onStartNewconversation}
       />
     </div>

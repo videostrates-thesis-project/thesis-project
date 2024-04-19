@@ -60,6 +60,12 @@ export class ParsedVideostrate {
     )
   }
 
+  public static generateElementId() {
+    let id = uuid()
+    id = String.fromCharCode(97 + Math.floor(Math.random() * 26)) + id.slice(1)
+    return id
+  }
+
   public moveClipById(clipId: string, start: number) {
     const clip = this.all.find((c) => c.id === clipId)
     if (!clip) {
@@ -126,7 +132,7 @@ export class ParsedVideostrate {
   }
 
   public addClip(clip: VideoClip, start: number, end: number) {
-    const newId = uuid()
+    const newId = ParsedVideostrate.generateElementId()
     const layer =
       Math.max(
         ...this.all.filter((e) => e.type === "video").map((e) => e.layer)
@@ -184,7 +190,7 @@ export class ParsedVideostrate {
     start: number,
     end: number
   ) {
-    const newId = uuid()
+    const newId = ParsedVideostrate.generateElementId()
 
     const containerElementId = this.findContainerElement(elementId)
 
@@ -210,8 +216,8 @@ export class ParsedVideostrate {
   }
 
   public deleteElementById(elementId: string) {
-    if (useStore.getState().selectedClipId === elementId) {
-      useStore.getState().setSelectedClipId(null)
+    if (useStore.getState().selectedClip?.id === elementId) {
+      useStore.getState().setSelectedClip(null)
     }
     this.all = this.all.filter(
       (c) =>
@@ -252,6 +258,7 @@ export class ParsedVideostrate {
   }
 
   private static cleanTree = (element: HTMLElement) => {
+    if (!element) return element
     if (element?.childNodes) {
       element.childNodes.forEach(
         (childNode) => (childNode = this.cleanTree(childNode as HTMLElement))
@@ -281,12 +288,12 @@ export class ParsedVideostrate {
     const document = parser.parseFromString(content, "text/html")
     let htmlElement = document.body.firstChild as HTMLElement
     htmlElement = ParsedVideostrate.cleanTree(htmlElement)
-    const parent = htmlElement.parentNode
+    const parent = htmlElement?.parentNode
     const wrapper = document.createElement("div")
     parent?.replaceChild(wrapper, htmlElement)
-    wrapper.appendChild(htmlElement)
+    if (htmlElement) wrapper.appendChild(htmlElement)
 
-    const newId = uuid()
+    const newId = ParsedVideostrate.generateElementId()
     const layer = Math.max(...this.all.map((e) => e.layer)) + 1
     this.all.push(
       new CustomElement({
@@ -394,6 +401,37 @@ export class ParsedVideostrate {
           this.assignClassToClip(e as VideoClipElement, className)
         } else if (e.type === "custom") {
           this.assignClassToElement(e as CustomElement, className)
+        } else {
+          throw new Error(`Element with id ${e.id} has an invalid type`)
+        }
+      }
+      return e
+    })
+
+    this.all = [...this.all]
+  }
+
+  private removeClassFromElement(element: CustomElement, className: string) {
+    const parser = new DOMParser()
+    const document = parser.parseFromString(element.content ?? "", "text/html")
+    const htmlElement = document.body.firstChild as HTMLElement
+    if (htmlElement) {
+      htmlElement.classList.remove(className)
+      element.content = htmlElement.outerHTML
+    }
+  }
+
+  private removeClassFromClip(clip: VideoClipElement, className: string) {
+    clip.className = clip.className?.replace(className, "")
+  }
+
+  public removeClass(elementIds: string[], className: string) {
+    this.all = this.all.map((e) => {
+      if (elementIds.includes(e.id)) {
+        if (e.type === "video") {
+          this.removeClassFromClip(e as VideoClipElement, className)
+        } else if (e.type === "custom") {
+          this.removeClassFromElement(e as CustomElement, className)
         } else {
           throw new Error(`Element with id ${e.id} has an invalid type`)
         }
