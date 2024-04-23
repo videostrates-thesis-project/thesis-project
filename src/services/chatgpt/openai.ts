@@ -126,9 +126,6 @@ class OpenAIService {
       })
 
       if (message.script) {
-        {
-          console.log("[ChatGPT] Running script\n", message.script)
-        }
         (await runScript(message.script))?.asPendingChanges()
         useStore.getState().setCurrentAsyncAction(null)
       }
