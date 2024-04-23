@@ -10,7 +10,7 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
     const availableClip = useStore
       .getState()
       .clipsMetadata.find((c) => c.source === clip.source)
-    const html = `<div id="${clip.id}" element-type="embedded-clip" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "") ?? ""}" layer="${clip.layer}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}" src="${clip.source}"></div>`
+    const html = `<div id="${clip.id}" element-type="embedded-clip" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "") ?? ""}" layer="${clip.layer}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}"></div>`
 
     // Find the parent element
     const parent = document.querySelector(
@@ -32,7 +32,7 @@ export class ChatGptSerializationStrategy extends SerializationStrategyBase {
       const availableClip = useStore
         .getState()
         .clipsMetadata.find((c) => c.source === clip.source)
-      return `<div id="${clip.id}" element-type="clip" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "") ?? ""}" layer="${clip.layer}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}" src="${clip.source}"></div>`
+      return `<div id="${clip.id}" element-type="clip" clip-name="${availableClip?.title}" class="${clip.className?.replace("composited", "") ?? ""}" layer="${clip.layer}" absolute-start="${clip.start}" absolute-end="${clip.end}" relative-start="${clip.offset ?? 0}" relative-end="${clip.end - clip.start + clip.offset}"  playback-speed="${isNaN(clip.speed) ? 1 : clip.speed}"></div>`
     } else {
       if (!(element as CustomElement).content)
         throw new Error("Missing content")

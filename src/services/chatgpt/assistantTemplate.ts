@@ -123,13 +123,10 @@ export const buildAssistantMessage = (
 
   const selectedMessagePrompt = buildSelectedMessagePrompt(selectedChatMessage)
 
-  return `List of available clips:
-${clips
-  .map(
-    (clip, index) =>
-      `${index + 1}. "${clip.title}", ${clip.length}, "${clip.source}"`
-  )
-  .join("\n    ")}
+  return `List of available clips (title, length in seconds):
+    ${clips
+      .map((clip, index) => `${index + 1}. "${clip.title}", ${clip.length}s`)
+      .join("    \n")}
 
 HTML code:
 ${html}
