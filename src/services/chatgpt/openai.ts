@@ -126,6 +126,9 @@ class OpenAIService {
       })
 
       if (message.script) {
+        {
+          console.log("[ChatGPT] Running script\n", message.script)
+        }
         (await runScript(message.script))?.asPendingChanges()
         useStore.getState().setCurrentAsyncAction(null)
       }
@@ -177,6 +180,8 @@ class OpenAIService {
       messages: messages,
       tool_choice: { type: "function", function: { name: "execute_changes" } },
       tools: [executeChangesFunction],
+      temperature: 0.25,
+      max_tokens: 4096,
     })
 
     console.log("[ChatGPT] Response", response)
