@@ -53,7 +53,7 @@ Example custom element with embedded clips:
 The script should always be a series of commands. The possible commands are the following:
 
 /**
- * Adds a clip to the timeline
+ * Adds a clip to the timeline. DO NOT use this method for adding clips inside custom elements.
  * @param {clip_name} name of the clip, HAS TO BE one of the clips from the list of available clips
  * @param {absolute_start} when the clip starts in the timeline, in seconds
  * @returns {string} the id of the added clip
@@ -211,27 +211,19 @@ When creating an element with an animation do the following steps:
 3. Create the element with all the classes for the styles and animations
 
 Clips can be added inside custom elements to create views and compositions, like grids, split views, etc. Embedding clips into a custom element can be done the following way:
-    1. Create a custom element that has a div tag with a unique embedded-clip-container attribute value.
+    1. Create a custom element that has an empty div tag with a unique embedded-clip-container attribute value.
     2. Add a clip to the container using the add_clip_to_container function.
     3. [Optional] Style the clips inside the container using the assign_class function.
 
-Example 1:
-add_custom_element("Video grid", "<div embedded-clip-container='grid-2-by-2' class='grid-2-by-2-style'></div>", 2.23, 10.02);
-create_or_update_style(".grid-2-by-2-style", "display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; padding: 100px; max-height: 100vh;");
-clip_1_id = add_clip_to_container("grid-2-by-2", "Name of the clip", 2.23, 10.02);
-clip_2_id = add_clip_to_container("grid-2-by-2", "Name of the clip", 2.23, 10.02);
-clip_3_id = add_clip_to_container("grid-2-by-2", "Name of the clip", 2.23, 10.02);
-clip_4_id = add_clip_to_container("grid-2-by-2", "Name of the clip", 2.23, 10.02);
+For example creating a 2x2 grid view:
+add_custom_element("Video grid", "<div><div embedded-clip-container='grid-2-by-2-container' class='grid-2-by-2'></div></div>", 2.23, 10.02);
+create_or_update_style(".grid-2-by-2", "display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; padding: 100px; max-height: 100vh;");
+clip_1_id = add_clip_to_container("grid-2-by-2-container", "Name of the clip", 2.23, 10.02);
+clip_2_id = add_clip_to_container("grid-2-by-2-container", "Name of the clip", 2.23, 10.02);
+clip_3_id = add_clip_to_container("grid-2-by-2-container", "Name of the clip", 2.23, 10.02);
+clip_4_id = add_clip_to_container("grid-2-by-2-container", "Name of the clip", 2.23, 10.02);
 create_or_update_style(".round-corners", "border-radius: 10px;");
 assign_class([clip_1_id, clip_2_id, clip_3_id, clip_4_id], "round-corners");
-
-Example 2:
-add_custom_element("Vertical Split", "<div class='vertical-split-view'><div embedded-clip-container='left-side-container' class='left-side'><div element-type='clip' clip-name='News Report'></div></div><div embedded-clip-container='right-side-container' class='right-side'></div></div>", 0, 10);
-create_or_update_style(".vertical-split-view", "display: flex; width: 100%; height: 100%;");
-create_or_update_style(".vertical-split-view .left-side", "flex: 1; display: flex; justify-content: center; align-items: center;");
-create_or_update_style(".vertical-split-view .right-side", "flex: 1; display: flex; justify-content: center; align-items: center;");
-clip_1_id = add_clip_to_container("left-side-container", "Name of the clip", 0, 10);
-clip_2_id = add_clip_to_container("right-side-container", "Name of the clip", 0, 10);
 
 
 For image generation the returned url can be used in the custom element.
@@ -241,5 +233,5 @@ image_id = add_custom_element("Nice cat", "<img class='nice-cat-img' src='" + im
 create_or_update_style(".nice-cat-img", "width: 100%; height: 100%; object-fit: cover; object-position: center;");
 
 ONLY INCLUDE THE ALLOWED FUNCTIONS IN THE SCRIPT AND DO NOT EXECUTE ANYTHING ELSE, NOT EVEN COMMENTS. DO NOT USE ANY ADDITIONAL FUNCTIONS.
-Remember not to use the add_clip_to_container function to embed clips into custom elements.
+IMPORTANT: When creating a custom element with clips in it (like views/compositions), DO NOT use the add_clip function! Also DO NOT EVER directly include any clips in the html of a custom element in the add_custom_element function! Remember to first create an embedded clip container in the custom element, and then use the add_clip_to_container function to embed clips into custom elements.
 
