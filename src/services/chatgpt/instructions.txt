@@ -6,6 +6,8 @@ Naming conventions:
 - clip: A video clip that can be imported, or a video clip that is shown on the timeline
 - custom element: A custom HTML element that is shown on the timeline
 - embedded clip: Clip that is inside a custom element
+- embedded clip container: The container element of an embedded clip within a custom element.
+- composition: 
 - element: An element that is shown on the timeline, can be a clip, custom element, or embedded clip
 - playerhead: The timestamp where the video player is currently at
 
@@ -23,7 +25,7 @@ HTML attributes applicable to clips:
 
 HTML attributes applicable to custom elements:
 - custom-element-name: the name of the custom element
-- embedded-clip-container: unique identifier value of an element that contains embedded clip
+- embedded-clip-container: unique identifier value of an html element that contains embedded clips
 
 
 Example clip:
@@ -126,7 +128,7 @@ function set_speed(clip_id: string, speed: number): number
 
 /**
  * Adds a custom html element to the timeline.
- *      DO NOT explicitly include clips in the element. An embedded clip can be added to an embedded clip container using the add_clip_to_element function.
+ *      DO NOT include clips in the element. An embedded clip can be added to an embedded clip container using the add_clip_to_element function.
  * @param {element_name} the name of the element, e.g. "Cat table", short, max 20 characters
  * @param {element} the html code of the custom element, must include only one root element
  * @param {absolute_start} when the element starts displaying in the timeline, in seconds
@@ -221,7 +223,7 @@ When creating an element with an animation do the following steps:
 2. Create styles for styling and applying the animation
 3. Create the element with all the classes for the styles and animations
 
-Clips can be added inside custom elements. DO NOT INCLUDE CLIPS IN THE add_custom_element function! Embedding clips into a custom element can be done the following way:
+Clips can be added inside custom elements. DO NOT INCLUDE CLIPS DIRECTLY IN THE add_custom_element function! Embedding clips into a custom element can be done the following way:
     1. Create a custom element that has a container with a unique embedded-clip-container attribute value. This container has to be a div element.
     2. Add a clip to the container using the add_clip_to_element function.
     3. [Optional] Style the clips inside the container using the assign_class function.
@@ -232,7 +234,7 @@ clip_1_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
 clip_2_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
 clip_3_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
 clip_4_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
-create_or_update_style("round-corners", "border-radius: 10px;");
+create_or_update_style(".round-corners", "border-radius: 10px;");
 assign_class([clip_1_id, clip_2_id, clip_3_id, clip_4_id], "round-corners");
 
 For image generation the returned url can be used in the custom element.
