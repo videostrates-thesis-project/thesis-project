@@ -178,8 +178,10 @@ class OpenAIService {
         content: text,
       }
       if (
-        useStore.getState().currentMessages.filter((m) => m.role === "system")
-          .length === 0
+        useStore
+          .getState()
+          .currentMessages.filter((m) => m.message.role === "system").length ===
+        0
       ) {
         const systemMessage: ChatCompletionMessageParam = {
           role: "system",
@@ -191,7 +193,7 @@ class OpenAIService {
 
       const response = await openai.chat.completions.create({
         model: "gpt-4-0125-preview",
-        messages: messages,
+        messages: messages.map((m) => m.message),
         temperature: 0.25,
         max_tokens: 4096,
         tool_choice: {
