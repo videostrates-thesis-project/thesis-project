@@ -7,16 +7,16 @@ export const addClipToElement = (
   end: number
 ) => {
   if (typeof elementId !== "string") {
-    throw new Error("[add_clip_to_element] Element ID must be a string")
+    throw new Error("[add_clip_to_container] Element ID must be a string")
   }
   if (typeof clipName !== "string") {
-    throw new Error("[add_clip_to_element] Clip name must be a string")
+    throw new Error("[add_clip_to_container] Clip name must be a string")
   }
   if (typeof start !== "number") {
-    throw new Error("[add_clip_to_element] Start time must be a number")
+    throw new Error("[add_clip_to_container] Start time must be a number")
   }
   if (typeof end !== "number") {
-    throw new Error("[add_clip_to_element] End time must be a number")
+    throw new Error("[add_clip_to_container] End time must be a number")
   }
 
   const returnFn = () => {
@@ -24,7 +24,7 @@ export const addClipToElement = (
     const availableClip = availableClips.find((clip) => clip.title === clipName)
     if (!availableClip) {
       throw new Error(
-        `[add_clip_to_element] Clip with source "${clipName}" not found in available clips`
+        `[add_clip_to_container] Clip with source "${clipName}" not found in available clips`
       )
     }
 
@@ -42,7 +42,7 @@ export const addClipToElement = (
       return clipId
     } catch (error) {
       console.error(
-        "[CommandProcessor] Error processing add_clip_to_element command: ",
+        "[CommandProcessor] Error processing add_clip_to_container command: ",
         error
       )
       throw error
@@ -50,6 +50,6 @@ export const addClipToElement = (
   }
 
   returnFn.toString = () =>
-    `add_clip_to_element("${elementId}", "${clipName}", ${start}, ${end})`
+    `add_clip_to_container("${elementId}", "${clipName}", ${start}, ${end})`
   return returnFn
 }

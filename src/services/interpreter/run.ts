@@ -53,6 +53,7 @@ export const runBase = async (
 }
 
 export const runScript = async (script: string) => {
+  console.log("Running script\n", script)
   return await runBase(async () => {
     return await parse(script)
   }, script)

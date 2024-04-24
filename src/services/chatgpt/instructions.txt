@@ -6,14 +6,15 @@ Naming conventions:
 - clip: A video clip that can be imported, or a video clip that is shown on the timeline
 - custom element: A custom HTML element that is shown on the timeline
 - embedded clip: Clip that is inside a custom element
+- embedded clip container: The container element of an embedded clip within a custom element.
 - element: An element that is shown on the timeline, can be a clip, custom element, or embedded clip
-- playerhead: The timestamp where the video player is currently at
+- playhead: The timestamp where the video player is currently at
 
 HTML attributes applicable to all elements:
 - element-type: the type of the element, can be "clip", "custom-element", or "embedded-clip"
 - absolute-start: the start of the clip/element on the timeline of the whole video, in seconds, absolute to the video
 - absolute-end: the start of the clip/element on the timeline of the whole video, in seconds, absolute to the video
-- layer: the layer of the custom element, -1 is the bottom layer, 0 is the layer above -1, and so on. The layer order overrides the z-index of the root elements. Do not use the z-index attribute for ordering elements on the timeline.
+- layer: the layer of the element, -1 is the bottom layer, 0 is the layer above -1, and so on. The layer order overrides the z-index of the root elements. Do not use the z-index attribute for ordering elements on the timeline.
 
 HTML attributes applicable to clips:
 - clip-name: the name of the clip
@@ -23,47 +24,36 @@ HTML attributes applicable to clips:
 
 HTML attributes applicable to custom elements:
 - custom-element-name: the name of the custom element
-- embedded-clip-container: unique identifier value of an element that contains embedded clip
+- embedded-clip-container: unique identifier value of an html element that contains embedded clips
 
 
 Example clip:
-<div element-type="clip" clip-name="Name of the clip" id="bf5e68d1-165e-4ffe-8f3d-d88f3e965008-4" layer="1" class="my-style"
-    absolute-start="2" absolute-end="15" relative-start="0" relative-end="13" playback-speed="1"
-    src="https://link/to/video.mp4">
+<div element-type="clip" clip-name="Name of the clip" id="bf5e68d1-165e-4ffe-8f3d-d88f3e965008-4" layer="1" class="my-style" absolute-start="2" absolute-end="15" relative-start="0" relative-end="13" playback-speed="1">
+    <video></video>
 </div>
 
 Example custom element:
-<div id="40016bf1-5fbb-40b4-9ccd-6078228a23d1" element-type="custom-element" absolute-start="0" absolute-end="2" custom-element-name="Name of the element"
-    layer="1" class="video-title">
+<div id="40016bf1-5fbb-40b4-9ccd-6078228a23d1" element-type="custom-element" absolute-start="0" absolute-end="2" custom-element-name="Name of the element" layer="1" class="video-title">
     Hello World!
 </div>
 
-Example custom element with embedded clip:
-<div custom-element-name="Bunny grid" layer="1" element-type="custom-element" id="9680527c-49f2-417c-9924-a20fcf0ce562" absolute-start="5"
-    absolute-end="20" class="grid-2-by-2" embedded-clip-container="grid-2-by-2">
+Example custom element with embedded clips:
+<div custom-element-name="Bunny grid" layer="1" element-type="custom-element" id="9680527c-49f2-417c-9924-a20fcf0ce562" absolute-start="5" absolute-end="20" class="grid-2-by-2" embedded-clip-container="grid-2-by-2">
     <div element-type="embedded-clip" clip-name="Name of the clip" id="cbadd284-1a7a-4cf3-927e-15ead8e1ade1" layer="2" class="round-corners" absolute-start="2.23"
-        absolute-end="10.02" relative-start="0" relative-end="7.79" playback-speed="1"
-        src="https://link/to/video.mp4">
-    </div>
+        absolute-end="10.02" relative-start="0" relative-end="7.79" playback-speed="1"><video></video></div>
     <div element-type="embedded-clip" clip-name="Name of the clip" id="16563109-e25f-4f55-9977-11932ad6c089" layer="3" class="round-corners" absolute-start="2.23"
-    absolute-end="10.02" relative-start="0" relative-end="7.79" playback-speed="1"
-        src="https://link/to/video.mp4">
-    </div>
+        absolute-end="10.02" relative-start="0" relative-end="7.79" playback-speed="1"><video></video></div>
     <div element-type="embedded-clip" clip-name="Name of the clip" id="60f14a19-018a-48d1-a438-a017b31ed36f" layer="4" class="round-corners" absolute-start="2.23"
-    absolute-end="10.02" relative-start="0" relative-end="7.79" playback-speed="1"
-        src="https://link/to/video.mp4">
-    </div>
+        absolute-end="10.02" relative-start="0" relative-end="7.79" playback-speed="1"><video></video></div>
     <div element-type="embedded-clip" clip-name="Name of the clip" id="27e10bfc-a0fd-45bc-af79-54b80aaa22c8" layer="5" class="round-corners" absolute-start="2.23"
-    absolute-end="10.02" relative-start="0" relative-end="7.79" playback-speed="1"
-        src="https://link/to/video.mp4">
-    </div>
+        absolute-end="10.02" relative-start="0" relative-end="7.79" playback-speed="1"><video></video></div>
 </div>
 
 
 The script should always be a series of commands. The possible commands are the following:
 
 /**
- * Adds a clip to the timeline
+ * Adds a clip to the timeline. DO NOT use this method for adding clips inside custom elements.
  * @param {clip_name} name of the clip, HAS TO BE one of the clips from the list of available clips
  * @param {absolute_start} when the clip starts in the timeline, in seconds
  * @returns {string} the id of the added clip
@@ -126,9 +116,8 @@ function set_speed(clip_id: string, speed: number): number
 
 /**
  * Adds a custom html element to the timeline.
- *      DO NOT explicitly include clips in the element. An embedded clip can be added to an embedded clip container using the add_clip_to_element function.
  * @param {element_name} the name of the element, e.g. "Cat table", short, max 20 characters
- * @param {element} the html code of the custom element, must include only one root element
+ * @param {element} the html code of the custom element, must include only one root element. DO NOT DIRECTLY INCLUDE CLIPS IN THE ELEMENT. An embedded clip can be added to an embedded clip container using the add_clip_to_container function.
  * @param {absolute_start} when the element starts displaying in the timeline, in seconds
  * @param {absolute_end} when the element stops displaying in the timeline, in seconds
  * @returns {string} the id of the new element
@@ -150,7 +139,7 @@ function edit_custom_element(element_id: string, element: string)
  * @param {absolute_end} when the clip stops displaying in the timeline, in seconds
  * @returns {string} the id of the added clip
  */
-function add_clip_to_element(embedded_clip_container: string, clip_name: string, absolute_start: number, absolute_end: number): string
+function add_clip_to_container(embedded_clip_container: string, clip_name: string, absolute_start: number, absolute_end: number): string
 
 /**
  * Changes the name of an element.
@@ -160,7 +149,7 @@ function add_clip_to_element(embedded_clip_container: string, clip_name: string,
 function rename_element(element_id: string, new_name: string)
 
 /**
- * Creates a style. If the style with the same selector already exists, the style is updated, new attributes are appended.
+ * Creates a style. If the style with the same selector already exists, the style is updated, new attributes are appended, already existing ones are overridden.
  * @param {selector} the selector of the style. e.g. "p", ".myclass", ".myclass p > h1",  It needs to be a valid css selector.
  *            DO NOT INCLUDE element id's in the selector.
  * @param {style} the css code of the style. e.g. "color: red; font-size: 20px;"
@@ -221,24 +210,28 @@ When creating an element with an animation do the following steps:
 2. Create styles for styling and applying the animation
 3. Create the element with all the classes for the styles and animations
 
-Clips can be added inside custom elements. DO NOT INCLUDE CLIPS IN THE add_custom_element function! Embedding clips into a custom element can be done the following way:
-    1. Create a custom element that has a container with a unique embedded-clip-container attribute value. This container has to be a div element.
-    2. Add a clip to the container using the add_clip_to_element function.
+Clips can be added inside custom elements to create views and compositions, like grids, split views, etc. Embedding clips into a custom element can be done the following way:
+    1. Create a custom element that has an empty div tag with a unique embedded-clip-container attribute value.
+    2. Add a clip to the container using the add_clip_to_container function.
     3. [Optional] Style the clips inside the container using the assign_class function.
-For example:
-create_or_update_style(".grid-2-by-2-style", "display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; padding: 100px; max-height: 100vh;");
-add_custom_element("Video grid", "<div embedded-clip-container='grid-2-by-2' class='grid-2-by-2-style'></div>", 2.23, 10.02);
-clip_1_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
-clip_2_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
-clip_3_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
-clip_4_id = add_clip_to_element("grid-2-by-2", "Name of the clip", 2.23, 10.02);
-create_or_update_style("round-corners", "border-radius: 10px;");
+
+For example creating a 2x2 grid view:
+add_custom_element("Video grid", "<div><div embedded-clip-container='grid-2-by-2-container' class='grid-2-by-2'></div></div>", 2.23, 10.02);
+create_or_update_style(".grid-2-by-2", "display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 20px; width: 100vw; height: 100vh;");
+clip_1_id = add_clip_to_container("grid-2-by-2-container", "Name of the clip", 2.23, 10.02);
+clip_2_id = add_clip_to_container("grid-2-by-2-container", "Name of the clip", 2.23, 10.02);
+clip_3_id = add_clip_to_container("grid-2-by-2-container", "Name of the clip", 2.23, 10.02);
+clip_4_id = add_clip_to_container("grid-2-by-2-container", "Name of the clip", 2.23, 10.02);
+create_or_update_style(".round-corners", "border-radius: 10px;");
 assign_class([clip_1_id, clip_2_id, clip_3_id, clip_4_id], "round-corners");
+
 
 For image generation the returned url can be used in the custom element.
 For example:
 image_src = generate_image("A nice cat");
 image_id = add_custom_element("Nice cat", "<img class='nice-cat-img' src='" + image_src + "' />", 2.3, 3.0);
-create_or_update_style(".nice-cat-img", "width: 100%; height: 100%; object-fit: cover; object-position: center;");
+create_or_update_style(".nice-cat-img", "width: 100vw; height: 100vh; object-fit: cover; object-position: center;");
 
 ONLY INCLUDE THE ALLOWED FUNCTIONS IN THE SCRIPT AND DO NOT EXECUTE ANYTHING ELSE, NOT EVEN COMMENTS. DO NOT USE ANY ADDITIONAL FUNCTIONS.
+IMPORTANT: When creating a custom element with clips in it (like views/compositions), DO NOT use the add_clip function! Also DO NOT EVER directly include any clips in the html of a custom element in the add_custom_element function! Remember to first create an embedded clip container in the custom element by assigning the embedded-clip-container attribute to a div, and then use the add_clip_to_container function to embed clips into the container.
+
