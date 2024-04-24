@@ -1,8 +1,10 @@
 import { useContext, useEffect, useState } from "react"
 import { TimelineContext } from "./Timeline"
+import formatTime from "../../utils/formatTime"
 import clsx from "clsx"
 
-const TARGET_STEP_WIDTH = 60
+const TARGET_STEP_WIDTH = 65
+const MIN_STEP_WIDTH = 50
 
 interface Marker {
   position: number
@@ -19,6 +21,8 @@ const Markers = () => {
       Math.round(TARGET_STEP_WIDTH / timeline.widthPerSecond)
     )
     if (stepLength !== 1 && stepLength % 2 === 1) stepLength++
+    if (stepLength * timeline.widthPerSecond < MIN_STEP_WIDTH) stepLength += 2
+
     const stepWidth = stepLength * timeline.widthPerSecond
     const newMarkers: Marker[] = []
     for (let i = 0; i < timeline.width - 30; i += stepWidth) {
@@ -26,7 +30,7 @@ const Markers = () => {
         position: i,
         label:
           newMarkers.length % 2 == 0
-            ? formatMarker(i / timeline.widthPerSecond)
+            ? formatTime(i / timeline.widthPerSecond)
             : null,
       })
     }
@@ -55,13 +59,6 @@ const Markers = () => {
       })}
     </div>
   )
-}
-
-const formatMarker = (marker: number | null) => {
-  if (marker === null) return ""
-  const minutes = Math.floor(marker / 60)
-  const seconds = Math.round(marker % 60)
-  return `${minutes}:${seconds.toString().padStart(2, "0")}`
 }
 
 export default Markers
