@@ -65,7 +65,12 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
     (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
       e.stopPropagation()
       runCommands(
-        addCustomElement(props.element.name, props.element.content, seek, 10)
+        addCustomElement(
+          props.element.name,
+          props.element.content,
+          seek,
+          seek + 10
+        )
       )
     },
     [props.element.name, props.element.content, seek]
