@@ -30,9 +30,12 @@ const ClipsSearch = (props: {
   }, [clipsMetadata, search])
 
   const onSearch = useCallback(() => {
+    if (search.length < 1) {
+      props.setSearchActive(false)
+      return
+    }
+    props.setSearchActive(true)
     // Require at least 3 characters to search
-    if (search.length > 0) props.setSearchActive(true)
-    else props.setSearchActive(false)
     if (search.length < 3) {
       setValidationError("Type at least 3 characters")
     } else {
@@ -54,7 +57,7 @@ const ClipsSearch = (props: {
 
   return (
     <>
-      <div className="join w-full">
+      <div className="join w-full relative">
         <input
           value={search}
           onChange={onSearchChange}
@@ -64,6 +67,18 @@ const ClipsSearch = (props: {
           className="input input-sm join-item input-bordered w-full"
           placeholder="Search in transcript..."
         />
+        {search && (
+          <button
+            className="btn btn-sm btn-ghost text-error absolute right-10"
+            onClick={() => {
+              onSearchChange({
+                target: { value: "" },
+              } as React.ChangeEvent<HTMLInputElement>)
+            }}
+          >
+            <i className="bi bi-x"></i>
+          </button>
+        )}
         <button className="btn btn-sm btn-neutral join-item" onClick={onSearch}>
           <i className="bi bi-search"></i>
         </button>
