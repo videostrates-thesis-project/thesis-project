@@ -110,23 +110,24 @@ export const useTimelineElements = (widthPerSecond: number) => {
 
   // Precalculate position of the elements
   const elements = useMemo(() => {
-    let elements = parsedVideostrate.all
-      .map((element) => {
-        const elementDetails = getElementDetails(element)
-        elementDetails.edits = editedElements.get(element.id)
-        if (movedElements.includes(element.id)) {
-          const oldElement = previousVideostrate?.all.find(
-            (e) => e.id === element.id
-          )
-          const oldElementDetails = oldElement
-            ? getElementDetails(oldElement)
-            : undefined
+    let elements =
+      parsedVideostrate.all
+        ?.map((element) => {
+          const elementDetails = getElementDetails(element)
+          elementDetails.edits = editedElements.get(element.id)
+          if (movedElements.includes(element.id)) {
+            const oldElement = previousVideostrate?.all.find(
+              (e) => e.id === element.id
+            )
+            const oldElementDetails = oldElement
+              ? getElementDetails(oldElement)
+              : undefined
 
-          elementDetails.oldElement = oldElementDetails
-        }
-        return elementDetails
-      })
-      .sort((a, b) => a.layer - b.layer || a.start - b.start)
+            elementDetails.oldElement = oldElementDetails
+          }
+          return elementDetails
+        })
+        .sort((a, b) => a.layer - b.layer || a.start - b.start) ?? []
 
     let prevElement: TimelineElement | null = null
     elements.forEach((element) => {
