@@ -111,6 +111,9 @@ export interface AppState {
 
   isUiFrozen: boolean
   setIsUiFrozen: (frozen: boolean) => void
+
+  openedContextMenuId: string | null
+  setOpenedContextMenuId: (id: string | null) => void
 }
 
 export const useStore = create<AppState>()(
@@ -408,6 +411,9 @@ export const useStore = create<AppState>()(
         set({ currentAsyncAction: action }),
       isUiFrozen: false,
       setIsUiFrozen: (frozen: boolean) => set({ isUiFrozen: frozen }),
+      openedContextMenuId: null,
+      setOpenedContextMenuId: (id: string | null) =>
+        set({ openedContextMenuId: id }),
     }),
     {
       name: "thesis-project-storage",
