@@ -7,7 +7,6 @@ Naming conventions:
 - custom element: A custom HTML element that is shown on the timeline
 - embedded clip: Clip that is inside a custom element
 - embedded clip container: The container element of an embedded clip within a custom element.
-- composition: 
 - element: An element that is shown on the timeline, can be a clip, custom element, or embedded clip
 - playerhead: The timestamp where the video player is currently at
 
@@ -15,7 +14,7 @@ HTML attributes applicable to all elements:
 - element-type: the type of the element, can be "clip", "custom-element", or "embedded-clip"
 - absolute-start: the start of the clip/element on the timeline of the whole video, in seconds, absolute to the video
 - absolute-end: the start of the clip/element on the timeline of the whole video, in seconds, absolute to the video
-- layer: the layer of the custom element, -1 is the bottom layer, 0 is the layer above -1, and so on. The layer order overrides the z-index of the root elements. Do not use the z-index attribute for ordering elements on the timeline.
+- layer: the layer of the element, -1 is the bottom layer, 0 is the layer above -1, and so on. The layer order overrides the z-index of the root elements. Do not use the z-index attribute for ordering elements on the timeline.
 
 HTML attributes applicable to clips:
 - clip-name: the name of the clip
