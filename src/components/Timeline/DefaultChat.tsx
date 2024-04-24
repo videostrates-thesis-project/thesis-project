@@ -11,6 +11,7 @@ const DefaultChat = () => {
   const {
     parsedVideostrate,
     clipsMetadata,
+    availableImages,
     selectedClip,
     selectedImportableClipName,
     selectedImportableImage,
@@ -30,6 +31,7 @@ const DefaultChat = () => {
       const serialized = serializeVideostrate(parsedVideostrate, "chatGPT")
       const prompt = buildAssistantMessage(
         clipsMetadata,
+        availableImages,
         serialized.style,
         serialized.html,
         selectedClip?.id ?? null,
@@ -41,6 +43,7 @@ const DefaultChat = () => {
         message
       )
       openAIService.sendDefaultChatMessageToAzure(prompt)
+      // openAIService.sendChatMessageToOpenAi(prompt)
       const latestMessage: ChatMessage = {
         role: "user",
         content: message,
@@ -55,6 +58,7 @@ const DefaultChat = () => {
     [
       addChatMessage,
       clipsMetadata,
+      availableImages,
       chatMessages,
       parsedVideostrate,
       seek,
