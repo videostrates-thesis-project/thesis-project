@@ -11,11 +11,20 @@ export const redo = () => {
 
   if (lastCommand) {
     const currentVideostrate = useStore.getState().parsedVideostrate.clone()
+    useStore.getState().addToUndoStack(
+      {
+        ...lastCommand,
+        script: {
+          ...lastCommand.script,
+          parsedVideostrate: currentVideostrate,
+        },
+      },
+      true
+    )
+
     useStore
       .getState()
-      .addToUndoStack({ ...lastCommand, parsedVideostrate: currentVideostrate })
-
-    useStore.getState().setParsedVideostrate(lastCommand.parsedVideostrate)
+      .setParsedVideostrate(lastCommand.script.parsedVideostrate)
     useStore.getState().setRedoStack(redoStack)
   }
 }

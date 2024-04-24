@@ -18,12 +18,12 @@ export const useLatestChanges = () => {
 
   const lastExecutedChange = useMemo(() => {
     if (undoStack.length === 0 || !pendingChanges) return null
-    return undoStack[undoStack.length - 1]
+    return undoStack[undoStack.length - 1].script
   }, [pendingChanges, undoStack])
 
   const previousVideostrate = useMemo(() => {
     if (!lastExecutedChange) return null
-    return undoStack[undoStack.length - 1].parsedVideostrate
+    return undoStack[undoStack.length - 1].script.parsedVideostrate
   }, [lastExecutedChange, undoStack])
 
   const removedElements = useMemo(() => {

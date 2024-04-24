@@ -1,6 +1,7 @@
 import { useStore } from "../../store"
 import { ExecutedFunction, ExecutedScript } from "./executedScript"
 import { parse } from "./parser"
+import { v4 as uuid } from "uuid"
 
 export const runBase = async (
   runCallback: () => Promise<ExecutedFunction[]>,
@@ -19,6 +20,17 @@ export const runBase = async (
       .getState()
       .addToast("error", "Error processing script", (error as Error).message)
     useStore.getState().setParsedVideostrate(videoStrateBefore)
+    useStore.getState().addToArchivedUndoStack({
+      time: new Date().toISOString(),
+      id: uuid(),
+      parent: useStore.getState().undoStack.at(-1)?.id ?? "",
+      error: String(error),
+      script: {
+        text,
+        script: [],
+        parsedVideostrate: videoStrateBefore,
+      },
+    })
     return
   }
 
@@ -27,7 +39,13 @@ export const runBase = async (
     script: functions,
     parsedVideostrate: videoStrateBefore,
   }
-  useStore.getState().addToUndoStack(executedScript)
+  const undoElement = {
+    time: new Date().toISOString(),
+    id: uuid(),
+    parent: useStore.getState().undoStack.at(-1)?.id ?? "",
+    script: executedScript,
+  }
+  useStore.getState().addToUndoStack(undoElement)
 
   return {
     asPendingChanges: () => useStore.getState().setPendingChanges(true),
