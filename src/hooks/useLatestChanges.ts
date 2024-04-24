@@ -18,12 +18,12 @@ export const useLatestChanges = () => {
 
   const lastExecutedChange = useMemo(() => {
     if (undoStack.length === 0 || !pendingChanges) return null
-    return undoStack[undoStack.length - 1]
+    return undoStack[undoStack.length - 1].script
   }, [pendingChanges, undoStack])
 
   const previousVideostrate = useMemo(() => {
     if (!lastExecutedChange) return null
-    return undoStack[undoStack.length - 1].parsedVideostrate
+    return undoStack[undoStack.length - 1].script.parsedVideostrate
   }, [lastExecutedChange, undoStack])
 
   const removedElements = useMemo(() => {
@@ -134,7 +134,10 @@ export const useLatestChanges = () => {
             })
           }
         })
-      } else if (command.name === "assign_class") {
+      } else if (
+        command.name === "assign_class" ||
+        command.name === "remove_class"
+      ) {
         const elementIds = command.arguments[0]
         elementIds.forEach((elementId: string) => {
           addToEdited(elementId, {

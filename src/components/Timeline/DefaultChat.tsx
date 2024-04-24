@@ -11,10 +11,12 @@ const DefaultChat = () => {
   const {
     parsedVideostrate,
     clipsMetadata,
-    selectedClipId,
+    selectedClip,
     selectedImportableClipName,
     selectedImportableImage,
     selectedImportableCustomElement,
+    selectedChatMessage,
+    setSelectedChatMessage,
     addChatMessage,
     chatMessages,
     pendingChanges,
@@ -30,10 +32,11 @@ const DefaultChat = () => {
         clipsMetadata,
         serialized.style,
         serialized.html,
-        selectedClipId,
+        selectedClip?.id ?? null,
         selectedImportableClipName,
         selectedImportableImage,
         selectedImportableCustomElement,
+        selectedChatMessage,
         seek,
         message
       )
@@ -61,10 +64,11 @@ const DefaultChat = () => {
       chatMessages,
       parsedVideostrate,
       seek,
-      selectedClipId,
+      selectedClip?.id,
       selectedImportableClipName,
       selectedImportableImage,
       selectedImportableCustomElement,
+      selectedChatMessage,
     ]
   )
 
@@ -86,6 +90,11 @@ const DefaultChat = () => {
         onSend={onSend}
         pendingChanges={pendingChanges}
         addEmoji={addEmoji}
+        messageSelection={{
+          selectedChatMessage: selectedChatMessage,
+          setSelectedChatMessage: setSelectedChatMessage,
+        }}
+        showSelection={true}
         onNewConversation={onStartNewconversation}
       />
     </div>

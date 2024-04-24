@@ -96,8 +96,10 @@ class OpenAIService {
         content: text,
       }
       if (
-        useStore.getState().currentMessages.filter((m) => m.role === "system")
-          .length === 0
+        useStore
+          .getState()
+          .currentMessages.filter((m) => m.message.role === "system").length ===
+        0
       ) {
         const systemMessage: ChatCompletionMessageParam = {
           role: "system",
@@ -109,7 +111,7 @@ class OpenAIService {
 
       const message = await this.sendChatMessageToAzureBase<ExecuteChanges>(
         "mirrorverse-gpt-4-turbo",
-        messages,
+        messages.map((m) => m.message),
         "execute_changes",
         executeChangesFunction
       )
@@ -141,6 +143,7 @@ class OpenAIService {
       })
 
       if (message.script) {
+        // eslint-disable-next-line prettier/prettier
         (await runScript(message.script))?.asPendingChanges()
         useStore.getState().setCurrentAsyncAction(null)
       }
@@ -281,6 +284,32 @@ class OpenAIService {
       messages[lastUserMessageIndex].id,
       reaction?.slice(0, 2) ?? ""
     )
+  }
+
+  public async createImageTitle(prompt: string) {
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content:
+            "Create a short title for an image with the following description and DO NOT include anything else in the response:\n\n" +
+            prompt,
+        },
+      ],
+    })
+
+    let title = response.choices[0].message.content?.trim()
+
+    if (title?.startsWith("'") || title?.startsWith('"')) {
+      title = title.slice(1)
+    }
+
+    if (title?.endsWith("'") || title?.endsWith('"')) {
+      title = title.slice(0, -1)
+    }
+
+    return title
   }
 
   public async githubCopilotAtHome(

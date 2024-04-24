@@ -99,3 +99,18 @@ test("can parse both styles and animations", () => {
     },
   ])
 })
+
+test("can parse arrow selectors", () => {
+  const style = parseStyle(`.test > .test2 { color: red; }`)
+
+  expect(style.style).toEqual([
+    {
+      selector: ".test > .test2",
+      style: "color: red;",
+    },
+    {
+      selector: "div video",
+      style: "position: relative !important;",
+    },
+  ])
+})

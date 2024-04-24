@@ -10,15 +10,17 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
     const clip = element as VideoClipElement
 
     const html = `<div clip-name="${clip.name}" id="${clip.id}" style="z-index: ${clip.layer};" class="${clip.className}">
-       <video  class="composited" data-start="${clip.start}" data-end="${clip.end}" data-offset="${clip.offset ?? 0}" data-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>
+       <video class="composited" data-start="${clip.start}" data-end="${clip.end}" data-offset="${clip.offset ?? 0}" data-speed="${isNaN(clip.speed) ? 1 : clip.speed}"><source src="${clip.source}" /></video>
     </div>`
 
     // Find the parent element
     const parent = document.querySelector(
       `[embedded-clip-container="${clip.parentId ?? "root"}"]`
     )
-    if (!parent)
-      throw new Error("Parent with id '" + clip.parentId + "' not found")
+    if (!parent) {
+      console.error("Parent with id '" + clip.parentId + "' not found")
+      return
+    }
 
     // Add the element
     parent.innerHTML += html
@@ -62,11 +64,6 @@ export class WebstrateSerializationStrategy extends SerializationStrategyBase {
       wrapper.setAttribute("data-start", element.start.toString())
       wrapper.setAttribute("data-end", element.end.toString())
       wrapper.setAttribute("data-offset", (element.offset ?? 0).toString())
-      wrapper.setAttribute("clip-start", (element.offset ?? 0).toString())
-      wrapper.setAttribute(
-        "clip-end",
-        (element.end - element.start + element.offset).toString()
-      )
       wrapper.setAttribute(
         "data-speed",
         (isNaN(element.speed) ? 1 : element.speed).toString()

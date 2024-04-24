@@ -7,7 +7,11 @@ import VideoClip, { IndexingState, RawMetadata } from "../types/videoClip"
 import { ChatMessage } from "../types/chatMessage"
 import { Image } from "../types/image"
 import { v4 as uuid } from "uuid"
-import { CustomElement, VideoClipElement } from "../types/videoElement"
+import {
+  CustomElement,
+  VideoClipElement,
+  VideoElement,
+} from "../types/videoElement"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 import { ExecutedScript } from "../services/interpreter/executedScript"
 
@@ -17,6 +21,19 @@ const DEFAULT_CLIP_TITLE = "Clip"
 
 export const aiProviders = ["openai", "azure"] as const
 export type AiProvider = (typeof aiProviders)[number]
+interface UndoElement {
+  time: string
+  id: string
+  parent: string
+  error?: string
+  script: ExecutedScript
+}
+
+interface MessageInformation {
+  time: string
+  activeUndoElementId: string
+  message: ChatCompletionMessageParam
+}
 
 export interface AppState {
   videostrateUrl: string
@@ -59,8 +76,8 @@ export interface AppState {
 
   clearSelection: () => void
 
-  selectedClipId: string | null
-  setSelectedClipId: (id: string | null) => void
+  selectedClip: VideoElement | null
+  setSelectedClip: (clip: VideoElement | null) => void
 
   selectedImportableClipName: string | null
   setSelectedImportableClipName: (name: string | null) => void
@@ -71,26 +88,28 @@ export interface AppState {
   selectedImportableCustomElement: CustomElement | null
   setSelectedImportableCustomElement: (element: CustomElement | null) => void
 
+  selectedChatMessage: ChatMessage | null
+  setSelectedChatMessage: (message: ChatMessage | null) => void
+
   chatMessages: ChatMessage[]
   addChatMessage: (message: ChatMessage) => ChatMessage[]
   addReactionToMessage: (id: string, reaction: string) => void
   resetMessages: () => void
 
-  currentMessages: ChatCompletionMessageParam[]
-  addMessage: (
-    message: ChatCompletionMessageParam
-  ) => ChatCompletionMessageParam[]
+  currentMessages: MessageInformation[]
+  addMessage: (message: ChatCompletionMessageParam) => MessageInformation[]
 
   pendingChanges: boolean
   setPendingChanges: (unaccepted: boolean) => void
 
-  undoStack: ExecutedScript[]
-  setUndoStack: (stack: ExecutedScript[]) => void
-  addToUndoStack: (script: ExecutedScript) => void
+  addToArchivedUndoStack: (script: UndoElement) => void
+  undoStack: UndoElement[]
+  popUndoStack: () => UndoElement | undefined
+  addToUndoStack: (script: UndoElement, noArchiving?: boolean) => void
 
-  redoStack: ExecutedScript[]
-  setRedoStack: (stack: ExecutedScript[]) => void
-  addToRedoStack: (script: ExecutedScript) => void
+  redoStack: UndoElement[]
+  setRedoStack: (stack: UndoElement[]) => void
+  addToRedoStack: (script: UndoElement) => void
 
   toasts: Toast[]
   addToast: (type: ToastType, title: string, description: string) => void
@@ -130,10 +149,11 @@ export const useStore = create<AppState>()(
           seek: 0,
           playing: false,
           playbackState: { frame: 0, time: 0 },
-          selectedClipId: null,
+          selectedClip: null,
           selectedImportableClipName: null,
           selectedImportableImage: null,
           selectedImportableCustomElement: null,
+          selectedChatMessage: null,
           chatMessages: [],
           currentMessages: [],
           pendingChanges: false,
@@ -154,7 +174,7 @@ export const useStore = create<AppState>()(
           }, state.availableClips)
 
           const availableImages = parsed.images.reduce((acc, img) => {
-            return concatAvailableImage(acc, img)
+            return concatAvailableImage(acc, img, true)
           }, state.availableImages)
 
           return {
@@ -239,7 +259,11 @@ export const useStore = create<AppState>()(
       addAvailableImage: (image: Image) => {
         set((state) => {
           return {
-            availableImages: concatAvailableImage(state.availableImages, image),
+            availableImages: concatAvailableImage(
+              state.availableImages,
+              image,
+              true
+            ),
           }
         })
       },
@@ -253,7 +277,7 @@ export const useStore = create<AppState>()(
       availableCustomElements: [],
       addAvailableCustomElement: (element: CustomElement) => {
         const newElement = element.clone()
-        newElement.id = uuid()
+        newElement.id = ParsedVideostrate.generateElementId()
         set((state) => {
           return {
             availableCustomElements: [
@@ -274,16 +298,17 @@ export const useStore = create<AppState>()(
       },
       clearSelection: () => {
         set({
-          selectedClipId: null,
+          selectedClip: null,
           selectedImportableClipName: null,
           selectedImportableImage: null,
           selectedImportableCustomElement: null,
+          selectedChatMessage: null,
         })
       },
-      selectedClipId: null,
-      setSelectedClipId: (id: string | null) => {
+      selectedClip: null,
+      setSelectedClip: (clip: VideoElement | null) => {
         get().clearSelection()
-        set({ selectedClipId: id })
+        set({ selectedClip: clip })
       },
       selectedImportableClipName: null,
       setSelectedImportableClipName: (name: string | null) => {
@@ -299,6 +324,11 @@ export const useStore = create<AppState>()(
       setSelectedImportableCustomElement: (element: CustomElement | null) => {
         get().clearSelection()
         set({ selectedImportableCustomElement: element })
+      },
+      selectedChatMessage: null,
+      setSelectedChatMessage: (message: ChatMessage | null) => {
+        get().clearSelection()
+        set({ selectedChatMessage: message })
       },
       chatMessages: [],
       addChatMessage: (message: ChatMessage) => {
@@ -321,7 +351,10 @@ export const useStore = create<AppState>()(
         })
       },
       resetMessages: () => {
-        set({ chatMessages: [], currentMessages: [] })
+        set({
+          chatMessages: [],
+          currentMessages: [],
+        })
       },
       currentMessages: [],
       addMessage: (message: ChatCompletionMessageParam) => {
@@ -329,7 +362,7 @@ export const useStore = create<AppState>()(
           const currentMessages = state.currentMessages
           // Find the last message where role = 'user'
           const lastUserMessageIndex = currentMessages
-            .map((m) => m.role)
+            .map((m) => m.message.role)
             .lastIndexOf("user")
           const chatLastUserMessageIndex = state.chatMessages
             .map((m) => m.role)
@@ -339,28 +372,62 @@ export const useStore = create<AppState>()(
             .lastIndexOf("user", chatLastUserMessageIndex - 1)
           const lastUserMessage = currentMessages[lastUserMessageIndex]
           if (state.chatMessages[secondLastUserMessageIndex]?.content) {
-            lastUserMessage.content =
+            lastUserMessage.message.content =
               state.chatMessages[secondLastUserMessageIndex]?.content
           }
 
+          const newMessage = {
+            time: new Date().toISOString(),
+            activeUndoElementId: get().undoStack.at(-1)?.id ?? "",
+            message,
+          }
+          const archivedMessages = localStorage.getItem("chatMessages") ?? ""
+          const newArchivedMessages =
+            archivedMessages + "\n" + JSON.stringify(newMessage)
+          localStorage.setItem("chatMessages", newArchivedMessages)
+
           return {
-            currentMessages: [...currentMessages, message],
+            currentMessages: [...currentMessages, newMessage],
           }
         })
         return get().currentMessages
       },
       undoStack: [],
-      setUndoStack: (stack: ExecutedScript[]) => set({ undoStack: stack }),
-      addToUndoStack: (script: ExecutedScript) =>
+      popUndoStack: () => {
+        const undoStack = get().undoStack
+        const lastElement = undoStack.pop()
+        if (lastElement) {
+          set({
+            undoStack,
+          })
+        }
+        return lastElement
+      },
+      addToArchivedUndoStack: (script: UndoElement) => {
+        const archivedUndoStack =
+          localStorage.getItem("archivedUndoStack") ?? ""
+        const newArchivedUndoStack =
+          archivedUndoStack + "\n" + JSON.stringify(script)
+        localStorage.setItem("archivedUndoStack", newArchivedUndoStack)
+      },
+      addToUndoStack: (script: UndoElement, noArchiving: boolean = false) => {
         set((state) => {
+          if (!noArchiving) {
+            const archivedUndoStack =
+              localStorage.getItem("archivedUndoStack") ?? ""
+            const newArchivedUndoStack =
+              archivedUndoStack + "\n" + JSON.stringify(script)
+            localStorage.setItem("archivedUndoStack", newArchivedUndoStack)
+          }
           return {
             undoStack: [...state.undoStack, script],
             redoStack: [],
           }
-        }),
+        })
+      },
       redoStack: [],
-      setRedoStack: (stack: ExecutedScript[]) => set({ redoStack: stack }),
-      addToRedoStack: (script: ExecutedScript) => {
+      setRedoStack: (stack: UndoElement[]) => set({ redoStack: stack }),
+      addToRedoStack: (script: UndoElement) => {
         set((state) => {
           return {
             redoStack: [...state.redoStack, script],
@@ -489,7 +556,11 @@ const concatAvailableClips = (
   return [...availableClips, { source, title: newTitle }]
 }
 
-const concatAvailableImage = (availableImages: Image[], image: Image) => {
+const concatAvailableImage = (
+  availableImages: Image[],
+  image: Image,
+  insertAtBeginning: boolean = false
+) => {
   if (availableImages.some((i) => i.url === image.url)) return availableImages
 
   image.title = image.title || DEFAULT_IMAGE_TITLE
@@ -502,7 +573,8 @@ const concatAvailableImage = (availableImages: Image[], image: Image) => {
     newTitle = `${image.title} ${index++}`
   }
   image.title = newTitle
-  return [...availableImages, image]
+  if (insertAtBeginning) return [image, ...availableImages]
+  else return [...availableImages, image]
 }
 
 const getUpdatedMetadata = (

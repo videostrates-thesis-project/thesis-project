@@ -64,11 +64,7 @@ const Navbar = () => {
             readOnly
           />
         </div>
-        <div className="navbar-end">
-          <button className="btn btn-accent btn-sm">
-            <i className="bi bi-download text-lg"></i> Export
-          </button>
-        </div>
+        <div className="navbar-end"></div>
       </nav>
     </>
   )

@@ -38,7 +38,7 @@ Example custom element:
     Hello World!
 </div>
 
-Example embedded clip:
+Example custom element with embedded clip:
 <div custom-element-name="Bunny grid" layer="1" element-type="custom-element" id="9680527c-49f2-417c-9924-a20fcf0ce562" absolute-start="5"
     absolute-end="20" class="grid-2-by-2" embedded-clip-container="grid-2-by-2">
     <div element-type="embedded-clip" clip-name="Name of the clip" id="cbadd284-1a7a-4cf3-927e-15ead8e1ade1" layer="2" class="round-corners" absolute-start="2.23"
@@ -181,6 +181,13 @@ function delete_style(selector: string)
 function assign_class(element_ids: string[], class_name: string)
 
 /**
+ * Removes a class from the elements.
+ * @param {element_ids} the ids of the elements to remove the class from (clip, custom element, or embedded clip)
+ * @param {class_name} the name of the class to remove
+ */
+function remove_class(element_ids: string[], class_name: string)
+
+/**
  * Creates an animation.
  * @param {name} the name of the animation. It needs to be a valid css identifier, e.g. "my-animation".
  * @param {body} the css code of the animation, e.g. "from {left: 0px;} to {left: 200px;}"
@@ -203,7 +210,7 @@ function delete_animation(name: string)
 function generate_image(name: string, prompt: string): string
 
 
-For styling use the create_or_update_style, delete_style, and assignd_class functions. Do not use inline styling.
+For styling use the create_or_update_style, delete_style, and assign_class functions. Do not use inline styling.
 An example for creating and styling a custom element:
 add_custom_element("Cat table", "<table class="cat-table"><tr><td><b>Name</b></td><td><b>Breed</b></td><td><b>Color</b></td></tr><tr><td>Luna</td><td>Siberian</td><td>Gray</td></tr><tr><td>Milo</td><td>Siamese</td><td>White and brown</td></tr><tr><td>Simba</td><td>Tabby</td><td>Orange</td></tr></table>", 5, 10);
 create_or_update_style("table.cat-table", "font-family: Arial; font-size: 14px; text-align: center; border-collapse: separate; border-spacing: 10px;");
@@ -214,7 +221,7 @@ When creating an element with an animation do the following steps:
 2. Create styles for styling and applying the animation
 3. Create the element with all the classes for the styles and animations
 
-A clip can be added inside a custom element that has the embedded-clip-container attribute:
+Clips can be added inside custom elements. DO NOT INCLUDE CLIPS IN THE add_custom_element function! Embedding clips into a custom element can be done the following way:
     1. Create a custom element that has a container with a unique embedded-clip-container attribute value. This container has to be a div element.
     2. Add a clip to the container using the add_clip_to_element function.
     3. [Optional] Style the clips inside the container using the assign_class function.
@@ -231,9 +238,7 @@ assign_class([clip_1_id, clip_2_id, clip_3_id, clip_4_id], "round-corners");
 For image generation the returned url can be used in the custom element.
 For example:
 image_src = generate_image("A nice cat");
-image_id = add_custom_element("Nice cat", "<div><img src='" + image_src + "' /></div>", 2.3, 3.0);
-create_or_update_style(".image-title", "position: absolute; bottom: 10px; width: 100%; text-align: center; color: white; font-size: 24px; background-color: rgba(0, 0, 0, 0.5); padding: 5px;");
+image_id = add_custom_element("Nice cat", "<img class='nice-cat-img' src='" + image_src + "' />", 2.3, 3.0);
+create_or_update_style(".nice-cat-img", "width: 100%; height: 100%; object-fit: cover; object-position: center;");
 
-The script can be executed by calling the execute_changes function.
 ONLY INCLUDE THE ALLOWED FUNCTIONS IN THE SCRIPT AND DO NOT EXECUTE ANYTHING ELSE, NOT EVEN COMMENTS. DO NOT USE ANY ADDITIONAL FUNCTIONS.
-Remember to always call the execute_changes function to apply the changes to the video.
