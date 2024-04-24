@@ -158,7 +158,6 @@ export const useStore = create<AppState>()(
           const availableImages = parsed.images.reduce((acc, img) => {
             return concatAvailableImage(acc, img, true)
           }, state.availableImages)
-
           return {
             parsedVideostrate: parsed.clone(),
             serializedVideostrate: { html, css: style },
@@ -186,7 +185,7 @@ export const useStore = create<AppState>()(
       addAvailableClip: (source: string, title?: string) => {
         set((state) => {
           const availableClips = concatAvailableClips(
-            state.clipsMetadata,
+            state.availableClips,
             source,
             title
           )
