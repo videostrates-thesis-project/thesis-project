@@ -1,4 +1,5 @@
 import { useStore } from "../store"
+import updateLayers from "../utils/updateLayers"
 import { Image } from "./image"
 import VideoClip from "./videoClip"
 import {
@@ -483,6 +484,19 @@ export class ParsedVideostrate {
     this.all = [...this.all]
   }
 
+  private isColliding(elementId: string, layer: number) {
+    const element = this.getElementById(elementId)
+    const timeStart = element!.start
+    const timeEnd = element!.end
+    const elements = this.all.filter((element) => element.layer === layer)
+    for (const element of elements) {
+      if (element.start < timeEnd && element.end > timeStart) {
+        return true
+      }
+    }
+    return false
+  }
+
   public changeLayer(elementId: string, layer: number) {
     const element = this.all.find((e) => e.id === elementId)
     if (element) {
@@ -493,12 +507,48 @@ export class ParsedVideostrate {
     this.all = [...this.all]
   }
 
+  public moveLayerUp(elementId: string) {
+    const element = this.getElementById(elementId)
+    if (!element) return
+    const currentLayer = element.layer
+    // Return if it's alone on the highest layer
+    if (!this.all.some((e) => e.layer >= currentLayer && e.id !== elementId))
+      return
+    const collision = this.isColliding(elementId, currentLayer + 1)
+    if (collision) {
+      this.all
+        .filter((e) => e.layer === currentLayer + 1)
+        .forEach((e) => (e.layer = e.layer - 1))
+    }
+    element.layer = currentLayer + 1
+    this.all = [...this._all]
+  }
+
+  public moveLayerDown(elementId: string) {
+    const element = this.getElementById(elementId)
+    if (!element) return
+    const currentLayer = element.layer
+    // Return if it's alone on the lowest layer
+    if (!this.all.some((e) => e.layer <= currentLayer && e.id !== elementId))
+      return
+    const collision = this.isColliding(elementId, currentLayer - 1)
+    if (collision) {
+      this.all
+        .filter((e) => e.layer === currentLayer - 1)
+        .forEach((e) => (e.layer = e.layer + 1))
+    }
+    element.layer = currentLayer - 1
+    this.all = [...this._all]
+  }
+
   private updateComputedProperties() {
     // Calculate clips, elements and length
     this.clips = this._all.filter(
       (e): e is VideoClipElement => e.type === "video"
     )
     this.elements = this._all.filter((e) => e.type !== "video")
+
+    this._all = updateLayers(this._all)
 
     if (this._all.length === 0) {
       this._length = 0

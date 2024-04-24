@@ -21,6 +21,8 @@ import { renameElement } from "./renameElement"
 import { reposition } from "./reposition"
 import { setSpeed } from "./setSpeed"
 import { addCroppedClip } from "./addCroppedClip"
+import { moveLayerUp } from "./moveLayerUp"
+import { moveLayerDown } from "./moveLayerDown"
 
 const builtinFunctions = {
   add_clip: addClip,
@@ -30,6 +32,8 @@ const builtinFunctions = {
   assign_class: assignClass,
   remove_class: removeClass,
   move_layer: moveLayer,
+  move_layer_up: moveLayerUp,
+  move_layer_down: moveLayerDown,
   create_animation: createAnimation,
   create_or_update_style: createOrUpdateStyle,
   create_style: createStyle,

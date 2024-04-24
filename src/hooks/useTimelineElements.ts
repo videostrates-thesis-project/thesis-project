@@ -170,11 +170,11 @@ export const useTimelineElements = (widthPerSecond: number) => {
     const newLayers: TimelineElement[][] = []
     // Iterate through layers in ascending order
     Array.from(layersIndexes)
-      .sort()
+      .sort((a, b) => b - a)
       .forEach((layerIndex) => {
         newLayers.push(layersMap.get(layerIndex) as TimelineElement[])
       })
-    setLayers(newLayers.reverse())
+    setLayers(newLayers)
   }, [elements])
 
   return layers
