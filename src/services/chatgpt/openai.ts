@@ -252,11 +252,16 @@ class OpenAIService {
 
     const reaction = response.choices[0].message.content?.trim()
     console.log("[ChatGPT] Reaction:", reaction)
-    if (!reaction || reaction.toLowerCase().includes("no reaction")) return
+    if (
+      !reaction ||
+      reaction.toLowerCase().includes("no reaction") ||
+      reaction?.charCodeAt(0) < 255
+    )
+      return
 
     addReactionToMessage(
       messages[lastUserMessageIndex].id,
-      reaction?.slice(0, 2) ?? ""
+      reaction?.slice(0, 3) ?? ""
     )
   }
 
