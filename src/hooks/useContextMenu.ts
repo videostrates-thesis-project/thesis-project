@@ -4,7 +4,7 @@ import { v4 as uuid } from "uuid"
 
 const useContextMenu = (itemCount: number) => {
   const { openedContextMenuId, setOpenedContextMenuId } = useStore()
-  const [id, setId] = useState(uuid())
+  const [id] = useState(uuid())
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
   const [isVisible, setIsVisible] = useState(false)
 
