@@ -81,8 +81,10 @@ class OpenAIService {
         content: text,
       }
       if (
-        useStore.getState().currentMessages.filter((m) => m.role === "system")
-          .length === 0
+        useStore
+          .getState()
+          .currentMessages.filter((m) => m.message.role === "system").length ===
+        0
       ) {
         const systemMessage: ChatCompletionMessageParam = {
           role: "system",
@@ -94,7 +96,7 @@ class OpenAIService {
 
       const message = await this.sendChatMessageToAzureBase<ExecuteChanges>(
         "mirrorverse-gpt-4-turbo",
-        messages,
+        messages.map((m) => m.message),
         "execute_changes",
         executeChangesFunction
       )
@@ -126,6 +128,7 @@ class OpenAIService {
       })
 
       if (message.script) {
+        // eslint-disable-next-line prettier/prettier
         (await runScript(message.script))?.asPendingChanges()
         useStore.getState().setCurrentAsyncAction(null)
       }
@@ -161,8 +164,9 @@ class OpenAIService {
       content: text,
     }
     if (
-      useStore.getState().currentMessages.filter((m) => m.role === "system")
-        .length === 0
+      useStore
+        .getState()
+        .currentMessages.filter((m) => m.message.role === "system").length === 0
     ) {
       const systemMessage: ChatCompletionMessageParam = {
         role: "system",
@@ -174,7 +178,7 @@ class OpenAIService {
 
     const response = await openai.chat.completions.create({
       model: "gpt-4-0125-preview",
-      messages: messages,
+      messages: messages.map((m) => m.message),
       tool_choice: { type: "function", function: { name: "execute_changes" } },
       tools: [executeChangesFunction],
     })

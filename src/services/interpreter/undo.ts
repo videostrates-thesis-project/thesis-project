@@ -1,23 +1,20 @@
 import { useStore } from "../../store"
 
 export const undo = () => {
-  const undoStack = useStore.getState().undoStack
-  if (undoStack.length === 0) {
+  const lastCommand = useStore.getState().popUndoStack()
+  if (lastCommand === undefined) {
     console.error("Cannot perform undo operation on empty stack")
     return
   }
 
-  const lastCommand = undoStack.pop()
+  const currentVideostrate = useStore.getState().parsedVideostrate.clone()
+  useStore.getState().addToRedoStack({
+    ...lastCommand,
+    script: { ...lastCommand.script, parsedVideostrate: currentVideostrate },
+  })
 
-  if (lastCommand) {
-    const currentVideostrate = useStore.getState().parsedVideostrate.clone()
-    useStore
-      .getState()
-      .addToRedoStack({ ...lastCommand, parsedVideostrate: currentVideostrate })
+  useStore.getState().setParsedVideostrate(lastCommand.script.parsedVideostrate)
 
-    useStore.getState().setParsedVideostrate(lastCommand.parsedVideostrate)
-    useStore.getState().setUndoStack(undoStack)
-  }
   if (useStore.getState().pendingChanges) {
     useStore.getState().setPendingChanges(false)
   }
