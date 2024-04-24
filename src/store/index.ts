@@ -19,6 +19,8 @@ const TOAST_LENGTH = 5000
 const DEFAULT_IMAGE_TITLE = "Image"
 const DEFAULT_CLIP_TITLE = "Clip"
 
+export const aiProviders = ["openai", "azure"] as const
+export type AiProvider = (typeof aiProviders)[number]
 interface UndoElement {
   time: string
   id: string
@@ -124,6 +126,9 @@ export interface AppState {
 
   isUiFrozen: boolean
   setIsUiFrozen: (frozen: boolean) => void
+
+  aiProvider: AiProvider
+  setAiProvider: (provider: AiProvider) => void
 }
 
 export const useStore = create<AppState>()(
@@ -171,7 +176,6 @@ export const useStore = create<AppState>()(
           const availableImages = parsed.images.reduce((acc, img) => {
             return concatAvailableImage(acc, img, true)
           }, state.availableImages)
-
           return {
             parsedVideostrate: parsed.clone(),
             serializedVideostrate: { html, css: style },
@@ -199,7 +203,7 @@ export const useStore = create<AppState>()(
       addAvailableClip: (source: string, title?: string) => {
         set((state) => {
           const availableClips = concatAvailableClips(
-            state.clipsMetadata,
+            state.availableClips,
             source,
             title
           )
@@ -458,6 +462,8 @@ export const useStore = create<AppState>()(
         set({ currentAsyncAction: action }),
       isUiFrozen: false,
       setIsUiFrozen: (frozen: boolean) => set({ isUiFrozen: frozen }),
+      aiProvider: "azure",
+      setAiProvider: (provider: AiProvider) => set({ aiProvider: provider }),
     }),
     {
       name: "thesis-project-storage",
