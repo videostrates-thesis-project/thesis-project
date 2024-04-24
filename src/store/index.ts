@@ -19,6 +19,20 @@ const TOAST_LENGTH = 5000
 const DEFAULT_IMAGE_TITLE = "Image"
 const DEFAULT_CLIP_TITLE = "Clip"
 
+interface UndoElement {
+  time: string
+  id: string
+  parent: string
+  error?: string
+  script: ExecutedScript
+}
+
+interface MessageInformation {
+  time: string
+  activeUndoElementId: string
+  message: ChatCompletionMessageParam
+}
+
 export interface AppState {
   videostrateUrl: string
   setVideostrateUrl: (url: string) => void
@@ -80,21 +94,20 @@ export interface AppState {
   addReactionToMessage: (id: string, reaction: string) => void
   resetMessages: () => void
 
-  currentMessages: ChatCompletionMessageParam[]
-  addMessage: (
-    message: ChatCompletionMessageParam
-  ) => ChatCompletionMessageParam[]
+  currentMessages: MessageInformation[]
+  addMessage: (message: ChatCompletionMessageParam) => MessageInformation[]
 
   pendingChanges: boolean
   setPendingChanges: (unaccepted: boolean) => void
 
-  undoStack: ExecutedScript[]
-  setUndoStack: (stack: ExecutedScript[]) => void
-  addToUndoStack: (script: ExecutedScript) => void
+  addToArchivedUndoStack: (script: UndoElement) => void
+  undoStack: UndoElement[]
+  popUndoStack: () => UndoElement | undefined
+  addToUndoStack: (script: UndoElement, noArchiving?: boolean) => void
 
-  redoStack: ExecutedScript[]
-  setRedoStack: (stack: ExecutedScript[]) => void
-  addToRedoStack: (script: ExecutedScript) => void
+  redoStack: UndoElement[]
+  setRedoStack: (stack: UndoElement[]) => void
+  addToRedoStack: (script: UndoElement) => void
 
   toasts: Toast[]
   addToast: (type: ToastType, title: string, description: string) => void
@@ -158,7 +171,6 @@ export const useStore = create<AppState>()(
           const availableImages = parsed.images.reduce((acc, img) => {
             return concatAvailableImage(acc, img, true)
           }, state.availableImages)
-
           return {
             parsedVideostrate: parsed.clone(),
             serializedVideostrate: { html, css: style },
@@ -186,7 +198,7 @@ export const useStore = create<AppState>()(
       addAvailableClip: (source: string, title?: string) => {
         set((state) => {
           const availableClips = concatAvailableClips(
-            state.clipsMetadata,
+            state.availableClips,
             source,
             title
           )
@@ -333,7 +345,10 @@ export const useStore = create<AppState>()(
         })
       },
       resetMessages: () => {
-        set({ chatMessages: [], currentMessages: [] })
+        set({
+          chatMessages: [],
+          currentMessages: [],
+        })
       },
       currentMessages: [],
       addMessage: (message: ChatCompletionMessageParam) => {
@@ -341,7 +356,7 @@ export const useStore = create<AppState>()(
           const currentMessages = state.currentMessages
           // Find the last message where role = 'user'
           const lastUserMessageIndex = currentMessages
-            .map((m) => m.role)
+            .map((m) => m.message.role)
             .lastIndexOf("user")
           const chatLastUserMessageIndex = state.chatMessages
             .map((m) => m.role)
@@ -351,28 +366,62 @@ export const useStore = create<AppState>()(
             .lastIndexOf("user", chatLastUserMessageIndex - 1)
           const lastUserMessage = currentMessages[lastUserMessageIndex]
           if (state.chatMessages[secondLastUserMessageIndex]?.content) {
-            lastUserMessage.content =
+            lastUserMessage.message.content =
               state.chatMessages[secondLastUserMessageIndex]?.content
           }
 
+          const newMessage = {
+            time: new Date().toISOString(),
+            activeUndoElementId: get().undoStack.at(-1)?.id ?? "",
+            message,
+          }
+          const archivedMessages = localStorage.getItem("chatMessages") ?? ""
+          const newArchivedMessages =
+            archivedMessages + "\n" + JSON.stringify(newMessage)
+          localStorage.setItem("chatMessages", newArchivedMessages)
+
           return {
-            currentMessages: [...currentMessages, message],
+            currentMessages: [...currentMessages, newMessage],
           }
         })
         return get().currentMessages
       },
       undoStack: [],
-      setUndoStack: (stack: ExecutedScript[]) => set({ undoStack: stack }),
-      addToUndoStack: (script: ExecutedScript) =>
+      popUndoStack: () => {
+        const undoStack = get().undoStack
+        const lastElement = undoStack.pop()
+        if (lastElement) {
+          set({
+            undoStack,
+          })
+        }
+        return lastElement
+      },
+      addToArchivedUndoStack: (script: UndoElement) => {
+        const archivedUndoStack =
+          localStorage.getItem("archivedUndoStack") ?? ""
+        const newArchivedUndoStack =
+          archivedUndoStack + "\n" + JSON.stringify(script)
+        localStorage.setItem("archivedUndoStack", newArchivedUndoStack)
+      },
+      addToUndoStack: (script: UndoElement, noArchiving: boolean = false) => {
         set((state) => {
+          if (!noArchiving) {
+            const archivedUndoStack =
+              localStorage.getItem("archivedUndoStack") ?? ""
+            const newArchivedUndoStack =
+              archivedUndoStack + "\n" + JSON.stringify(script)
+            localStorage.setItem("archivedUndoStack", newArchivedUndoStack)
+          }
           return {
             undoStack: [...state.undoStack, script],
             redoStack: [],
           }
-        }),
+        })
+      },
       redoStack: [],
-      setRedoStack: (stack: ExecutedScript[]) => set({ redoStack: stack }),
-      addToRedoStack: (script: ExecutedScript) => {
+      setRedoStack: (stack: UndoElement[]) => set({ redoStack: stack }),
+      addToRedoStack: (script: UndoElement) => {
         set((state) => {
           return {
             redoStack: [...state.redoStack, script],

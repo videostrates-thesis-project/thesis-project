@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState } from "react"
 import { useStore } from "../../store"
+import useLogger from "../../hooks/useLogger"
 
 const HamburgerMenuContent = () => {
   const { videostrateUrl, setVideostrateUrl, setShowScriptTab, showScriptTab } =
@@ -7,6 +8,7 @@ const HamburgerMenuContent = () => {
   const [url, setUrl] = useState(videostrateUrl)
   const downloadRef = useRef<HTMLAnchorElement>(null)
   const importRef = useRef<HTMLInputElement>(null)
+  const { exportLogs } = useLogger()
 
   const onChangeUrl = useCallback(() => {
     setVideostrateUrl(url)
@@ -58,8 +60,8 @@ const HamburgerMenuContent = () => {
         </button>
       </div>
 
-      <div className="form-control">
-        <label className="label cursor-pointer">
+      <div className="form-control w-full gap-4">
+        <label className="label cursor-pointer mr-auto">
           <input
             type="checkbox"
             checked={showScriptTab}
@@ -68,6 +70,9 @@ const HamburgerMenuContent = () => {
           />
           <span className="label-text ml-2">Show script tab</span>
         </label>
+        <button className="btn btn-sm btn-accent w-auto" onClick={exportLogs}>
+          Export Logs
+        </button>
       </div>
 
       <div className="flex flex-row gap-4">

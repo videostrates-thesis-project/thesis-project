@@ -1,8 +1,8 @@
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useMemo, useRef, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { useStore } from "../../store"
 import Browser from "../CodeView/Browser"
-import { CustomElement } from "../../types/videoElement"
+import { CustomElement, VideoClipElement } from "../../types/videoElement"
 import CodeEditor, { EditorFile, EditorMatch } from "../CodeView/CodeEditor"
 import { css_beautify, html_beautify } from "js-beautify"
 import { VideostrateStyle } from "../../types/parsedVideostrate"
@@ -38,7 +38,7 @@ const serializeVideostrateStyles = (
 
 const CodeView = () => {
   const { elementId } = useParams()
-  const { parsedVideostrate } = useStore()
+  const { parsedVideostrate, availableClips } = useStore()
   const [html, setHtml] = useState("")
   const [css, setCss] = useState("")
   const [oldCss, setOldCss] = useState<VideostrateStyle[]>([])
@@ -55,6 +55,7 @@ const CodeView = () => {
   const [currentMatch, setCurrentMatch] = useState<EditorMatch | null>(null)
   const navigate = useNavigate()
   const [isQuitting, setIsQuitting] = useState(false)
+  const embeddedMap = useRef<Map<string, VideoClipElement[]>>(new Map())
 
   const element = useMemo(() => {
     const element = parsedVideostrate?.elements.find(
@@ -62,19 +63,52 @@ const CodeView = () => {
     ) as CustomElement
     if (!element) return null
 
+    const parser = new DOMParser()
+    const document = parser.parseFromString(element.content, "text/html")
+    document.querySelectorAll("div[embedded-clip-container]").forEach((el) => {
+      console.log(el)
+      const containerId = el.getAttribute("embedded-clip-container")
+      if (!containerId) return
+
+      const clips = parsedVideostrate.clips.filter(
+        (c) => c.parentId === containerId
+      )
+      clips.forEach((clip) => {
+        const availableClip = availableClips.find(
+          (c) => c.source === clip.source
+        )
+        const html = `<div VIDEO-CONTAINER-DO-NOT-CHANGE="!!!" clip-name="${availableClip?.title}" class="${clip.className}"><video style="min-width: 0; width: 100%; height: 100%;"><source src="${clip.source}" /></video></div>`
+        el.innerHTML += html
+      })
+      if (clips.length > 0) {
+        embeddedMap.current.set(containerId, clips)
+      }
+    })
+
     element.name = element.name || "element"
-    const beautifiedHtml = html_beautify(element.content, {
+    const beautifiedHtml = html_beautify(document.body.innerHTML, {
       indent_size: 4,
     })
     setHtml(beautifiedHtml)
     setOldHtmlText(beautifiedHtml)
     setBeforeAssistantHtml(beautifiedHtml)
-    const parser = new DOMParser()
-    const document = parser.parseFromString(element.content, "text/html")
-    const filteredCss = parsedVideostrate.style.filter(
-      (style) => document.querySelectorAll(style.selector).length > 0
-    )
-    // Filter animation to see if they appear in anywhere in the filtered css
+    const filteredCss = parsedVideostrate.style
+      .filter(
+        (style) =>
+          document.querySelectorAll(
+            style.selector.replaceAll("&gt;", ">").replaceAll("&amp;gt;", "&")
+          ).length > 0 &&
+          !(
+            style.selector === "div video" &&
+            style.style.includes("position: relative !important;")
+          )
+      )
+      .map((s) => ({
+        ...s,
+        selector: s.selector
+          .replaceAll("&gt;", " > ")
+          .replaceAll("&amp;", " & "),
+      }))
     const filteredAnimations = parsedVideostrate.animations.filter((q) =>
       filteredCss.some((c) => c.style.includes(q.selector))
     )
@@ -92,7 +126,9 @@ const CodeView = () => {
 
     return element
   }, [
+    availableClips,
     elementId,
+    parsedVideostrate.clips,
     parsedVideostrate.animations,
     parsedVideostrate?.elements,
     parsedVideostrate.style,
@@ -167,9 +203,40 @@ const CodeView = () => {
   const onSave = useCallback(() => {
     if (!elementId) return
 
+    const parser = new DOMParser()
+    const document = parser.parseFromString(html, "text/html")
+    let shouldBreak = false
+    embeddedMap.current.forEach((clips, containerId) => {
+      const el = document.querySelector(
+        `div[embedded-clip-container="${containerId}"]`
+      )
+      if (!el) {
+        if (
+          !confirm(
+            "You deleted an embedded clip container. Are you sure you want to continue?"
+          )
+        ) {
+          shouldBreak = true
+          return
+        }
+      }
+      clips.forEach((clip) => {
+        const videoElement = document.getElementById(clip.id)
+        if (videoElement) {
+          videoElement.remove()
+        }
+      })
+    })
+    if (shouldBreak) return
+
+    const newHtml = html_beautify(document.body.innerHTML, {
+      indent_size: 4,
+      preserve_newlines: false,
+    })
+
     const parsedStyle = parseStyle(css)
     runCommands(
-      editCustomElement(elementId, html),
+      editCustomElement(elementId, newHtml),
       ...oldCss.map((style) => deleteStyle(style.selector)),
       ...oldAnimations.map((animation) => deleteAnimation(animation.selector)),
       ...parsedStyle.style.map((style) =>

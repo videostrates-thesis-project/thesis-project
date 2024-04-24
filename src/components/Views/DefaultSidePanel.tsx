@@ -62,7 +62,7 @@ const DefaultSidePanel = () => {
             </li>
           ))}
       </ul>
-      <div className="flex flex-col p-4 w-full min-h-0 h-full overflow-y-auto">
+      <div className="flex flex-col p-4 w-full min-h-0 h-full overflow-y-scroll">
         {sideBarTab === "clips" && <AvailableClips />}
         {sideBarTab === "command" && <Commander />}
         {sideBarTab === "images" && <AvailableImages />}

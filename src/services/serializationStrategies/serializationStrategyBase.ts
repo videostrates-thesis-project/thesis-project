@@ -27,11 +27,11 @@ export abstract class SerializationStrategyBase {
   public serializeStyle(parsedVideostrate: ParsedVideostrate): string {
     return parsedVideostrate.style
       .map((style) => {
-        return `${style.selector} { ${style.style} }`
+        return `${style.selector.replaceAll("&gt;", ">").replaceAll("&amp;gt;", "&")} { ${style.style} }`
       })
       .concat(
         parsedVideostrate.animations.map((style) => {
-          return `@keyframes ${style.selector} { ${style.style} }`
+          return `@keyframes ${style.selector.replaceAll("&gt;", ">").replaceAll("&amp;gt;", "&")} { ${style.style} }`
         })
       )
       .join("\n")

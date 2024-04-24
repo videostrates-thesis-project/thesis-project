@@ -42,7 +42,7 @@ const HamburgerMenu = ({ isOpen, onClose }: HamburgerMenuProps) => {
 
       <div
         className={clsx(
-          "fixed top-10 left-0 bottom-0 w-96 bg-base-300 z-50 flex flex-col items-center gap-5 px-4",
+          "fixed top-10 left-0 bottom-0 w-96 bg-base-300 z-50 flex flex-col items-center gap-5 px-4 pt-6",
           isClosing ? "animate-slide-out" : "animate-slide-in"
         )}
       >

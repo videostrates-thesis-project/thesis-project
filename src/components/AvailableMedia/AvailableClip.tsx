@@ -8,6 +8,7 @@ import clsx from "clsx"
 import Sparkle from "../Sparkle"
 import AddElementButton from "./AddElementButton"
 import ChatContextTooltip from "./ChatContextTooltip"
+import formatTime from "../../utils/formatTime"
 
 const AvailableClip = (props: { clip: VideoClip }) => {
   const { seek, deleteAvailableClip, parsedVideostrate, isUiFrozen } =
@@ -79,7 +80,9 @@ const AvailableClip = (props: { clip: VideoClip }) => {
               <div className="overflow-hidden whitespace-nowrap text-ellipsis">
                 {props.clip.title}
               </div>
-              <div>{props.clip.length ?? "?"} seconds</div>
+              <div>
+                {props.clip.length ? formatTime(props.clip.length) : "?"}
+              </div>
               <div className="relative -right-2 -bottom-1 flex-grow w-full flex justify-end items-end">
                 <AddElementButton onClick={addToTimeline} time={seek} />
               </div>
