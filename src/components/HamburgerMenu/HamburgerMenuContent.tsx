@@ -16,7 +16,12 @@ const HamburgerMenuContent = () => {
 
   const onExport = useCallback(() => {
     const store = useStore.getState()
-    const json = JSON.stringify(store)
+    const json = JSON.stringify({
+      availableClips: store.availableClips,
+      availableImages: store.availableImages,
+      availableCustomElements: store.availableCustomElements,
+      clipsMetadata: store.clipsMetadata,
+    })
 
     if (downloadRef.current) {
       downloadRef.current.href = `data:text/json;charset=utf-8,${encodeURIComponent(json)}`
@@ -39,7 +44,11 @@ const HamburgerMenuContent = () => {
       }
       const file = files[0]
       const store = JSON.parse(await file.text())
-      useStore.setState(store)
+      useStore.setState({
+        ...useStore.getState(),
+        ...store,
+      })
+
       window.location.reload()
     },
     []
