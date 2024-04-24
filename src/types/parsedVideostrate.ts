@@ -134,10 +134,7 @@ export class ParsedVideostrate {
 
   public addClip(clip: VideoClip, start: number, end: number) {
     const newId = ParsedVideostrate.generateElementId()
-    const layer =
-      Math.max(
-        ...this.all.filter((e) => e.type === "video").map((e) => e.layer)
-      ) + 1
+    const layer = Math.max(...this.all.map((e) => e.layer)) + 1
     this.all.push(
       new VideoClipElement({
         id: newId,
