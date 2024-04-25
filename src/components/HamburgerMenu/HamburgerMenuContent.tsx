@@ -1,6 +1,7 @@
-import { useCallback, useRef, useMemo, useState } from "react"
+import { useCallback, useRef, useMemo, useState, useEffect } from "react"
 import { AiProvider, useStore } from "../../store"
 import useLogger from "../../hooks/useLogger"
+import { v4 as uuid } from "uuid"
 
 const HamburgerMenuContent = () => {
   const {
@@ -19,6 +20,10 @@ const HamburgerMenuContent = () => {
   const onChangeUrl = useCallback(() => {
     setVideostrateUrl(url)
   }, [setVideostrateUrl, url])
+
+  useEffect(() => {
+    setUrl(videostrateUrl)
+  }, [videostrateUrl])
 
   const onExport = useCallback(() => {
     const store = useStore.getState()
@@ -75,6 +80,10 @@ const HamburgerMenuContent = () => {
     ] as { value: AiProvider; label: string; isSelected: boolean }[]
   }, [aiProvider])
 
+  const onCreateNewWebstrate = useCallback(() => {
+    setVideostrateUrl("https://demo.webstrates.net/videostrates-" + uuid())
+  }, [setVideostrateUrl])
+
   return (
     <>
       <div className="flex flex-col gap-4 w-full">
@@ -85,9 +94,17 @@ const HamburgerMenuContent = () => {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
         />
-        <button className="btn btn-sm btn-accent w-auto" onClick={onChangeUrl}>
-          Change URL
-        </button>
+        <div className="grid grid-rows-1 grid-cols-2 gap-4">
+          <button className="btn btn-accent w-auto" onClick={onChangeUrl}>
+            Change URL
+          </button>
+          <button
+            className="btn btn-error w-auto"
+            onClick={onCreateNewWebstrate}
+          >
+            Create new webstrate
+          </button>
+        </div>
       </div>
 
       <div className="form-control w-full gap-4">
