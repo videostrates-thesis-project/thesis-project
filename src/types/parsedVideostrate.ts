@@ -508,16 +508,23 @@ export class ParsedVideostrate {
     const element = this.getElementById(elementId)
     if (!element) return
     const currentLayer = element.layer
+    const targetLayer = currentLayer + 1
     // Return if it's alone on the highest layer
     if (!this.all.some((e) => e.layer >= currentLayer && e.id !== elementId))
       return
-    const collision = this.isColliding(elementId, currentLayer + 1)
+    const collision = this.isColliding(elementId, targetLayer)
     if (collision) {
+      // Move everything from a target layer to a lower layer
       this.all
-        .filter((e) => e.layer === currentLayer + 1)
+        .filter((e) => e.layer === targetLayer)
+        .forEach((e) => (e.layer = e.layer - 1))
+      // Move other elements from the current and lower layers to a lower layer, to make the space for elements moved down
+      this.all
+        .filter((e) => e.layer <= currentLayer)
         .forEach((e) => (e.layer = e.layer - 1))
     }
-    element.layer = currentLayer + 1
+
+    element.layer = targetLayer
     this.all = [...this._all]
   }
 
@@ -525,16 +532,22 @@ export class ParsedVideostrate {
     const element = this.getElementById(elementId)
     if (!element) return
     const currentLayer = element.layer
+    const targetLayer = currentLayer - 1
     // Return if it's alone on the lowest layer
     if (!this.all.some((e) => e.layer <= currentLayer && e.id !== elementId))
       return
-    const collision = this.isColliding(elementId, currentLayer - 1)
+    const collision = this.isColliding(elementId, targetLayer)
     if (collision) {
+      // Move everything from a target layer to a higher layer
       this.all
-        .filter((e) => e.layer === currentLayer - 1)
+        .filter((e) => e.layer === targetLayer)
+        .forEach((e) => (e.layer = e.layer + 1))
+      // Move other elements from the current and higher layers to a higher layer, to make the space for elements moved u
+      this.all
+        .filter((e) => e.layer >= currentLayer)
         .forEach((e) => (e.layer = e.layer + 1))
     }
-    element.layer = currentLayer - 1
+    element.layer = targetLayer
     this.all = [...this._all]
   }
 
