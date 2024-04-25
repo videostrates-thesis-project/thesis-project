@@ -276,6 +276,22 @@ export class ParsedVideostrate {
     return element
   }
 
+  private parseCustomElementContent(content: string): HTMLElement {
+    const parser = new DOMParser()
+    const document = parser.parseFromString(content, "text/html")
+
+    // if the content is not a valid html or has multiple root elements, wrap it in a div
+    if (document.body.children.length !== 1) {
+      const wrapper = document.createElement("div")
+      wrapper.innerHTML = content
+      return wrapper
+    }
+
+    let htmlElement = document.body.firstChild as HTMLElement
+    htmlElement = ParsedVideostrate.cleanTree(htmlElement)
+    return htmlElement
+  }
+
   public addCustomElement(
     name: string,
     content: string,
@@ -284,10 +300,7 @@ export class ParsedVideostrate {
     type: VideoElementType = "custom",
     nodeType = "div"
   ) {
-    const parser = new DOMParser()
-    const document = parser.parseFromString(content, "text/html")
-    let htmlElement = document.body.firstChild as HTMLElement
-    htmlElement = ParsedVideostrate.cleanTree(htmlElement)
+    const htmlElement = this.parseCustomElementContent(content)
     const parent = htmlElement?.parentNode
     const wrapper = document.createElement("div")
     parent?.replaceChild(wrapper, htmlElement)
@@ -304,7 +317,7 @@ export class ParsedVideostrate {
         nodeType,
         type,
         offset: 0,
-        content,
+        content: htmlElement.outerHTML,
         outerHtml: wrapper.outerHTML,
         layer,
         speed: 1,
@@ -319,7 +332,8 @@ export class ParsedVideostrate {
     const element = this.all.find((e) => e.id === id)
     if (element) {
       const customElement = element as CustomElement
-      customElement.content = content
+      const htmlElement = this.parseCustomElementContent(content)
+      customElement.content = htmlElement.outerHTML
     } else {
       throw new Error(`Element with id ${id} not found`)
     }
