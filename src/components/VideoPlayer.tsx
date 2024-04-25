@@ -111,7 +111,10 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
         <div
           className="w-full h-full overflow-hidden min-h-0 min-w-0"
           // Add 48px to the height to account for the controls
-          style={{ height: `${iframeContainerHeight + 48}px` }}
+          style={{
+            height: `${iframeContainerHeight}px`,
+            minHeight: `${iframeContainerHeight}px`,
+          }}
         >
           <iframe
             ref={iframeRef}
@@ -126,8 +129,8 @@ function VideoPlayer(props: { videoPlayerUrl: string }) {
             src={props.videoPlayerUrl}
           ></iframe>
         </div>
-        <PlayerControls />
       </div>
+      <PlayerControls />
     </div>
   )
 }

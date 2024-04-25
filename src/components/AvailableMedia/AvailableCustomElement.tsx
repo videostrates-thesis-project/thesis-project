@@ -98,7 +98,10 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
         {isSelected && <Sparkle />}
         <div
           className="w-full h-full overflow-hidden min-h-0 min-w-0"
-          style={{ height: `${iframeContainerHeight}px` }}
+          style={{
+            height: `${iframeContainerHeight}px`,
+            minHeight: `${iframeContainerHeight}px`,
+          }}
         >
           <iframe
             ref={iframeRef}
