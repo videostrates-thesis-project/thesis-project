@@ -24,6 +24,7 @@ const DefaultChat = () => {
     seek,
     addReactionToMessage,
     resetMessages,
+    clearSelection,
   } = useStore()
 
   const onSend = useCallback(
@@ -59,19 +60,21 @@ const DefaultChat = () => {
         [...chatMessages, latestMessage],
         useStore.getState().addReactionToMessage
       )
+      clearSelection()
     },
     [
-      addChatMessage,
+      parsedVideostrate,
       clipsMetadata,
       availableImages,
-      chatMessages,
-      parsedVideostrate,
-      seek,
       selectedClip?.id,
       selectedImportableClipName,
       selectedImportableImage,
       selectedImportableCustomElement,
       selectedChatMessage,
+      seek,
+      addChatMessage,
+      chatMessages,
+      clearSelection,
     ]
   )
 
@@ -84,7 +87,8 @@ const DefaultChat = () => {
 
   const onStartNewconversation = useCallback(() => {
     resetMessages()
-  }, [resetMessages])
+    clearSelection()
+  }, [clearSelection, resetMessages])
 
   return (
     <div className="w-96 min-w-96">
