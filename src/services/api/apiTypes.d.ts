@@ -60,15 +60,15 @@ interface SearchVideosRequest {
   videos: { url: string; start: number; end: number }[]
 }
 
+interface ClipResults {
+  text: string
+  before_text: string
+  after_text: string
+  highlighted: string
+  start: number
+  end: number
+}
+
 interface SearchVideosResponse {
-  [videoUrl: string]: [
-    {
-      text: string
-      before_text: string
-      after_text: string
-      highlighted: string
-      start: number
-      end: number
-    },
-  ]
+  [videoUrl: string]: clipResults[]
 }

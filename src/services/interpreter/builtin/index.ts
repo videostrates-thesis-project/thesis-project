@@ -25,7 +25,7 @@ import { addCroppedClip } from "./addCroppedClip"
 const builtinFunctions = {
   add_clip: addClip,
   add_cropped_clip: addCroppedClip,
-  add_clip_to_element: addClipToElement,
+  add_clip_to_container: addClipToElement,
   add_custom_element: addCustomElement,
   assign_class: assignClass,
   remove_class: removeClass,

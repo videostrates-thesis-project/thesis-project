@@ -11,6 +11,7 @@ const DefaultChat = () => {
   const {
     parsedVideostrate,
     clipsMetadata,
+    availableImages,
     selectedClip,
     selectedImportableClipName,
     selectedImportableImage,
@@ -30,6 +31,7 @@ const DefaultChat = () => {
       const serialized = serializeVideostrate(parsedVideostrate, "chatGPT")
       const prompt = buildAssistantMessage(
         clipsMetadata,
+        availableImages,
         serialized.style,
         serialized.html,
         selectedClip?.id ?? null,
@@ -40,7 +42,13 @@ const DefaultChat = () => {
         seek,
         message
       )
-      openAIService.sendDefaultChatMessageToAzure(prompt)
+      openAIService.sendChatMessage(prompt).catch((error) => {
+        addChatMessage({
+          role: "assistant",
+          content: "There was an error processing your request: " + error,
+          id: uuid(),
+        })
+      })
       const latestMessage: ChatMessage = {
         role: "user",
         content: message,
@@ -55,6 +63,7 @@ const DefaultChat = () => {
     [
       addChatMessage,
       clipsMetadata,
+      availableImages,
       chatMessages,
       parsedVideostrate,
       seek,
