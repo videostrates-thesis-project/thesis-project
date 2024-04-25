@@ -1,4 +1,5 @@
 import { useStore } from "../store"
+import updateLayers from "../utils/updateLayers"
 import { Image } from "./image"
 import VideoClip from "./videoClip"
 import {
@@ -133,10 +134,7 @@ export class ParsedVideostrate {
 
   public addClip(clip: VideoClip, start: number, end: number) {
     const newId = ParsedVideostrate.generateElementId()
-    const layer =
-      Math.max(
-        ...this.all.filter((e) => e.type === "video").map((e) => e.layer)
-      ) + 1
+    const layer = Math.max(...this.all.map((e) => e.layer)) + 1
     this.all.push(
       new VideoClipElement({
         id: newId,
@@ -497,6 +495,19 @@ export class ParsedVideostrate {
     this.all = [...this.all]
   }
 
+  private isColliding(elementId: string, layer: number) {
+    const element = this.getElementById(elementId)
+    const timeStart = element!.start
+    const timeEnd = element!.end
+    const elements = this.all.filter((element) => element.layer === layer)
+    for (const element of elements) {
+      if (element.start < timeEnd && element.end > timeStart) {
+        return true
+      }
+    }
+    return false
+  }
+
   public changeLayer(elementId: string, layer: number) {
     const element = this.all.find((e) => e.id === elementId)
     if (element) {
@@ -507,12 +518,61 @@ export class ParsedVideostrate {
     this.all = [...this.all]
   }
 
+  public moveLayerUp(elementId: string) {
+    const element = this.getElementById(elementId)
+    if (!element) return
+    const currentLayer = element.layer
+    const targetLayer = currentLayer + 1
+    // Return if it's alone on the highest layer
+    if (!this.all.some((e) => e.layer >= currentLayer && e.id !== elementId))
+      return
+    const collision = this.isColliding(elementId, targetLayer)
+    if (collision) {
+      // Move everything from a target layer to a lower layer
+      this.all
+        .filter((e) => e.layer === targetLayer)
+        .forEach((e) => (e.layer = e.layer - 1))
+      // Move other elements from the current and lower layers to a lower layer, to make the space for elements moved down
+      this.all
+        .filter((e) => e.layer <= currentLayer)
+        .forEach((e) => (e.layer = e.layer - 1))
+    }
+
+    element.layer = targetLayer
+    this.all = [...this._all]
+  }
+
+  public moveLayerDown(elementId: string) {
+    const element = this.getElementById(elementId)
+    if (!element) return
+    const currentLayer = element.layer
+    const targetLayer = currentLayer - 1
+    // Return if it's alone on the lowest layer
+    if (!this.all.some((e) => e.layer <= currentLayer && e.id !== elementId))
+      return
+    const collision = this.isColliding(elementId, targetLayer)
+    if (collision) {
+      // Move everything from a target layer to a higher layer
+      this.all
+        .filter((e) => e.layer === targetLayer)
+        .forEach((e) => (e.layer = e.layer + 1))
+      // Move other elements from the current and higher layers to a higher layer, to make the space for elements moved u
+      this.all
+        .filter((e) => e.layer >= currentLayer)
+        .forEach((e) => (e.layer = e.layer + 1))
+    }
+    element.layer = targetLayer
+    this.all = [...this._all]
+  }
+
   private updateComputedProperties() {
     // Calculate clips, elements and length
     this.clips = this._all.filter(
       (e): e is VideoClipElement => e.type === "video"
     )
     this.elements = this._all.filter((e) => e.type !== "video")
+
+    this._all = updateLayers(this._all)
 
     if (this._all.length === 0) {
       this._length = 0

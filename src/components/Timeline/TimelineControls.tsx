@@ -3,9 +3,10 @@ import { useTimeStamp } from "../../hooks/useTimeStamp"
 import { useStore } from "../../store"
 import { runCommands } from "../../services/interpreter/run"
 import { deleteElement as deleteElementCommand } from "../../services/interpreter/builtin/deleteElement"
-import useEditCommands from "../../hooks/useEditCommands"
 import { addCustomElement } from "../../services/interpreter/builtin/addCustomElement"
 import clsx from "clsx"
+import { moveLayerUp } from "../../services/interpreter/builtin/moveLayerUp"
+import { moveLayerDown } from "../../services/interpreter/builtin/moveLayerDown"
 
 const TimelineControls = (props: {
   zoomIn: (step: number) => void
@@ -14,21 +15,20 @@ const TimelineControls = (props: {
 }) => {
   const { parsedVideostrate, playbackState, selectedClip, isUiFrozen, seek } =
     useStore()
-  const { execute, moveLayerDown, moveLayerUp } = useEditCommands()
   const playbackTime = useTimeStamp(playbackState.time)
   const fullTime = useTimeStamp(parsedVideostrate.length)
 
   const moveUp = useCallback(() => {
     if (selectedClip?.id) {
-      execute(moveLayerUp(selectedClip?.id))
+      runCommands(moveLayerUp(selectedClip?.id))
     }
-  }, [execute, moveLayerUp, selectedClip])
+  }, [selectedClip])
 
   const moveDown = useCallback(() => {
     if (selectedClip?.id) {
-      execute(moveLayerDown(selectedClip?.id))
+      runCommands(moveLayerDown(selectedClip?.id))
     }
-  }, [execute, moveLayerDown, selectedClip])
+  }, [selectedClip])
 
   const deleteElement = useCallback(() => {
     if (selectedClip?.id) {
