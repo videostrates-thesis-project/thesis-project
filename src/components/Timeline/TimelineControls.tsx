@@ -48,6 +48,7 @@ const TimelineControls = (props: {
             <div className="tooltip" data-tip="Create custom element">
               <button className="btn btn-sm btn-ghost" onClick={createElement}>
                 <i className="bi bi-plus-lg text-lg"></i>
+                <span>Element</span>
               </button>
             </div>
           </>
