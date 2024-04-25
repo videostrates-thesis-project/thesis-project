@@ -5,7 +5,11 @@ tags:
 creation date: 2024-04-24 16:12
 ---
 ## Task 1
-// TODO: Anna
+In the first task, you have to create a short highlight video for the start of a Formula 1 race.
+- Add the "F1 highlights" clip to the timeline.
+- Add the “F1 onboard” clip as well - it should be small, in the bottom right corner and start around second 3
+- Add a black box with rounded edges on the top left, which says “Formula 1“, then “Lap 1/56” below it. It should start at second 1 and last until the end of the video and slide in from the left when it appears on the screen.
+
 
 ## Task 2 - Baby Elephant news
 In the local zoo, four cute baby elephants were born this year. Your task is to cut a short news report that introduces them.
