@@ -112,6 +112,16 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
               top: `${iframeTop}px`,
             }}
           ></iframe>
+          <div
+            className="z-10 absolute"
+            style={{
+              width: `${iframeWidth}px`,
+              height: `${iframeHeight}px`,
+              scale: `${iframeScale}`,
+              left: `${iframeLeft}px`,
+              top: `${iframeTop}px`,
+            }}
+          ></div>
         </div>
         <div className="flex flex-row justify-between items-center m-1">
           <span className="overflow-hidden whitespace-nowrap text-ellipsis pl-1">
