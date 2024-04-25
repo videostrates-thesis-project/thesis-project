@@ -127,6 +127,9 @@ export interface AppState {
   isUiFrozen: boolean
   setIsUiFrozen: (frozen: boolean) => void
 
+  openedContextMenuId: string | null
+  setOpenedContextMenuId: (id: string | null) => void
+
   aiProvider: AiProvider
   setAiProvider: (provider: AiProvider) => void
 }
@@ -462,6 +465,9 @@ export const useStore = create<AppState>()(
         set({ currentAsyncAction: action }),
       isUiFrozen: false,
       setIsUiFrozen: (frozen: boolean) => set({ isUiFrozen: frozen }),
+      openedContextMenuId: null,
+      setOpenedContextMenuId: (id: string | null) =>
+        set({ openedContextMenuId: id }),
       aiProvider: "azure",
       setAiProvider: (provider: AiProvider) => set({ aiProvider: provider }),
     }),

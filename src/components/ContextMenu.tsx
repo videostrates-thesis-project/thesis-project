@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react"
+import { useRef } from "react"
+import { useOnClickOutside } from "../hooks/useClickOutside"
 
 type ContextMenuProps = {
   items: { label: string; action: () => void }[]
@@ -15,19 +16,8 @@ const ContextMenu = ({
   onClose,
   disabled,
 }: ContextMenuProps) => {
-  const [mouseLeaveTimeout, setMouseLeaveTimeout] = useState<NodeJS.Timeout>()
-
-  const onMouseLeave = useCallback(() => {
-    clearTimeout(mouseLeaveTimeout)
-    const timeout = setTimeout(() => {
-      onClose()
-    }, 1000)
-    setMouseLeaveTimeout(timeout)
-  }, [mouseLeaveTimeout, onClose])
-
-  const onMouseEnter = useCallback(() => {
-    clearTimeout(mouseLeaveTimeout)
-  }, [mouseLeaveTimeout])
+  const ref = useRef<HTMLDivElement>(null)
+  useOnClickOutside(ref, onClose)
 
   if (!visible) return null
 
@@ -35,8 +25,7 @@ const ContextMenu = ({
     <div
       className="fixed shadow-md z-50"
       style={{ top: position.y, left: position.x }}
-      onMouseLeave={onMouseLeave}
-      onMouseEnter={onMouseEnter}
+      ref={ref}
     >
       <ul className="menu bg-base-200 rounded-box">
         {items.map((item, index) => (

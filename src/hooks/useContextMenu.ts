@@ -1,8 +1,18 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
+import { useStore } from "../store"
+import { v4 as uuid } from "uuid"
 
 const useContextMenu = (itemCount: number) => {
+  const { openedContextMenuId, setOpenedContextMenuId } = useStore()
+  const [id] = useState(uuid())
   const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
   const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    if (openedContextMenuId !== id) {
+      setIsVisible(false)
+    }
+  }, [id, openedContextMenuId])
 
   const showMenu = useCallback(
     (
@@ -11,6 +21,7 @@ const useContextMenu = (itemCount: number) => {
       if (itemCount === 0) return
       event.preventDefault()
       setIsVisible(true)
+      setOpenedContextMenuId(id)
 
       const clickX = event.pageX + 5
       const clickY = event.pageY + 5
@@ -28,12 +39,13 @@ const useContextMenu = (itemCount: number) => {
       setMenuPosition({ x: posX, y: posY })
       event.stopPropagation() // Prevent event bubbling
     },
-    [itemCount]
+    [id, itemCount, setOpenedContextMenuId]
   )
 
   const hideMenu = useCallback(() => {
     setIsVisible(false)
-  }, [])
+    setOpenedContextMenuId(null)
+  }, [setOpenedContextMenuId])
 
   return { showMenu, hideMenu, menuPosition, isVisible }
 }

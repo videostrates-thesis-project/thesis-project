@@ -328,6 +328,7 @@ const Clip = (props: { clip: TimelineElement }) => {
                   onDrag={onDragLeft}
                   onDragStart={(e) => {
                     onDragLeftStart(e)
+                    hideMenu()
                   }}
                   onDragEnd={onCropLeftEnd}
                 >
@@ -347,6 +348,7 @@ const Clip = (props: { clip: TimelineElement }) => {
                 onDragStart={(e) => {
                   onDragStart(e)
                   setSelectedClip(clip)
+                  hideMenu()
                 }}
                 onDragEnd={onDragMoveEnd}
               >
@@ -367,6 +369,7 @@ const Clip = (props: { clip: TimelineElement }) => {
                   onDrag={onDragRight}
                   onDragStart={(e) => {
                     onDragRightStart(e)
+                    hideMenu()
                   }}
                   onDragEnd={onCropRightEnd}
                 >
