@@ -388,7 +388,7 @@ const CodeView = () => {
     >
       <div
         className={clsx(
-          "animate-zoom-in grid grid-cols-2 w-11/12 h-11/12 z-10 bg-base-300",
+          "animate-zoom-in grid grid-cols-2 w-11/12 h-[calc(1100%/12)] z-10 bg-base-300",
           isQuitting && "animate-zoom-out"
         )}
         onKeyDown={onHotkey}
@@ -403,7 +403,7 @@ const CodeView = () => {
         )}
         {element && (
           <>
-            <div className="flex flex-col">
+            <div className="flex flex-col h-full max-h-full min-h-0">
               <Browser
                 html={displayedHtml}
                 highlight={onHighlight}

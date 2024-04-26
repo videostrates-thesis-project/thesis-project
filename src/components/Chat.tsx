@@ -179,7 +179,7 @@ const Chat = ({
   )
 
   return (
-    <div className="flex flex-col h-full max-h-full bg-base-300 border-l border-neutral rounded">
+    <div className="flex flex-col h-full max-h-full bg-base-300 border-l border-neutral rounded min-h-0">
       <div className="flex flex-row w-full bg-base-100 p-2">
         <button
           className="ml-auto btn btn-xs btn-accent group text-xs"
