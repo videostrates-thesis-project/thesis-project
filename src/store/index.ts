@@ -149,6 +149,7 @@ export const useStore = create<AppState>()(
           availableClips: [],
           clipsMetadata: [],
           availableImages: [],
+          availableCustomElements: [],
           seek: 0,
           playing: false,
           playbackState: { frame: 0, time: 0 },
