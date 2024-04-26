@@ -11,7 +11,7 @@ import AddElementButton from "./AddElementButton"
 import ChatContextTooltip from "./ChatContextTooltip"
 
 const AvailableImage = (props: { image: Image }) => {
-  const { parsedVideostrate, seek, deleteAvailableImage, isUiFrozen } =
+  const { parsedVideostrate, playbackState, deleteAvailableImage, isUiFrozen } =
     useStore()
   const { selectedImportableImage, setSelectedImportableImage } = useStore()
 
@@ -31,8 +31,8 @@ const AvailableImage = (props: { image: Image }) => {
         addCustomElement(
           props.image.title,
           `<img src="${props.image.url}" alt="${props.image.title}" class="image-full-cover"/>`,
-          seek,
-          seek + 20
+          playbackState.time,
+          playbackState.time + 20
         ),
         createOrUpdateStyle(
           ".image-full-cover",
@@ -40,7 +40,7 @@ const AvailableImage = (props: { image: Image }) => {
         )
       )
     },
-    [props.image.title, props.image.url, seek]
+    [props.image.title, props.image.url, playbackState.time]
   )
 
   const deleteImage = useCallback(
@@ -76,7 +76,7 @@ const AvailableImage = (props: { image: Image }) => {
           <span className="overflow-hidden whitespace-nowrap text-ellipsis pl-1">
             {props.image.title}
           </span>
-          <AddElementButton onClick={addImage} time={seek} />
+          <AddElementButton onClick={addImage} time={playbackState.time} />
         </div>
         <DeleteMediaButton
           disabled={!canBeDeleted || isUiFrozen}

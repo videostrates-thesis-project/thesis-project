@@ -22,7 +22,7 @@ const DefaultChat = () => {
     addChatMessage,
     chatMessages,
     pendingChanges,
-    seek,
+    playbackState,
     addReactionToMessage,
     resetMessages,
     clearSelection,
@@ -42,7 +42,7 @@ const DefaultChat = () => {
         selectedImportableImage,
         selectedImportableCustomElement,
         selectedChatMessage,
-        seek,
+        playbackState.time,
         message
       )
       openAIService.sendChatMessage(prompt).catch((error) => {
@@ -74,7 +74,7 @@ const DefaultChat = () => {
       selectedImportableImage,
       selectedImportableCustomElement,
       selectedChatMessage,
-      seek,
+      playbackState.time,
       addChatMessage,
       chatMessages,
       clearSelection,
