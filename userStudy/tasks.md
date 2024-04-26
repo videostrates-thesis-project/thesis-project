@@ -26,6 +26,8 @@ The elephant's names and their short description:
 - Sandra: Sandra's obsession with fountains just makes her more adorable.
 - Louis: For Louis there's no greater joy than having a good nap. Anytime. Anywhere.
 
+`Hint`: Once the first banner is created try to add it as a reusable element so that it can be imported and modified for the rest of the elephants.
+
 ![Elephant News Scene 2](./images/user-study-elephant-news-scene-2.png)
 
 ### Scene 3
