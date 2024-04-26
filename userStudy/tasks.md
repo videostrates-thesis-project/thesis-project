@@ -4,7 +4,7 @@ tags:
   - AU/thesis/user-study
 creation date: 2024-04-24 16:12
 ---
-## Task 1
+## Task 1 - Formula 1
 In the first task, you have to create a short highlight video for the start of a Formula 1 race.
 - Add the "F1 highlights" clip to the timeline.
 - Add the “F1 onboard” clip as well - it should be small, in the bottom right corner and start around second 3
