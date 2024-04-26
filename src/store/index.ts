@@ -14,10 +14,7 @@ import {
 } from "../types/videoElement"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 import { ExecutedScript } from "../services/interpreter/executedScript"
-import {
-  initialChatMessages,
-  initialCurrentMessages,
-} from "./initialChatMessagesState"
+import { initialChatMessages } from "./initialChatMessagesState"
 import MessageInformation from "../types/messageInformation"
 
 const TOAST_LENGTH = 5000
@@ -157,7 +154,7 @@ export const useStore = create<AppState>()(
           selectedImportableCustomElement: null,
           selectedChatMessage: null,
           chatMessages: initialChatMessages(),
-          currentMessages: initialCurrentMessages(),
+          currentMessages: [],
           pendingChanges: false,
           undoStack: [],
           redoStack: [],
@@ -354,10 +351,10 @@ export const useStore = create<AppState>()(
       resetMessages: () => {
         set({
           chatMessages: initialChatMessages(),
-          currentMessages: initialCurrentMessages(),
+          currentMessages: [],
         })
       },
-      currentMessages: initialCurrentMessages(),
+      currentMessages: [],
       addMessage: (message: ChatCompletionMessageParam) => {
         set((state) => {
           const currentMessages = state.currentMessages
@@ -386,7 +383,6 @@ export const useStore = create<AppState>()(
           const newArchivedMessages =
             archivedMessages + "\n" + JSON.stringify(newMessage)
           localStorage.setItem("chatMessages", newArchivedMessages)
-
           return {
             currentMessages: [...currentMessages, newMessage],
           }

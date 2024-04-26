@@ -1,19 +1,5 @@
 import { ChatMessage } from "../types/chatMessage"
 import { v4 as uuid } from "uuid"
-import MessageInformation from "../types/messageInformation"
-
-const initialCurrentMessages = (): MessageInformation[] => {
-  return [
-    {
-      time: new Date().toISOString(),
-      activeUndoElementId: "",
-      message: {
-        role: "assistant",
-        content: getWelcomeMessageString(),
-      },
-    },
-  ]
-}
 
 const initialChatMessages = (): ChatMessage[] => {
   return [
@@ -40,4 +26,4 @@ const getWelcomeMessageString = () => {
   `
 }
 
-export { initialCurrentMessages, initialChatMessages }
+export { initialChatMessages }
