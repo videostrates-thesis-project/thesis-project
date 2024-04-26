@@ -37,5 +37,18 @@ In the final scene you should create a 2x2 grid view containing the clips of eac
 ## Task 3
 // TODO: Jedrek
 
+## Bonus task - Minecraft Cinematic
+
+This task is an open-ended exploratory task. The goal is to release your imagination, use all the experience that you have gathered so far, and create something cool.
+
+In the library you can find images and clips taken in Minecraft, and your task is to cut a fancy cinematic video showcasing how beautiful this video game is. The resources have two main categories: city and nature.
+
+Some tips about what you could do:
+- Cut similar clips sequentially, like "close city street clips"
+- Make compositions of the clips and images, like grid, vertical split, picture in picture
+- Add animations: fade-in, slide-in, zoom-in, spinning, jumping, stretching
+- Create custom elements, like title screen, banner, logo
+- Generate extra images
+
 
 
