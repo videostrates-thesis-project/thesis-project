@@ -248,7 +248,15 @@ export const useStore = create<AppState>()(
       },
       deleteAvailableClip: (source: string) => {
         set((state) => {
+          let selectedImportableClipName = state.selectedImportableClipName
+          if (
+            state.selectedImportableClipName ===
+            state.clipsMetadata.find((clip) => clip.source === source)?.title
+          ) {
+            selectedImportableClipName = null
+          }
           return {
+            selectedImportableClipName,
             clipsMetadata: state.clipsMetadata.filter(
               (clip) => clip.source !== source
             ),
@@ -272,7 +280,12 @@ export const useStore = create<AppState>()(
       },
       deleteAvailableImage: (url: string) => {
         set((state) => {
+          let selectedImportableImage = state.selectedImportableImage
+          if (state.selectedImportableImage?.url === url) {
+            selectedImportableImage = null
+          }
           return {
+            selectedImportableImage,
             availableImages: state.availableImages.filter((i) => i.url !== url),
           }
         })
@@ -292,7 +305,13 @@ export const useStore = create<AppState>()(
       },
       deleteAvailableCustomElement: (id: string) => {
         set((state) => {
+          let selectedImportableCustomElement =
+            state.selectedImportableCustomElement
+          if (state.selectedImportableCustomElement?.id === id) {
+            selectedImportableCustomElement = null
+          }
           return {
+            selectedImportableCustomElement,
             availableCustomElements: state.availableCustomElements.filter(
               (e) => e.id !== id
             ),
