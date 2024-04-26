@@ -86,6 +86,8 @@ const Chat = ({
   }
 
   const onTrySend = useCallback(() => {
+    if (loading || currentAsyncAction) return
+
     setTypewriterIndex(null)
     setNewMessage(true)
     if (messageSelection?.selectedChatMessage) {
