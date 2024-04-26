@@ -2,6 +2,8 @@ import { useCallback, useRef, useMemo, useState, useEffect } from "react"
 import { AiProvider, useStore } from "../../store"
 import useLogger from "../../hooks/useLogger"
 import { v4 as uuid } from "uuid"
+import VideoClip, { VideoClipDict } from "../../types/videoClip"
+import { CustomElement, CustomElementDict } from "../../types/videoElement"
 
 const HamburgerMenuContent = () => {
   const {
@@ -32,6 +34,9 @@ const HamburgerMenuContent = () => {
       availableImages: store.availableImages,
       availableCustomElements: store.availableCustomElements,
       clipsMetadata: store.clipsMetadata,
+      parsedVideostrate: {
+        style: store.parsedVideostrate.style,
+      },
     })
 
     if (downloadRef.current) {
@@ -55,12 +60,22 @@ const HamburgerMenuContent = () => {
       }
       const file = files[0]
       const store = JSON.parse(await file.text())
+      const newParsedVideostrate = useStore.getState().parsedVideostrate.clone()
+      store.parsedVideostrate.style.forEach(
+        (s: { selector: string; style: string }) =>
+          newParsedVideostrate.addStyle(s.selector, s.style)
+      )
       useStore.setState({
         ...useStore.getState(),
         ...store,
+        clipsMetadata: store.clipsMetadata.map((c: VideoClipDict) =>
+          VideoClip.fromDict(c)
+        ),
+        availableCustomElements: store.availableCustomElements.map(
+          (a: CustomElementDict) => CustomElement.fromDict(a)
+        ),
       })
-
-      window.location.reload()
+      useStore.getState().setParsedVideostrate(newParsedVideostrate)
     },
     []
   )

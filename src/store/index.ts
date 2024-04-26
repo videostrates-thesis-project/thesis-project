@@ -503,23 +503,11 @@ export const useStore = create<AppState>()(
               break
             case "availableCustomElements":
               return (value as CustomElement[]).map((c) => {
-                return new CustomElement({
-                  ...(c as CustomElement),
-                  start: c._start,
-                  end: c._end,
-                  offset: c._offset,
-                })
+                return CustomElement.fromDict(c)
               })
             case "clipsMetadata":
               return (value as VideoClip[]).map((c) => {
-                return new VideoClip(
-                  c.source,
-                  c.title,
-                  c.status,
-                  c.length,
-                  c.thumbnailUrl,
-                  c.indexingState
-                )
+                return VideoClip.fromDict(c)
               })
             case "toasts":
               return []

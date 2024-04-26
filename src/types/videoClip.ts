@@ -20,6 +20,15 @@ export interface IndexingState {
   progress: number
 }
 
+export interface VideoClipDict {
+  source: string
+  title: string
+  status: "CACHED" | "UNCACHED"
+  length?: number
+  thumbnailUrl?: string
+  indexingState?: IndexingState
+}
+
 export default class VideoClip {
   source: string
   status: "CACHED" | "UNCACHED"
@@ -42,6 +51,17 @@ export default class VideoClip {
     this.length = length
     this.thumbnailUrl = thumbnailUrl
     this.indexingState = indexingState
+  }
+
+  static fromDict(dict: VideoClipDict) {
+    return new VideoClip(
+      dict.source,
+      dict.title,
+      dict.status,
+      dict.length,
+      dict.thumbnailUrl,
+      dict.indexingState
+    )
   }
 
   updateMetadata(rawMetadata: RawMetadata) {
