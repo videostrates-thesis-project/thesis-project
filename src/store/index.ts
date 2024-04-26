@@ -14,6 +14,11 @@ import {
 } from "../types/videoElement"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 import { ExecutedScript } from "../services/interpreter/executedScript"
+import {
+  initialChatMessages,
+  initialCurrentMessages,
+} from "./initialChatMessagesState"
+import MessageInformation from "../types/messageInformation"
 
 const TOAST_LENGTH = 5000
 const DEFAULT_IMAGE_TITLE = "Image"
@@ -27,12 +32,6 @@ interface UndoElement {
   parent: string
   error?: string
   script: ExecutedScript
-}
-
-interface MessageInformation {
-  time: string
-  activeUndoElementId: string
-  message: ChatCompletionMessageParam
 }
 
 export interface AppState {
@@ -157,8 +156,8 @@ export const useStore = create<AppState>()(
           selectedImportableImage: null,
           selectedImportableCustomElement: null,
           selectedChatMessage: null,
-          chatMessages: [],
-          currentMessages: [],
+          chatMessages: initialChatMessages(),
+          currentMessages: initialCurrentMessages(),
           pendingChanges: false,
           undoStack: [],
           redoStack: [],
@@ -332,7 +331,7 @@ export const useStore = create<AppState>()(
         get().clearSelection()
         set({ selectedChatMessage: message })
       },
-      chatMessages: [],
+      chatMessages: initialChatMessages(),
       addChatMessage: (message: ChatMessage) => {
         set((state) => {
           return {
@@ -354,11 +353,11 @@ export const useStore = create<AppState>()(
       },
       resetMessages: () => {
         set({
-          chatMessages: [],
-          currentMessages: [],
+          chatMessages: initialChatMessages(),
+          currentMessages: initialCurrentMessages(),
         })
       },
-      currentMessages: [],
+      currentMessages: initialCurrentMessages(),
       addMessage: (message: ChatCompletionMessageParam) => {
         set((state) => {
           const currentMessages = state.currentMessages

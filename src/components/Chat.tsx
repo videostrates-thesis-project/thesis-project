@@ -212,7 +212,7 @@ const Chat = ({
 
               <div
                 className={clsx(
-                  "chat-bubble text-left break-normal text-sm relative pb-4",
+                  "chat-bubble text-left break-normal text-sm relative pb-4 whitespace-pre-line",
                   msg.role === "user" && "chat-bubble-primary"
                 )}
                 onClick={() => onSelectReply(msg)}
