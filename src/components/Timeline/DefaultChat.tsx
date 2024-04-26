@@ -12,6 +12,7 @@ const DefaultChat = () => {
     parsedVideostrate,
     clipsMetadata,
     availableImages,
+    availableCustomElements,
     selectedClip,
     selectedImportableClipName,
     selectedImportableImage,
@@ -21,7 +22,7 @@ const DefaultChat = () => {
     addChatMessage,
     chatMessages,
     pendingChanges,
-    seek,
+    playbackState,
     addReactionToMessage,
     resetMessages,
     clearSelection,
@@ -33,6 +34,7 @@ const DefaultChat = () => {
       const prompt = buildAssistantMessage(
         clipsMetadata,
         availableImages,
+        availableCustomElements,
         serialized.style,
         serialized.html,
         selectedClip?.id ?? null,
@@ -40,7 +42,7 @@ const DefaultChat = () => {
         selectedImportableImage,
         selectedImportableCustomElement,
         selectedChatMessage,
-        seek,
+        playbackState.time,
         message
       )
       openAIService.sendChatMessage(prompt).catch((error) => {
@@ -66,12 +68,13 @@ const DefaultChat = () => {
       parsedVideostrate,
       clipsMetadata,
       availableImages,
+      availableCustomElements,
       selectedClip?.id,
       selectedImportableClipName,
       selectedImportableImage,
       selectedImportableCustomElement,
       selectedChatMessage,
-      seek,
+      playbackState.time,
       addChatMessage,
       chatMessages,
       clearSelection,
