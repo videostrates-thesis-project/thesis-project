@@ -104,6 +104,7 @@ const buildSelectedMessagePrompt = (
 export const buildAssistantMessage = (
   clips: VideoClip[],
   images: Image[],
+  availableCustomElements: CustomElement[],
   style: string,
   html: string,
   selectedClipId: string | null,
@@ -128,14 +129,27 @@ export const buildAssistantMessage = (
     ${
       clips
         .map((clip, index) => `${index + 1}. "${clip.title}", ${clip.length}s`)
-        .join("    \n") ?? "No clips available"
+        .join("\n    ") || "No clips available"
     }
 
 List of available images (title, url):
     ${
       images
         .map((image, index) => `${index + 1}. "${image.title}", ${image.url}`)
-        .join("    \n") ?? "No images available"
+        .join("\n    ") || "No images available"
+    }
+
+List of available custom elements (name, html):
+    ${
+      availableCustomElements
+        .map(
+          (element, index) =>
+            `${index + 1}. "${element.name}", ${element.content.replaceAll(
+              "\n",
+              " "
+            )}`
+        )
+        .join("\n    ") || "No custom elements available"
     }
 
 HTML code:
