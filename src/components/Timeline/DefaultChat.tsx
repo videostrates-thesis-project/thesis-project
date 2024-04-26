@@ -12,6 +12,7 @@ const DefaultChat = () => {
     parsedVideostrate,
     clipsMetadata,
     availableImages,
+    availableCustomElements,
     selectedClip,
     selectedImportableClipName,
     selectedImportableImage,
@@ -32,6 +33,7 @@ const DefaultChat = () => {
       const prompt = buildAssistantMessage(
         clipsMetadata,
         availableImages,
+        availableCustomElements,
         serialized.style,
         serialized.html,
         selectedClip?.id ?? null,
@@ -64,6 +66,7 @@ const DefaultChat = () => {
       addChatMessage,
       clipsMetadata,
       availableImages,
+      availableCustomElements,
       chatMessages,
       parsedVideostrate,
       seek,
