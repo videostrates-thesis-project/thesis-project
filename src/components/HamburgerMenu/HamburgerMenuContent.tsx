@@ -61,10 +61,12 @@ const HamburgerMenuContent = () => {
       const file = files[0]
       const store = JSON.parse(await file.text())
       const newParsedVideostrate = useStore.getState().parsedVideostrate.clone()
-      store.parsedVideostrate.style.forEach(
-        (s: { selector: string; style: string }) =>
-          newParsedVideostrate.addStyle(s.selector, s.style)
-      )
+      if (store.parsedVideostrate?.style) {
+        store.parsedVideostrate.style.forEach(
+          (s: { selector: string; style: string }) =>
+            newParsedVideostrate.addStyle(s.selector, s.style)
+        )
+      }
       useStore.setState({
         ...useStore.getState(),
         ...store,
@@ -75,7 +77,9 @@ const HamburgerMenuContent = () => {
           (a: CustomElementDict) => CustomElement.fromDict(a)
         ),
       })
-      useStore.getState().setParsedVideostrate(newParsedVideostrate)
+      if (store.parsedVideostrate?.style) {
+        useStore.getState().setParsedVideostrate(newParsedVideostrate)
+      }
     },
     []
   )
@@ -139,10 +143,10 @@ const HamburgerMenuContent = () => {
 
       <div className="flex flex-row gap-4">
         <button className="btn btn-accent w-auto" onClick={onExport}>
-          Export store
+          Export library
         </button>
         <button className="btn btn-info w-auto" onClick={onImport}>
-          Import store
+          Import library
         </button>
       </div>
 
