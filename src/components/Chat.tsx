@@ -86,6 +86,8 @@ const Chat = ({
   }
 
   const onTrySend = useCallback(() => {
+    if (loading || currentAsyncAction) return
+
     setTypewriterIndex(null)
     setNewMessage(true)
     if (messageSelection?.selectedChatMessage) {
@@ -179,7 +181,7 @@ const Chat = ({
   )
 
   return (
-    <div className="flex flex-col h-full max-h-full bg-base-300 border-l border-neutral rounded">
+    <div className="flex flex-col h-full max-h-full bg-base-300 border-l border-neutral rounded min-h-0">
       <div className="flex flex-row w-full bg-base-100 p-2">
         <button
           className="ml-auto btn btn-xs btn-accent group text-xs"
@@ -401,7 +403,10 @@ const Chat = ({
           />
           {!message && (
             <Sparkle
-              className={clsx("top-1 left-4", highlight.isEnabled && "left-14")}
+              className={clsx(
+                "top-1",
+                highlight.isEnabled ? "left-12" : "left-4"
+              )}
             />
           )}
           <button

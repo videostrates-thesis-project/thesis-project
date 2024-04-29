@@ -1,6 +1,9 @@
-import { useCallback, useRef, useMemo, useState } from "react"
+import { useCallback, useRef, useMemo, useState, useEffect } from "react"
 import { AiProvider, useStore } from "../../store"
 import useLogger from "../../hooks/useLogger"
+import { v4 as uuid } from "uuid"
+import VideoClip, { VideoClipDict } from "../../types/videoClip"
+import { CustomElement, CustomElementDict } from "../../types/videoElement"
 
 const HamburgerMenuContent = () => {
   const {
@@ -20,6 +23,10 @@ const HamburgerMenuContent = () => {
     setVideostrateUrl(url)
   }, [setVideostrateUrl, url])
 
+  useEffect(() => {
+    setUrl(videostrateUrl)
+  }, [videostrateUrl])
+
   const onExport = useCallback(() => {
     const store = useStore.getState()
     const json = JSON.stringify({
@@ -27,6 +34,9 @@ const HamburgerMenuContent = () => {
       availableImages: store.availableImages,
       availableCustomElements: store.availableCustomElements,
       clipsMetadata: store.clipsMetadata,
+      parsedVideostrate: {
+        style: store.parsedVideostrate.style,
+      },
     })
 
     if (downloadRef.current) {
@@ -50,12 +60,26 @@ const HamburgerMenuContent = () => {
       }
       const file = files[0]
       const store = JSON.parse(await file.text())
+      const newParsedVideostrate = useStore.getState().parsedVideostrate.clone()
+      if (store.parsedVideostrate?.style) {
+        store.parsedVideostrate.style.forEach(
+          (s: { selector: string; style: string }) =>
+            newParsedVideostrate.addStyle(s.selector, s.style)
+        )
+      }
       useStore.setState({
         ...useStore.getState(),
         ...store,
+        clipsMetadata: store.clipsMetadata.map((c: VideoClipDict) =>
+          VideoClip.fromDict(c)
+        ),
+        availableCustomElements: store.availableCustomElements.map(
+          (a: CustomElementDict) => CustomElement.fromDict(a)
+        ),
       })
-
-      window.location.reload()
+      if (store.parsedVideostrate?.style) {
+        useStore.getState().setParsedVideostrate(newParsedVideostrate)
+      }
     },
     []
   )
@@ -75,6 +99,10 @@ const HamburgerMenuContent = () => {
     ] as { value: AiProvider; label: string; isSelected: boolean }[]
   }, [aiProvider])
 
+  const onCreateNewWebstrate = useCallback(() => {
+    setVideostrateUrl("https://demo.webstrates.net/videostrates-" + uuid())
+  }, [setVideostrateUrl])
+
   return (
     <>
       <div className="flex flex-col gap-4 w-full">
@@ -85,9 +113,17 @@ const HamburgerMenuContent = () => {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
         />
-        <button className="btn btn-sm btn-accent w-auto" onClick={onChangeUrl}>
-          Change URL
-        </button>
+        <div className="grid grid-rows-1 grid-cols-2 gap-4">
+          <button className="btn btn-accent w-auto" onClick={onChangeUrl}>
+            Change URL
+          </button>
+          <button
+            className="btn btn-error w-auto"
+            onClick={onCreateNewWebstrate}
+          >
+            Create new webstrate
+          </button>
+        </div>
       </div>
 
       <div className="form-control w-full gap-4">
@@ -107,10 +143,10 @@ const HamburgerMenuContent = () => {
 
       <div className="flex flex-row gap-4">
         <button className="btn btn-accent w-auto" onClick={onExport}>
-          Export store
+          Export library
         </button>
         <button className="btn btn-info w-auto" onClick={onImport}>
-          Import store
+          Import library
         </button>
       </div>
 

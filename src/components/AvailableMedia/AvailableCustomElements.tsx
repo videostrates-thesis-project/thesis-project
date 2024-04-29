@@ -6,7 +6,7 @@ const AvailableCustomElements = () => {
   return (
     <div className="flex flex-row flex-wrap gap-4">
       {availableCustomElements.map((element) => (
-        <AvailableCustomElement key={element.name} element={element} />
+        <AvailableCustomElement key={element.id} element={element} />
       ))}
     </div>
   )

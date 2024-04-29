@@ -21,7 +21,13 @@ const updateLayers = (elements: VideoElement[]) => {
     prevElementLayer = element.layer
     element.layer = currentLayer
   })
-  return sorted
+  const results = elements
+    .map((element) => {
+      return sorted.find((e) => e.id === element.id)
+    })
+    .filter((e): e is VideoElement => e !== undefined)
+  console.log("updateLayers, results ", results)
+  return results
 }
 
 export default updateLayers

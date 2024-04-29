@@ -9,7 +9,7 @@ const SearchSingleClipResults = (props: {
   results: ClipResults[]
   url: string
 }) => {
-  const { clipsMetadata, seek } = useStore()
+  const { clipsMetadata, playbackState } = useStore()
 
   const [folded, setFolded] = useState(false)
 
@@ -21,7 +21,7 @@ const SearchSingleClipResults = (props: {
 
   const onAddClip = (clipTitle: string, start: number, end: number) => {
     console.log("Add clip", clipTitle, start, end)
-    runCommands(addCroppedClip(clipTitle, seek, start, end))
+    runCommands(addCroppedClip(clipTitle, playbackState.time, start, end))
   }
 
   const clip = useMemo(

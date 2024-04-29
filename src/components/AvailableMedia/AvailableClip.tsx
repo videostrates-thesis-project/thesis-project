@@ -11,7 +11,7 @@ import ChatContextTooltip from "./ChatContextTooltip"
 import formatTime from "../../utils/formatTime"
 
 const AvailableClip = (props: { clip: VideoClip }) => {
-  const { seek, deleteAvailableClip, parsedVideostrate, isUiFrozen } =
+  const { playbackState, deleteAvailableClip, parsedVideostrate, isUiFrozen } =
     useStore()
   const { selectedImportableClipName, setSelectedImportableClipName } =
     useStore()
@@ -35,14 +35,18 @@ const AvailableClip = (props: { clip: VideoClip }) => {
         console.log("Error: No clip title")
         return
       }
-      runCommands(addClip(props.clip.title, seek))
+      runCommands(addClip(props.clip.title, playbackState.time))
     },
-    [props.clip.title, seek]
+    [props.clip.title, playbackState.time]
   )
 
-  const deleteClip = useCallback(() => {
-    deleteAvailableClip(props.clip.source)
-  }, [props.clip.source, deleteAvailableClip])
+  const deleteClip = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation()
+      deleteAvailableClip(props.clip.source)
+    },
+    [props.clip.source, deleteAvailableClip]
+  )
 
   return (
     <>
@@ -84,7 +88,10 @@ const AvailableClip = (props: { clip: VideoClip }) => {
                 {props.clip.length ? formatTime(props.clip.length) : "?"}
               </div>
               <div className="relative -right-2 -bottom-1 flex-grow w-full flex justify-end items-end">
-                <AddElementButton onClick={addToTimeline} time={seek} />
+                <AddElementButton
+                  onClick={addToTimeline}
+                  time={playbackState.time}
+                />
               </div>
               <DeleteMediaButton
                 disabled={!canBeDeleted}

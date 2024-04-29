@@ -24,7 +24,7 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
   const {
     serializedVideostrate,
     deleteAvailableCustomElement,
-    seek,
+    playbackState,
     isUiFrozen,
   } = useStore()
   const {
@@ -68,17 +68,21 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
         addCustomElement(
           props.element.name,
           props.element.content,
-          seek,
-          seek + 10
+          playbackState.time,
+          playbackState.time + 10
         )
       )
     },
-    [props.element.name, props.element.content, seek]
+    [props.element.name, props.element.content, playbackState.time]
   )
 
-  const deleteElement = useCallback(() => {
-    deleteAvailableCustomElement(props.element.id)
-  }, [deleteAvailableCustomElement, props.element.id])
+  const deleteElement = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation()
+      deleteAvailableCustomElement(props.element.id)
+    },
+    [deleteAvailableCustomElement, props.element.id]
+  )
 
   return (
     <ChatContextTooltip className="w-full h-60" selected={isSelected}>
@@ -98,7 +102,10 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
         {isSelected && <Sparkle />}
         <div
           className="w-full h-full overflow-hidden min-h-0 min-w-0"
-          style={{ height: `${iframeContainerHeight}px` }}
+          style={{
+            height: `${iframeContainerHeight}px`,
+            minHeight: `${iframeContainerHeight}px`,
+          }}
         >
           <iframe
             ref={iframeRef}
@@ -112,13 +119,23 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
               top: `${iframeTop}px`,
             }}
           ></iframe>
+          <div
+            className="z-10 absolute"
+            style={{
+              width: `${iframeWidth}px`,
+              height: `${iframeHeight}px`,
+              scale: `${iframeScale}`,
+              left: `${iframeLeft}px`,
+              top: `${iframeTop}px`,
+            }}
+          ></div>
         </div>
         <div className="flex flex-row justify-between items-center m-1">
           <span className="overflow-hidden whitespace-nowrap text-ellipsis pl-1">
             {props.element.name}
           </span>
 
-          <AddElementButton onClick={addToTimeline} time={seek} />
+          <AddElementButton onClick={addToTimeline} time={playbackState.time} />
         </div>
         <DeleteMediaButton disabled={isUiFrozen} onClick={deleteElement} />
       </div>

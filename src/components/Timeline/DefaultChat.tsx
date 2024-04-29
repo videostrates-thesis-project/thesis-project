@@ -12,6 +12,7 @@ const DefaultChat = () => {
     parsedVideostrate,
     clipsMetadata,
     availableImages,
+    availableCustomElements,
     selectedClip,
     selectedImportableClipName,
     selectedImportableImage,
@@ -21,9 +22,10 @@ const DefaultChat = () => {
     addChatMessage,
     chatMessages,
     pendingChanges,
-    seek,
+    playbackState,
     addReactionToMessage,
     resetMessages,
+    clearSelection,
   } = useStore()
 
   const onSend = useCallback(
@@ -32,6 +34,7 @@ const DefaultChat = () => {
       const prompt = buildAssistantMessage(
         clipsMetadata,
         availableImages,
+        availableCustomElements,
         serialized.style,
         serialized.html,
         selectedClip?.id ?? null,
@@ -39,7 +42,7 @@ const DefaultChat = () => {
         selectedImportableImage,
         selectedImportableCustomElement,
         selectedChatMessage,
-        seek,
+        playbackState.time,
         message
       )
       openAIService.sendChatMessage(prompt).catch((error) => {
@@ -59,19 +62,22 @@ const DefaultChat = () => {
         [...chatMessages, latestMessage],
         useStore.getState().addReactionToMessage
       )
+      clearSelection()
     },
     [
-      addChatMessage,
+      parsedVideostrate,
       clipsMetadata,
       availableImages,
-      chatMessages,
-      parsedVideostrate,
-      seek,
+      availableCustomElements,
       selectedClip?.id,
       selectedImportableClipName,
       selectedImportableImage,
       selectedImportableCustomElement,
       selectedChatMessage,
+      playbackState.time,
+      addChatMessage,
+      chatMessages,
+      clearSelection,
     ]
   )
 
@@ -84,7 +90,8 @@ const DefaultChat = () => {
 
   const onStartNewconversation = useCallback(() => {
     resetMessages()
-  }, [resetMessages])
+    clearSelection()
+  }, [clearSelection, resetMessages])
 
   return (
     <div className="w-96 min-w-96">
