@@ -69,7 +69,7 @@ export const useClipsMetadata = () => {
     // It's because the metamax API may take a while to cache the metadata
     const interval = setInterval(() => {
       updateAvailableClips()
-    }, 1000) // 1 second
+    }, 3000) // 1 second
     return () => clearInterval(interval)
   }, [updateAvailableClips])
 
@@ -77,7 +77,7 @@ export const useClipsMetadata = () => {
     // Periodically fetch indexing state for clips that haven't been indexed yet
     const interval = setInterval(() => {
       updateClipsIndexingState()
-    }, 5000) // 5 seconds
+    }, 10000) // 5 seconds
     return () => clearInterval(interval)
   }, [updateClipsIndexingState])
 
