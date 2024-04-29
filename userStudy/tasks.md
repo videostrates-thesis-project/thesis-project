@@ -55,18 +55,7 @@ Your task is to create a video showing iPhone colors over time.
 - Every clip presenting different colors should be preceded with a separate title screen providing information such as conference year. 
 - Every clip should start with a fade-in transition.
 
-## Bonus task - Minecraft Cinematic
 
-This task is an open-ended exploratory task. The goal is to release your imagination, use all the experience that you have gathered so far, and create something cool.
-
-In the library you can find images and clips taken in Minecraft, and your task is to cut a fancy cinematic video showcasing how beautiful this video game is. The resources have two main categories: city and nature.
-
-Some tips about what you could do:
-- Cut similar clips sequentially, like "close city street clips"
-- Make compositions of the clips and images, like grid, vertical split, picture in picture
-- Add animations: fade-in, slide-in, zoom-in, spinning, jumping, stretching
-- Create custom elements, like title screen, banner, logo
-- Generate extra images
 
 
 
