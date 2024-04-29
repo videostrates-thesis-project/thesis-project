@@ -40,9 +40,13 @@ const AvailableClip = (props: { clip: VideoClip }) => {
     [props.clip.title, playbackState.time]
   )
 
-  const deleteClip = useCallback(() => {
-    deleteAvailableClip(props.clip.source)
-  }, [props.clip.source, deleteAvailableClip])
+  const deleteClip = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation()
+      deleteAvailableClip(props.clip.source)
+    },
+    [props.clip.source, deleteAvailableClip]
+  )
 
   return (
     <>
