@@ -390,13 +390,10 @@ export const useStore = create<AppState>()(
           const chatLastUserMessageIndex = state.chatMessages
             .map((m) => m.role)
             .lastIndexOf("user")
-          const secondLastUserMessageIndex = state.chatMessages
-            .map((m) => m.role)
-            .lastIndexOf("user", chatLastUserMessageIndex - 1)
           const lastUserMessage = currentMessages[lastUserMessageIndex]
-          if (state.chatMessages[secondLastUserMessageIndex]?.content) {
+          if (state.chatMessages[chatLastUserMessageIndex]?.content) {
             lastUserMessage.message.content =
-              state.chatMessages[secondLastUserMessageIndex]?.content
+              state.chatMessages[chatLastUserMessageIndex]?.content
           }
 
           const newMessage = {
