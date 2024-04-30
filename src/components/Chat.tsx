@@ -9,6 +9,7 @@ import { useOnClickOutside } from "../hooks/useClickOutside"
 import { useStore } from "../store"
 import { useSelectionHint } from "../hooks/useSelectionHint"
 import Sparkle from "./Sparkle"
+import IntroductionMessage from "./IntroductionMessage"
 
 type ChatProps = {
   onSend: (message: string) => void
@@ -98,7 +99,7 @@ const Chat = ({
 
     setMessage("")
     setLoading(true)
-  }, [message, onSend, messageSelection])
+  }, [loading, currentAsyncAction, messageSelection, onSend, message])
 
   useEffect(() => {
     if (endRef.current) {
@@ -192,6 +193,7 @@ const Chat = ({
         </button>
       </div>
       <div className="pt-4 max-h-full overflow-y-auto overflow-x-hidden break-words break-all">
+        {!highlight.isEnabled && <IntroductionMessage />}
         {messages.map((msg, index) => (
           <div
             key={index}

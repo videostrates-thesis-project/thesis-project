@@ -14,7 +14,6 @@ import {
 } from "../types/videoElement"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 import { ExecutedScript } from "../services/interpreter/executedScript"
-import { initialChatMessages } from "./initialChatMessagesState"
 import MessageInformation from "../types/messageInformation"
 
 const TOAST_LENGTH = 5000
@@ -155,7 +154,7 @@ export const useStore = create<AppState>()(
           selectedImportableImage: null,
           selectedImportableCustomElement: null,
           selectedChatMessage: null,
-          chatMessages: initialChatMessages(),
+          chatMessages: [],
           currentMessages: [],
           pendingChanges: false,
           undoStack: [],
@@ -354,7 +353,7 @@ export const useStore = create<AppState>()(
         get().clearSelection()
         set({ selectedChatMessage: message })
       },
-      chatMessages: initialChatMessages(),
+      chatMessages: [],
       addChatMessage: (message: ChatMessage) => {
         set((state) => {
           return {
@@ -376,7 +375,7 @@ export const useStore = create<AppState>()(
       },
       resetMessages: () => {
         set({
-          chatMessages: initialChatMessages(),
+          chatMessages: [],
           currentMessages: [],
         })
       },
