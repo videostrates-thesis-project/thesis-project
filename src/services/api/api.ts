@@ -9,6 +9,8 @@ import {
   getVideoIndexingStateRequest,
   IndexVideoRequest,
   getVideoIndexingStateResponse,
+  AzureRequest,
+  AzureChatRequest,
 } from "./apiTypes"
 import { API_URL } from "../../envVariables"
 
@@ -23,6 +25,13 @@ export const azureImageRequest = async (
   request: AzureImageRequest
 ): Promise<AzureImageResponse> => {
   const ENDPOINT = "/prompt_azure_openai/image"
+  return perform_request(ENDPOINT, request)
+}
+
+export const azureChatRequest = async (
+  request: AzureRequest
+): Promise<AzureChatRequest> => {
+  const ENDPOINT = "/prompt_azure_openai/message"
   return perform_request(ENDPOINT, request)
 }
 

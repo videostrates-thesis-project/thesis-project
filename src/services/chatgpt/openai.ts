@@ -9,6 +9,8 @@ import { azureFunctionRequest } from "../api/api"
 import { AzureModelType } from "../api/apiTypes"
 import { ChatMessage } from "../../types/chatMessage"
 import { runScript } from "../interpreter/run"
+import { serializeVideostrate } from "../parser/serializationExecutor"
+import { buildAssistantMessage } from "./assistantTemplate"
 
 const ASSISTANT_POLL_RATE = 5000
 
@@ -29,6 +31,28 @@ class OpenAIService {
 
   async init() {
     this.thread = await openai.beta.threads.create()
+  }
+
+  async sendScriptExecutionMessage(text: string) {
+    const store = useStore.getState()
+    const serialized = serializeVideostrate(store.parsedVideostrate, "chatGPT")
+
+    const prompt = buildAssistantMessage(
+      store.clipsMetadata,
+      store.availableImages,
+      store.availableCustomElements,
+      serialized.style,
+      serialized.html,
+      store.selectedClip?.id ?? null,
+      store.selectedImportableClipName,
+      store.selectedImportableImage,
+      store.selectedImportableCustomElement,
+      store.selectedChatMessage,
+      store.playbackState.time,
+      text
+    )
+
+    this.sendChatMessage(prompt)
   }
 
   async sendChatMessage(text: string) {

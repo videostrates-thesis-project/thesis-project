@@ -32,7 +32,7 @@ export const parseVideostrate = (text: string) => {
 }
 
 export const findContainerElement = (htmlElement: HTMLElement) => {
-  // Walk up the tree until a container element with costum-element-name attribute is found
+  // Walk up the tree until a container element with custom-element-name attribute is found
   let parent: HTMLElement | null = htmlElement
   while (parent) {
     if (parent.hasAttribute("custom-element-name")) {

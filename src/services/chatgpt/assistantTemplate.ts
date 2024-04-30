@@ -101,6 +101,53 @@ const buildSelectedMessagePrompt = (
   }
 }
 
+const buildAvailableClipsList = (clips: VideoClip[]) => {
+  return `List of available clips (title, length in seconds):
+    ${
+      clips
+        .map((clip, index) => `${index + 1}. "${clip.title}", ${clip.length}s`)
+        .join("\n    ") || "No clips available"
+    }`
+}
+
+const buildAvailableClipsListWithSrc = (clips: VideoClip[]) => {
+  return `List of available clips (title, length in seconds, src):
+    ${
+      clips
+        .map(
+          (clip, index) =>
+            `${index + 1}. "${clip.title}", ${clip.length}s, ${clip.source}`
+        )
+        .join("\n    ") || "No clips available"
+    }`
+}
+
+const buildAvailableImagesList = (images: Image[]) => {
+  return `List of available images (title, url):
+    ${
+      images
+        .map((image, index) => `${index + 1}. "${image.title}", ${image.url}`)
+        .join("\n    ") || "No images available"
+    }`
+}
+
+const buildAvailableCustomElementsList = (
+  availableCustomElements: CustomElement[]
+) => {
+  return `List of available custom elements (name, html):
+    ${
+      availableCustomElements
+        .map(
+          (element, index) =>
+            `${index + 1}. "${element.name}", ${element.content.replaceAll(
+              "\n",
+              " "
+            )}`
+        )
+        .join("\n    ") || "No custom elements available"
+    }`
+}
+
 export const buildAssistantMessage = (
   clips: VideoClip[],
   images: Image[],
@@ -125,32 +172,11 @@ export const buildAssistantMessage = (
 
   const selectedMessagePrompt = buildSelectedMessagePrompt(selectedChatMessage)
 
-  return `List of available clips (title, length in seconds):
-    ${
-      clips
-        .map((clip, index) => `${index + 1}. "${clip.title}", ${clip.length}s`)
-        .join("\n    ") || "No clips available"
-    }
+  return `${buildAvailableClipsList(clips)}
 
-List of available images (title, url):
-    ${
-      images
-        .map((image, index) => `${index + 1}. "${image.title}", ${image.url}`)
-        .join("\n    ") || "No images available"
-    }
+${buildAvailableImagesList(images)}
 
-List of available custom elements (name, html):
-    ${
-      availableCustomElements
-        .map(
-          (element, index) =>
-            `${index + 1}. "${element.name}", ${element.content.replaceAll(
-              "\n",
-              " "
-            )}`
-        )
-        .join("\n    ") || "No custom elements available"
-    }
+${buildAvailableCustomElementsList(availableCustomElements)}
 
 HTML code:
 ${html}
@@ -163,4 +189,55 @@ ${highlightPrompt}
 ${selectedMessagePrompt}
 
 The user input is: "${prompt}"`
+}
+
+export const buildAssistantMessageUncontrolled = (
+  clips: VideoClip[],
+  images: Image[],
+  availableCustomElements: CustomElement[],
+  style: string,
+  html: string,
+  selectedClipId: string | null,
+  selectedImportableClipName: string | null,
+  selectedImportableImage: Image | null,
+  selectedImportableCustomElement: CustomElement | null,
+  selectedChatMessage: ChatMessage | null,
+  seek: number,
+  prompt: string
+) => {
+  const highlightPrompt = buildHighlightPrompt(
+    selectedClipId,
+    selectedImportableClipName,
+    selectedImportableImage,
+    selectedImportableCustomElement,
+    seek
+  )
+
+  const selectedMessagePrompt = buildSelectedMessagePrompt(selectedChatMessage)
+
+  return `${buildAvailableClipsListWithSrc(clips)}
+
+${buildAvailableImagesList(images)}
+
+${buildAvailableCustomElementsList(availableCustomElements)}
+
+Videostrates HTML code:
+<html>
+<head>
+  <style id="videostrate-style">
+    ${style}
+  </style>
+</head>
+<body>
+  ${html}
+</body>
+</html>
+
+${highlightPrompt}
+
+${selectedMessagePrompt}
+
+The user input is: "${prompt}"
+
+Answer with the modified HTML code that includes changes based on the user input. DO NOT INCLUDE ANYTHING ELSE IN THE RESPONSE BUT THE VALID HTML CODE.`
 }

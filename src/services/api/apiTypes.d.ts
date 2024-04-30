@@ -35,6 +35,10 @@ interface AzureImageResponse {
   url: string
 }
 
+interface AzureChatRequest {
+  response: string
+}
+
 // Azure Video Indexer --------------------------------------------
 
 interface IndexVideoRequest {
