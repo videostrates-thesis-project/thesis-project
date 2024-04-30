@@ -54,7 +54,7 @@ const HelpMessage = () => {
                 <ul className="list-disc pl-6">
                   <li>
                     <strong>Querying:</strong>{" "}
-                    <i className="bi text-primary bi-search"></i> searching in
+                    <i className="bi text-primary bi-search"></i> Search in
                     transcripts of the clips in the{" "}
                     <i className="bi text-primary bi-cassette"></i> clips tab
                   </li>
@@ -102,13 +102,18 @@ const HelpMessage = () => {
                     ctrl+scroll
                   </li>
                   <li>
-                    <strong>Move sideways</strong> using scrollbar or
+                    <strong>Navigate sideways</strong> using the scrollbar or
                     shift+scroll
                   </li>
                   <li>
                     <i className="bi text-primary bi-plus-lg"></i>{" "}
                     <strong>Element</strong> button to add a custom element
                     (available only when nothing is selected on the timeline)
+                  </li>
+                  <li>
+                    <i className="bi text-primary bi-arrow-counterclockwise"></i>{" "}
+                    <strong>Undo</strong>/<strong>Redo</strong> using the
+                    buttons or ctrl+z/ctrl+y
                   </li>
                 </ul>
               </p>
@@ -118,8 +123,8 @@ const HelpMessage = () => {
               <p>Chat is a place where you can communicate with the AI.</p>
               <p>
                 <i className="bi text-primary bi-arrow-clockwise"></i>{" "}
-                <strong>Start new conversation</strong> if the AI gets stuck and
-                cannot solve your problem.
+                <strong>Start new conversation</strong> or <strong>Undo</strong>{" "}
+                if the AI gets stuck and cannot solve your problem.
               </p>
             </section>
             <section className="text-left flex flex-col gap-0">
