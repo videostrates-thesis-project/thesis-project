@@ -80,6 +80,7 @@ export const useLatestChanges = () => {
         editedElements.set(elementId, [change])
       } else if (edited) {
         if (edited.some((e) => e.changeType === ChangeType.New)) return
+        if (edited.some((e) => e.description === change.description)) return
         editedElements.set(elementId, [...edited, change])
       } else {
         editedElements.set(elementId, [change])
@@ -109,15 +110,21 @@ export const useLatestChanges = () => {
       )
       const newElement = parsedVideostrate.all.find((e) => e.id === elementId)
       const moveShift = (newElement?.start || 0) - (oldElement?.start || 0)
-      const formattedShift =
-        moveShift % 1 === 0 ? moveShift.toFixed(0) : moveShift.toFixed(2)
-      addToEdited(elementId, {
-        changeType: ChangeType.Edited,
-        description: `Moved by ${formattedShift} seconds`,
-      })
+      if (moveShift !== 0) {
+        const formattedShift =
+          moveShift % 1 === 0 ? moveShift.toFixed(0) : moveShift.toFixed(2)
+        addToEdited(elementId, {
+          changeType: ChangeType.Edited,
+          description: `Moved by ${formattedShift} seconds`,
+        })
+      }
     })
     lastExecutedChange.script.forEach((command) => {
-      if (["create_style", "delete_style"].includes(command.name)) {
+      if (
+        ["create_style", "delete_style", "create_or_update_style"].includes(
+          command.name
+        )
+      ) {
         // It detects changes applied by:
         // create_style, delete_style, create_animation, delete_animation
         const selector = command.arguments[0]
@@ -162,6 +169,12 @@ export const useLatestChanges = () => {
         addToEdited(elementId, {
           changeType: ChangeType.Edited,
           description: "Crop changed",
+        })
+      } else if (command.name === "reposition") {
+        const elementId = command.arguments[0]
+        addToEdited(elementId, {
+          changeType: ChangeType.Edited,
+          description: "Repositioned",
         })
       }
     })

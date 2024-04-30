@@ -76,9 +76,13 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
     [props.element.name, props.element.content, playbackState.time]
   )
 
-  const deleteElement = useCallback(() => {
-    deleteAvailableCustomElement(props.element.id)
-  }, [deleteAvailableCustomElement, props.element.id])
+  const deleteElement = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation()
+      deleteAvailableCustomElement(props.element.id)
+    },
+    [deleteAvailableCustomElement, props.element.id]
+  )
 
   return (
     <ChatContextTooltip className="w-full h-60" selected={isSelected}>

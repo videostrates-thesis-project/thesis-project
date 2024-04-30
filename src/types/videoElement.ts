@@ -82,12 +82,27 @@ interface CustomElementProps extends VideoElementProps {
   content: string
 }
 
+export type CustomElementDict = CustomElementProps & {
+  _start: number
+  _end: number
+  _offset: number
+}
+
 export class CustomElement extends VideoElement {
   content: string
 
   constructor(props: CustomElementProps) {
     super(props)
     this.content = props.content
+  }
+
+  static fromDict(c: CustomElementDict) {
+    return new CustomElement({
+      ...(c as CustomElement),
+      start: c._start,
+      end: c._end,
+      offset: c._offset,
+    })
   }
 
   clone() {
