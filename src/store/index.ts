@@ -14,6 +14,7 @@ import {
 } from "../types/videoElement"
 import { serializeVideostrate } from "../services/parser/serializationExecutor"
 import { ExecutedScript } from "../services/interpreter/executedScript"
+import MessageInformation from "../types/messageInformation"
 
 const TOAST_LENGTH = 5000
 const DEFAULT_IMAGE_TITLE = "Image"
@@ -28,12 +29,6 @@ interface UndoElement {
   parent: string
   error?: string
   script: ExecutedScript
-}
-
-interface MessageInformation {
-  time: string
-  activeUndoElementId: string
-  message: ChatCompletionMessageParam
 }
 
 export interface AppState {
@@ -395,13 +390,10 @@ export const useStore = create<AppState>()(
           const chatLastUserMessageIndex = state.chatMessages
             .map((m) => m.role)
             .lastIndexOf("user")
-          const secondLastUserMessageIndex = state.chatMessages
-            .map((m) => m.role)
-            .lastIndexOf("user", chatLastUserMessageIndex - 1)
           const lastUserMessage = currentMessages[lastUserMessageIndex]
-          if (state.chatMessages[secondLastUserMessageIndex]?.content) {
+          if (state.chatMessages[chatLastUserMessageIndex]?.content) {
             lastUserMessage.message.content =
-              state.chatMessages[secondLastUserMessageIndex]?.content
+              state.chatMessages[chatLastUserMessageIndex]?.content
           }
 
           const newMessage = {
@@ -413,7 +405,6 @@ export const useStore = create<AppState>()(
           const newArchivedMessages =
             archivedMessages + "\n" + JSON.stringify(newMessage)
           localStorage.setItem("chatMessages", newArchivedMessages)
-
           return {
             currentMessages: [...currentMessages, newMessage],
           }
