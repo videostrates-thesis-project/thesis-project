@@ -13,7 +13,7 @@ const TimelineControls = (props: {
   zoomOut: (step: number) => void
   zoomToFit: () => void
 }) => {
-  const { parsedVideostrate, playbackState, selectedClip, isUiFrozen, seek } =
+  const { parsedVideostrate, playbackState, selectedClip, isUiFrozen } =
     useStore()
   const playbackTime = useTimeStamp(playbackState.time)
   const fullTime = useTimeStamp(parsedVideostrate.length)
@@ -37,8 +37,15 @@ const TimelineControls = (props: {
   }, [selectedClip])
 
   const createElement = useCallback(() => {
-    runCommands(addCustomElement("New element", "", seek, seek + 10))
-  }, [seek])
+    runCommands(
+      addCustomElement(
+        "New element",
+        "",
+        playbackState.time,
+        playbackState.time + 10
+      )
+    )
+  }, [playbackState.time])
 
   return (
     <div className="flex flex-row text-lg bg-base-300 border-y border-neutral p-2 ">

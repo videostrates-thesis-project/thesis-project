@@ -240,8 +240,8 @@ const CodeEditor = ({
   ])
 
   return (
-    <div className="flex flex-col flex-1">
-      <div className="flex flex-row items-center">
+    <div className="flex flex-col flex-1 min-h-0">
+      <div className="flex flex-row items-center h-10">
         {tabs.map((tab, index) => (
           <div
             key={index}
@@ -295,7 +295,7 @@ const CodeEditor = ({
             setMonaco(monaco)
           }}
           width="100%"
-          height="calc(100vh - 5rem)"
+          height="calc(100vh - 2.5rem)"
           language={language}
           original={originalCode}
           modified={code}
@@ -308,7 +308,7 @@ const CodeEditor = ({
             setMonaco(monaco)
           }}
           width="100%"
-          height="calc(91.6vh - 5rem)"
+          height="calc(91.6vh - 2.5rem)"
           language={language}
           defaultValue={code}
           value={code}

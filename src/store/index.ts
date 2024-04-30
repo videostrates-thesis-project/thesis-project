@@ -20,6 +20,7 @@ import MessageInformation from "../types/messageInformation"
 const TOAST_LENGTH = 5000
 const DEFAULT_IMAGE_TITLE = "Image"
 const DEFAULT_CLIP_TITLE = "Clip"
+const DEFAULT_CUSTOM_ELEMENT_TITLE = "Element"
 
 export const aiProviders = ["openai", "azure"] as const
 export type AiProvider = (typeof aiProviders)[number]
@@ -145,6 +146,7 @@ export const useStore = create<AppState>()(
           availableClips: [],
           clipsMetadata: [],
           availableImages: [],
+          availableCustomElements: [],
           seek: 0,
           playing: false,
           playbackState: { frame: 0, time: 0 },
@@ -243,7 +245,15 @@ export const useStore = create<AppState>()(
       },
       deleteAvailableClip: (source: string) => {
         set((state) => {
+          let selectedImportableClipName = state.selectedImportableClipName
+          if (
+            state.selectedImportableClipName ===
+            state.clipsMetadata.find((clip) => clip.source === source)?.title
+          ) {
+            selectedImportableClipName = null
+          }
           return {
+            selectedImportableClipName,
             clipsMetadata: state.clipsMetadata.filter(
               (clip) => clip.source !== source
             ),
@@ -267,16 +277,26 @@ export const useStore = create<AppState>()(
       },
       deleteAvailableImage: (url: string) => {
         set((state) => {
+          let selectedImportableImage = state.selectedImportableImage
+          if (state.selectedImportableImage?.url === url) {
+            selectedImportableImage = null
+          }
           return {
+            selectedImportableImage,
             availableImages: state.availableImages.filter((i) => i.url !== url),
           }
         })
       },
       availableCustomElements: [],
       addAvailableCustomElement: (element: CustomElement) => {
-        const newElement = element.clone()
-        newElement.id = ParsedVideostrate.generateElementId()
         set((state) => {
+          const newElement = element.clone()
+          newElement.id = ParsedVideostrate.generateElementId()
+          newElement.name = getNextAvailableTitle(
+            newElement.name,
+            state.availableCustomElements.map((e) => ({ title: e.name })),
+            DEFAULT_CUSTOM_ELEMENT_TITLE
+          )
           return {
             availableCustomElements: [
               ...state.availableCustomElements,
@@ -287,7 +307,13 @@ export const useStore = create<AppState>()(
       },
       deleteAvailableCustomElement: (id: string) => {
         set((state) => {
+          let selectedImportableCustomElement =
+            state.selectedImportableCustomElement
+          if (state.selectedImportableCustomElement?.id === id) {
+            selectedImportableCustomElement = null
+          }
           return {
+            selectedImportableCustomElement,
             availableCustomElements: state.availableCustomElements.filter(
               (e) => e.id !== id
             ),
@@ -498,23 +524,11 @@ export const useStore = create<AppState>()(
               break
             case "availableCustomElements":
               return (value as CustomElement[]).map((c) => {
-                return new CustomElement({
-                  ...(c as CustomElement),
-                  start: c._start,
-                  end: c._end,
-                  offset: c._offset,
-                })
+                return CustomElement.fromDict(c)
               })
             case "clipsMetadata":
               return (value as VideoClip[]).map((c) => {
-                return new VideoClip(
-                  c.source,
-                  c.title,
-                  c.status,
-                  c.length,
-                  c.thumbnailUrl,
-                  c.indexingState
-                )
+                return VideoClip.fromDict(c)
               })
             case "toasts":
               return []
@@ -544,15 +558,12 @@ const concatAvailableClips = (
   if (availableClips.some((clip) => clip.source === source))
     return availableClips
 
-  title = title || DEFAULT_CLIP_TITLE
-  let newTitle = title
-  let index = 1
-  while (
-    newTitle === DEFAULT_CLIP_TITLE ||
-    availableClips.some((clip) => clip.title === newTitle)
-  ) {
-    newTitle = `${title} ${index++}`
-  }
+  const newTitle = getNextAvailableTitle(
+    title,
+    availableClips,
+    DEFAULT_CLIP_TITLE
+  )
+
   return [...availableClips, { source, title: newTitle }]
 }
 
@@ -562,19 +573,29 @@ const concatAvailableImage = (
   insertAtBeginning: boolean = false
 ) => {
   if (availableImages.some((i) => i.url === image.url)) return availableImages
-
-  image.title = image.title || DEFAULT_IMAGE_TITLE
-  let newTitle = image.title
-  let index = 1
-  while (
-    newTitle === DEFAULT_IMAGE_TITLE ||
-    availableImages.some((i) => i.title === newTitle)
-  ) {
-    newTitle = `${image.title} ${index++}`
-  }
-  image.title = newTitle
+  image.title = getNextAvailableTitle(
+    image.title,
+    availableImages,
+    DEFAULT_IMAGE_TITLE
+  )
   if (insertAtBeginning) return [image, ...availableImages]
   else return [...availableImages, image]
+}
+
+const getNextAvailableTitle = (
+  title: string | undefined,
+  elements: { title: string }[],
+  defaultTitle: string
+) => {
+  let newTitle = title || defaultTitle
+  let index = 1
+  while (
+    newTitle === defaultTitle ||
+    elements.some((i) => i.title === newTitle)
+  ) {
+    newTitle = `${title} ${index++}`
+  }
+  return newTitle
 }
 
 const getUpdatedMetadata = (

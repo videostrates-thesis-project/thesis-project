@@ -6,7 +6,7 @@ const DeleteMediaButton = (props: {
 }) => {
   return (
     <div
-      className={clsx("absolute right-1 top-1 tooltip tooltip-left")}
+      className={clsx("absolute right-1 top-1 tooltip tooltip-left z-20")}
       data-tip={
         props.disabled ? "In use - cannot be deleted" : "Delete from library"
       }

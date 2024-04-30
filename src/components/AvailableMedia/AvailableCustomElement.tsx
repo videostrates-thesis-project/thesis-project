@@ -24,7 +24,7 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
   const {
     serializedVideostrate,
     deleteAvailableCustomElement,
-    seek,
+    playbackState,
     isUiFrozen,
   } = useStore()
   const {
@@ -68,17 +68,21 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
         addCustomElement(
           props.element.name,
           props.element.content,
-          seek,
-          seek + 10
+          playbackState.time,
+          playbackState.time + 10
         )
       )
     },
-    [props.element.name, props.element.content, seek]
+    [props.element.name, props.element.content, playbackState.time]
   )
 
-  const deleteElement = useCallback(() => {
-    deleteAvailableCustomElement(props.element.id)
-  }, [deleteAvailableCustomElement, props.element.id])
+  const deleteElement = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      e.stopPropagation()
+      deleteAvailableCustomElement(props.element.id)
+    },
+    [deleteAvailableCustomElement, props.element.id]
+  )
 
   return (
     <ChatContextTooltip className="w-full h-60" selected={isSelected}>
@@ -131,7 +135,7 @@ const AvailableCustomElement = (props: { element: CustomElement }) => {
             {props.element.name}
           </span>
 
-          <AddElementButton onClick={addToTimeline} time={seek} />
+          <AddElementButton onClick={addToTimeline} time={playbackState.time} />
         </div>
         <DeleteMediaButton disabled={isUiFrozen} onClick={deleteElement} />
       </div>
