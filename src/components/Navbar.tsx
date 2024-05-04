@@ -4,6 +4,7 @@ import { useStore } from "../store"
 import clsx from "clsx"
 import { redo } from "../services/interpreter/redo"
 import HamburgerMenu from "./HamburgerMenu/HamburgerMenu"
+import HelpMessage from "./HelpMessage"
 
 const Navbar = () => {
   const { fileName, setFileName, undoStack, redoStack } = useStore()
@@ -64,7 +65,9 @@ const Navbar = () => {
             readOnly
           />
         </div>
-        <div className="navbar-end"></div>
+        <div className="navbar-end">
+          <HelpMessage />
+        </div>
       </nav>
     </>
   )
