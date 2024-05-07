@@ -9,6 +9,9 @@ export const deleteElement = (elementId: string) => {
     const parsedVideostrate = useStore.getState().parsedVideostrate
 
     try {
+      if (useStore.getState().selectedClip?.id === elementId) {
+        useStore.getState().setSelectedClip(null)
+      }
       parsedVideostrate.deleteElementById(elementId)
       useStore.getState().setParsedVideostrate(parsedVideostrate)
     } catch (error) {

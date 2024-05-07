@@ -1,4 +1,3 @@
-import { useStore } from "../store"
 import updateLayers from "../utils/updateLayers"
 import { Image } from "./image"
 import VideoClip from "./videoClip"
@@ -214,9 +213,6 @@ export class ParsedVideostrate {
   }
 
   public deleteElementById(elementId: string) {
-    if (useStore.getState().selectedClip?.id === elementId) {
-      useStore.getState().setSelectedClip(null)
-    }
     this.all = this.all.filter(
       (c) =>
         c.id !== elementId &&
