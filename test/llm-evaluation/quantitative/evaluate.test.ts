@@ -86,86 +86,186 @@ type TestReport = {
   testReportsForTags: TestReportForTag[]
 }
 
+function clearStore() {
+  useStore.setState({
+    videostrateUrl: "",
+    fileName: "Untitled Videostrate",
+    availableClips: [],
+    clipsMetadata: [],
+    availableImages: [],
+    availableCustomElements: [],
+    seek: 0,
+    playing: false,
+    playbackState: { frame: 0, time: 0 },
+    selectedClip: null,
+    selectedImportableClipName: null,
+    selectedImportableImage: null,
+    selectedImportableCustomElement: null,
+    selectedChatMessage: null,
+    chatMessages: [],
+    currentMessages: [],
+    pendingChanges: false,
+    undoStack: [],
+    redoStack: [],
+    toasts: [],
+  })
+}
+
+function setSelectedClip(id: string | undefined) {
+  if (!id) return
+
+  // find clip by name and set it as selected
+  const store = useStore.getState()
+  const clip = store.parsedVideostrate.clips.find((c) => c.id === id)
+  if (clip) {
+    useStore.setState({ selectedClip: clip })
+  } else {
+    throw new Error(`Clip with name ${id} not found`)
+  }
+}
+
+function setSelecteImportableClipName(name: string | undefined) {
+  if (!name) return
+  useStore.setState({ selectedImportableClipName: name })
+}
+
+function setSelectedImportableImage(title: string | undefined) {
+  if (!title) return
+  const image = useStore
+    .getState()
+    .availableImages.find((i) => i.title === title)
+  if (image) {
+    useStore.setState({ selectedImportableImage: image })
+  } else {
+    throw new Error(`Image with title ${title} not found`)
+  }
+}
+
+function setSelectedImportableCustomElement(name: string | undefined) {
+  if (!name) return
+  const customElement = useStore
+    .getState()
+    .availableCustomElements.find((c) => c.name === name)
+  if (customElement) {
+    useStore.setState({ selectedImportableCustomElement: customElement })
+  } else {
+    throw new Error(`Custom element with name ${name} not found`)
+  }
+}
+
+async function runTestCase(
+  file: string,
+  generationType: GenerationType
+): Promise<TestResult> {
+  console.log("")
+  console.log("Running test case: ", file)
+  clearStore()
+
+  // read the test case
+  const testCase = JSON.parse(
+    fs.readFileSync(`${testCaseFolder}/${file}`, "utf-8")
+  )
+
+  // read the specified videostrate example, parse it
+  const videostrate = fs.readFileSync(
+    `${videostrateFolder}/${testCase.videostrate}.html`,
+    "utf-8"
+  )
+  const originalVideoStrate = parseVideostrate(videostrate)
+  useStore.setState({ parsedVideostrate: originalVideoStrate.clone() })
+
+  if (testCase.library) {
+    await importLibrary(testCase.library + ".json")
+  }
+
+  if (testCase.selection) {
+    const allowedSelections = [
+      "selectedClip",
+      "selectedImportableClipName",
+      "selectedImportableImage",
+      "selectedImportableCustomElement",
+    ]
+
+    for (const selection in testCase.selection) {
+      if (allowedSelections.includes(selection)) {
+        const value = testCase.selection[selection]
+        if (selection === "selectedClip") {
+          setSelectedClip(value)
+        } else if (selection === "selectedImportableClipName") {
+          setSelecteImportableClipName(value)
+        } else if (selection === "selectedImportableImage") {
+          setSelectedImportableImage(value)
+        } else if (selection === "selectedImportableCustomElement") {
+          setSelectedImportableCustomElement(value)
+        } else {
+          throw new Error(`Invalid selection: ${selection}`)
+        }
+      }
+    }
+  }
+
+  let testResultType: TestResultType | undefined
+
+  // run the controlled or uncontrolled generation -> get the new parsed videostrate
+  console.log("Prompting llm")
+  try {
+    if (generationType === "controlled") {
+      await openAIService.sendScriptExecutionMessage(testCase.prompt)
+    } else {
+      await openAIServiceUncontrolled.sendScriptExecutionMessage(
+        testCase.prompt
+      )
+    }
+  } catch (e) {
+    console.log("[ERROR] Test case: ", file)
+    return {
+      testCase: file,
+      resultType: "error",
+      tags: testCase.tags,
+    }
+  }
+
+  const llmChangedParsedVideostrate = useStore
+    .getState()
+    .parsedVideostrate.clone()
+
+  console.log("LLM changed videostrate: ", llmChangedParsedVideostrate)
+
+  // run the expected changes script on the original videostrate
+  console.log("Running script for expected changes")
+  useStore.setState({ parsedVideostrate: originalVideoStrate.clone() })
+  const script = testCase.expectedChanges.join("\n")
+  await runScript(script)
+  const expectedParsedVideostrate = useStore
+    .getState()
+    .parsedVideostrate.clone()
+
+  // check the expected changes
+  console.log("Comparing videostrates")
+  console.log("Expected: ", expectedParsedVideostrate)
+  console.log("Actual: ", llmChangedParsedVideostrate)
+  if (llmChangedParsedVideostrate.equals(expectedParsedVideostrate)) {
+    console.log("[PASSED] Test case: ", file)
+    testResultType = "passed"
+  } else {
+    console.log("[FAILED] Test case: ", file)
+    testResultType = "failed"
+  }
+
+  return {
+    testCase: file,
+    resultType: testResultType,
+    tags: testCase.tags,
+  }
+}
+
 async function run_test(generationType: GenerationType) {
   const testResults: TestResult[] = []
 
   // loop through the test cases
   for (const file of fs.readdirSync(testCaseFolder)) {
-    console.log("")
-    console.log("Running test case: ", file)
-
-    // read the test case
-    const testCase = JSON.parse(
-      fs.readFileSync(`${testCaseFolder}/${file}`, "utf-8")
-    )
-
-    // read the specified videostrate example, parse it
-    const videostrate = fs.readFileSync(
-      `${videostrateFolder}/${testCase.videostrate}.html`,
-      "utf-8"
-    )
-    const originalVideoStrate = parseVideostrate(videostrate)
-
-    if (testCase.library) {
-      await importLibrary(testCase.library + ".json")
-    }
-
-    let testResultType: TestResultType | undefined
-
-    // run the controlled or uncontrolled generation -> get the new parsed videostrate
-    console.log("Prompting llm")
-    useStore.setState({ parsedVideostrate: originalVideoStrate.clone() })
-    try {
-      if (generationType === "controlled") {
-        await openAIService.sendScriptExecutionMessage(testCase.prompt)
-      } else {
-        await openAIServiceUncontrolled.sendScriptExecutionMessage(
-          testCase.prompt
-        )
-      }
-    } catch (e) {
-      testResultType = "error"
-      throw e //todo: uncomment
-    }
-
-    if (testResultType === "error") {
-      console.log("[ERROR] Test case: ", file)
-      continue
-    }
-
-    const llmChangedParsedVideostrate = useStore
-      .getState()
-      .parsedVideostrate.clone()
-
-    console.log("LLM changed videostrate: ", llmChangedParsedVideostrate)
-
-    // run the expected changes script on the original videostrate
-    console.log("Running script for expected changes")
-    useStore.setState({ parsedVideostrate: originalVideoStrate.clone() })
-    const script = testCase.expectedChanges.join("\n")
-    await runScript(script)
-    const expectedParsedVideostrate = useStore
-      .getState()
-      .parsedVideostrate.clone()
-
-    // check the expected changes
-    console.log("Comparing videostrates")
-    console.log("Expected: ", expectedParsedVideostrate)
-    console.log("Actual: ", llmChangedParsedVideostrate)
-    if (llmChangedParsedVideostrate.equals(expectedParsedVideostrate)) {
-      console.log("[PASSED] Test case: ", file)
-      testResultType = "passed"
-    } else {
-      console.log("[FAILED] Test case: ", file)
-      testResultType = "failed"
-    }
-
-    // save the result
-    testResults.push({
-      testCase: file,
-      resultType: testResultType,
-      tags: testCase.tags,
-    })
+    const testResult = await runTestCase(file, generationType)
+    testResults.push(testResult)
   }
 
   // generate report
@@ -195,8 +295,28 @@ async function run_test(generationType: GenerationType) {
   return testReport
 }
 
-test("Run test", async () => {
+async function run_tests(generationType: GenerationType) {
   console.log("Running test")
-  const testReport = await run_test("controlled")
+  const testReport = await run_test(generationType)
   console.log(testReport)
-}, 1000000)
+
+  // export the test report to rootFolder + "/results${generationType}-year-month-day-hour-minute-second.json"
+  const date = new Date()
+  const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDay()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`
+  fs.writeFileSync(
+    `${rootFolder}/results/${generationType}-${dateString}.json`,
+    JSON.stringify(testReport, null, 2)
+  )
+}
+
+describe("Run test", () => {
+  test("Controlled test", async () => {
+    console.log("Running controlled tests")
+    await run_tests("controlled")
+  }, 1000000)
+
+  test("Uncontrolled test", async () => {
+    console.log("Running uncontrolled tests")
+    await run_tests("uncontrolled")
+  }, 1000000)
+})

@@ -53,7 +53,7 @@ class OpenAIService {
       text
     )
 
-    this.sendChatMessage(prompt)
+    await this.sendChatMessage(prompt)
   }
 
   async sendChatMessage(text: string) {

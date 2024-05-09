@@ -1,12 +1,12 @@
 {
-  "videostrate": "simple",
+  "videostrate": "gaps",
   "library": null,
   "selection": {
-    "selectedClip": "clip1"
+    "selectedClip": "l1fcbb76-a75b-4173-a837-86a5792ffe52"
   },
   "prompt": "Move this clip 5 seconds later",
   "expectedChanges": [
-    "move_delta('jb2acd65-6ccb-4944-9089-28fdfc0da02b', 5)"
+    "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
   ],
   "tags": [
     "timeline",
