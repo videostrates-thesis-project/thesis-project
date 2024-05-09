@@ -28,4 +28,8 @@ export default {
   moduleNameMapper: {
     "\\.(gif|ttf|eot|svg|png)$": "<rootDir>/test/__ mocks __/fileMock.js",
   },
+  setupFiles: ["<rootDir>/test/setup-tests.ts"],
+  globals: {
+    fetch: global.fetch,
+  },
 }

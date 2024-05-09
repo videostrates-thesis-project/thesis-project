@@ -1,0 +1,16 @@
+{
+  "videostrate": "simple",
+  "library": null,
+  "selection": {
+    "selectedClip": "clip1"
+  },
+  "prompt": "Move this clip 5 seconds later",
+  "expectedChanges": [
+    "move_delta('jb2acd65-6ccb-4944-9089-28fdfc0da02b', 5)"
+  ],
+  "tags": [
+    "timeline",
+    "move",
+    "selection-reference-direct"
+  ]
+}

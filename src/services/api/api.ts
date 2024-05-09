@@ -62,6 +62,7 @@ const perform_request = async (
   request: any
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): Promise<any> => {
+  console.log("Performing request to: ", API_URL + endpoint)
   return fetch(API_URL + endpoint, {
     method: "POST",
     headers: {

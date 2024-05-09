@@ -62,6 +62,21 @@ export class VideoElement {
     this._offset = Math.round(value * precision) / precision
   }
 
+  public equals(other: VideoElement) {
+    return (
+      this.id === other.id &&
+      this.name === other.name &&
+      this.start === other.start &&
+      this.end === other.end &&
+      this.nodeType === other.nodeType &&
+      this.offset === other.offset &&
+      this.type === other.type &&
+      // this.outerHtml === other.outerHtml &&
+      this.layer === other.layer &&
+      this.speed === other.speed
+    )
+  }
+
   clone() {
     return new VideoElement({
       id: this.id,
@@ -105,6 +120,10 @@ export class CustomElement extends VideoElement {
     })
   }
 
+  public equals(other: CustomElement) {
+    return super.equals(other) && this.content === other.content
+  }
+
   clone() {
     return new CustomElement({
       id: this.id,
@@ -141,6 +160,16 @@ export class VideoClipElement extends VideoElement {
     this.className = props.className
     this.parentId = props.parentId
     this.containerElementId = props.containerElementId
+  }
+
+  public equals(other: VideoClipElement) {
+    return (
+      super.equals(other) &&
+      this.source === other.source &&
+      this.className === other.className &&
+      this.parentId === other.parentId &&
+      this.containerElementId === other.containerElementId
+    )
   }
 
   clone() {

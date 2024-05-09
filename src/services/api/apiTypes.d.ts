@@ -1,4 +1,4 @@
-import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
+import { ChatCompletionMessageParam } from "openai/resources"
 
 //  OpenAI --------------------------------------------
 

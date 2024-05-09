@@ -1,4 +1,4 @@
-import instructions from "./instructions-uncontrolled.txt?raw"
+import instructionsUncontrolled from "./instructions-uncontrolled.ts"
 import { useStore } from "../../store"
 import { ChatCompletionMessageParam } from "openai/resources/index.mjs"
 import { azureChatRequest } from "../api/api"
@@ -52,7 +52,7 @@ class OpenAIServiceUncontrolled {
       ) {
         const systemMessage: ChatCompletionMessageParam = {
           role: "system",
-          content: instructions,
+          content: instructionsUncontrolled,
         }
         useStore.getState().addMessage(systemMessage)
       }

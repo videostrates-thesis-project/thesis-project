@@ -60,6 +60,20 @@ export class ParsedVideostrate {
     )
   }
 
+  public equals(other: ParsedVideostrate) {
+    if (this.all.length !== other.all.length) {
+      return false
+    }
+
+    for (let i = 0; i < this.all.length; i++) {
+      if (!this.all[i].equals(other.all[i])) {
+        return false
+      }
+    }
+
+    return true
+  }
+
   public static generateElementId() {
     let id = uuid()
     id = String.fromCharCode(97 + Math.floor(Math.random() * 26)) + id.slice(1)
