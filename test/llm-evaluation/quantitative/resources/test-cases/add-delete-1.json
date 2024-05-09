@@ -1,0 +1,16 @@
+{
+  "videostrate": "gaps",
+  "library": "elephant-news",
+  "selection": {
+    "selectedImportableClipName": "Baby Elephant Cosmo"
+  },
+  "prompt": "Add this clip to the end of the video",
+  "expectedChanges": [
+    "add_clip('Baby Elephant Cosmo', 50)"
+  ],
+  "tags": [
+    "timeline",
+    "add/delete",
+    "selection-reference-direct"
+  ]
+}

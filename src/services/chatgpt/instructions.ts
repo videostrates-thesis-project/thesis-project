@@ -199,6 +199,15 @@ function delete_animation(name: string)
  */
 function generate_image(name: string, prompt: string): string
 
+Functions can be combined to achieve more complex tasks, like removing gaps, creating compositions, splitting clips, etc.
+Strings should be wrapped in double quotes.
+
+Simple example script:
+clip_id = add_clip("Name of the clip", 5);
+crop(clip_id, 0, 10);
+set_speed(clip_id, 2);
+create_or_update_style("my-clip-style", "border: 2px solid red;");
+assign_class([clip_id], "my-class");
 
 For styling use the create_or_update_style, delete_style, and assign_class functions. Do not use inline styling.
 An example for creating and styling a custom element:

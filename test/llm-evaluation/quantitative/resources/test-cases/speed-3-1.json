@@ -1,0 +1,17 @@
+{
+  "videostrate": "gaps",
+  "library": "elephant-news",
+  "selection": {
+    "selectedClip": "a6e1ca91-97c2-464d-b94e-29a3481fd327"
+  },
+  "prompt": "Set the speed slower so that there's no gap after this clip and it ends at the same time the next clip starts.",
+  "expectedChanges": [
+    "set_speed('a6e1ca91-97c2-464d-b94e-29a3481fd327', 0.8)"
+  ],
+  "tags": [
+    "timeline",
+    "speed",
+    "selection-reference-direct",
+    "arithmetics"
+  ]
+}

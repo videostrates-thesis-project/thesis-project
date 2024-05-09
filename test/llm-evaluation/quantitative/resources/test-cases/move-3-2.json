@@ -1,16 +1,16 @@
 {
   "videostrate": "gaps",
-  "library": null,
+  "library": "elephant-news",
   "selection": {
     "selectedClip": "l1fcbb76-a75b-4173-a837-86a5792ffe52"
   },
-  "prompt": "Move this clip 5 seconds later",
+  "prompt": "Move to second 15",
   "expectedChanges": [
-    "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+    "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 15)"
   ],
   "tags": [
     "timeline",
     "move",
-    "selection-reference-direct"
+    "selection-reference-indirect"
   ]
 }

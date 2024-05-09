@@ -1,0 +1,14 @@
+{
+  "videostrate": "gaps",
+  "library": "elephant-news",
+  "selection": {},
+  "prompt": "Put all the clips to the bottom right corner",
+  "expectedChanges": [
+    "assign_class(['l1fcbb76-a75b-4173-a837-86a5792ffe52', 'a6e1ca91-97c2-464d-b94e-29a3481fd327', 'd69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+  ],
+  "tags": [
+    "timeline",
+    "apply-style",
+    "selection-no-reference"
+  ]
+}

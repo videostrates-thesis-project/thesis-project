@@ -1,0 +1,18 @@
+{
+  "videostrate": "sequential",
+  "library": "elephant-news",
+  "selection": {
+    "selectedClip": "wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062"
+  },
+  "prompt": "Switch this clip with the next one",
+  "expectedChanges": [
+    "move('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', 14.86)",
+    "move('j5321de0-e192-4e2b-bb71-cc592d7005f6', 0)"
+  ],
+  "tags": [
+    "timeline",
+    "move",
+    "selection-reference-direct",
+    "arithmetics"
+  ]
+}

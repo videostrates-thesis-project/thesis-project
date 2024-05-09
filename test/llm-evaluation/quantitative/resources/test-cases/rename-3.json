@@ -1,0 +1,17 @@
+{
+  "videostrate": "sequential",
+  "library": "elephant-news",
+  "selection": {},
+  "prompt": "Rename elements to 1, 2, ... in the order they appear in the timeline.",
+  "expectedChanges": [
+    "rename_element('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', '1')",
+    "rename_element('j5321de0-e192-4e2b-bb71-cc592d7005f6', '2')",
+    "rename_element('n1b4f703-d06c-48f8-9d7c-6a13f1118016', '3')",
+    "rename_element('d69e9dec-3237-4ed3-8418-ef09d0166b11', '4')",
+    "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', '5')"
+  ],
+  "tags": [
+    "timeline",
+    "rename"
+  ]
+}

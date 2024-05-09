@@ -1,0 +1,16 @@
+{
+  "videostrate": "gaps",
+  "library": "elephant-news",
+  "selection": {
+    "selectedClip": "l1fcbb76-a75b-4173-a837-86a5792ffe52"
+  },
+  "prompt": "Double the speed of this clip",
+  "expectedChanges": [
+    "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2)"
+  ],
+  "tags": [
+    "timeline",
+    "speed",
+    "selection-reference-direct"
+  ]
+}

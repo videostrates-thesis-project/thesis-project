@@ -1,0 +1,16 @@
+{
+  "videostrate": "sequential",
+  "library": "elephant-news",
+  "selection": {
+    "selectedClip": "q4b6ff2b-53c5-4731-b404-da1d12a75cf9"
+  },
+  "prompt": "Replace [year] in the name of this element with the correct year",
+  "expectedChanges": [
+    "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 'Title 2022')"
+  ],
+  "tags": [
+    "timeline",
+    "rename",
+    "selection-reference-direct"
+  ]
+}

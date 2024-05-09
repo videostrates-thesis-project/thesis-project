@@ -36,7 +36,7 @@ const videostrateFolder = rootFolder + "/resources/videostrates"
 */
 
 async function importLibrary(file: string) {
-  const store = JSON.parse(libraryFolder + file)
+  const store = JSON.parse(fs.readFileSync(`${libraryFolder}/${file}`, "utf-8"))
   const newParsedVideostrate = useStore.getState().parsedVideostrate.clone()
   if (store.parsedVideostrate?.style) {
     store.parsedVideostrate.style.forEach(
@@ -67,6 +67,7 @@ type TestResultType = "passed" | "failed" | "error"
 type TestResult = {
   testCase: string
   resultType: TestResultType
+  extraInfo?: unknown
   tags: string[]
 }
 
@@ -116,7 +117,7 @@ function setSelectedClip(id: string | undefined) {
 
   // find clip by name and set it as selected
   const store = useStore.getState()
-  const clip = store.parsedVideostrate.clips.find((c) => c.id === id)
+  const clip = store.parsedVideostrate.all.find((c) => c.id === id)
   if (clip) {
     useStore.setState({ selectedClip: clip })
   } else {
@@ -153,6 +154,13 @@ function setSelectedImportableCustomElement(name: string | undefined) {
   }
 }
 
+function setPlayhead(time: number) {
+  useStore.setState({
+    playbackState: { frame: 0, time },
+    seek: time,
+  })
+}
+
 async function runTestCase(
   file: string,
   generationType: GenerationType
@@ -184,11 +192,13 @@ async function runTestCase(
       "selectedImportableClipName",
       "selectedImportableImage",
       "selectedImportableCustomElement",
+      "playhead",
     ]
 
     for (const selection in testCase.selection) {
       if (allowedSelections.includes(selection)) {
         const value = testCase.selection[selection]
+        console.log("Setting selection: ", selection, value)
         if (selection === "selectedClip") {
           setSelectedClip(value)
         } else if (selection === "selectedImportableClipName") {
@@ -197,9 +207,11 @@ async function runTestCase(
           setSelectedImportableImage(value)
         } else if (selection === "selectedImportableCustomElement") {
           setSelectedImportableCustomElement(value)
-        } else {
-          throw new Error(`Invalid selection: ${selection}`)
+        } else if (selection === "playhead") {
+          setPlayhead(value)
         }
+      } else {
+        throw new Error(`Invalid selection: ${selection}`)
       }
     }
   }
@@ -222,14 +234,13 @@ async function runTestCase(
       testCase: file,
       resultType: "error",
       tags: testCase.tags,
+      extraInfo: `${e}`,
     }
   }
 
   const llmChangedParsedVideostrate = useStore
     .getState()
     .parsedVideostrate.clone()
-
-  console.log("LLM changed videostrate: ", llmChangedParsedVideostrate)
 
   // run the expected changes script on the original videostrate
   console.log("Running script for expected changes")
@@ -259,13 +270,25 @@ async function runTestCase(
   }
 }
 
-async function run_test(generationType: GenerationType) {
+async function run_test(
+  generationType: GenerationType,
+  passes: number,
+  files?: string[]
+) {
   const testResults: TestResult[] = []
 
   // loop through the test cases
-  for (const file of fs.readdirSync(testCaseFolder)) {
-    const testResult = await runTestCase(file, generationType)
-    testResults.push(testResult)
+  if (!files) {
+    files = fs.readdirSync(testCaseFolder)
+  }
+
+  console.log("Running test cases: ", files)
+
+  for (const file of files) {
+    for (let i = 0; i < passes; i++) {
+      const testResult = await runTestCase(file, generationType)
+      testResults.push(testResult)
+    }
   }
 
   // generate report
@@ -295,9 +318,13 @@ async function run_test(generationType: GenerationType) {
   return testReport
 }
 
-async function run_tests(generationType: GenerationType) {
+async function run_tests(
+  generationType: GenerationType,
+  passes: number,
+  files?: string[]
+) {
   console.log("Running test")
-  const testReport = await run_test(generationType)
+  const testReport = await run_test(generationType, passes, files)
   console.log(testReport)
 
   // export the test report to rootFolder + "/results${generationType}-year-month-day-hour-minute-second.json"
@@ -309,14 +336,35 @@ async function run_tests(generationType: GenerationType) {
   )
 }
 
-describe("Run test", () => {
-  test("Controlled test", async () => {
-    console.log("Running controlled tests")
-    await run_tests("controlled")
-  }, 1000000)
+// const files = [
+//   // "add-delete-1.json",
+//   // "add-delete-2-1.json",
+//   // "add-delete-3-1.json",
+//   // "rename-2-1.json",
+//   // "rename-3-1.json",
+//   // "apply-style-1.json",
+//   // "add-delete-4.json",
+//   // "add-delete-5.json",
+//   // "move-7.json",
+//   // "move-3-2.json",
+//   // "move-4-1.json",
+//   // "move-4-2.json",
+//   // "move-5.json",
+//   // "rename-2-1.json",
+//   // "rename-2-2.json",
+//   // "speed-3-1.json",
+//   "crop-6.json",
+//   // "crop-7.json",
+// ]
+const files = undefined
+const passes = 1
 
-  test("Uncontrolled test", async () => {
-    console.log("Running uncontrolled tests")
-    await run_tests("uncontrolled")
-  }, 1000000)
-})
+// test("Controlled test", async () => {
+//   console.log("Running controlled tests")
+//   await run_tests("controlled", passes, files)
+// }, 100000000)
+
+test("Uncontrolled test", async () => {
+  console.log("Running uncontrolled tests")
+  await run_tests("uncontrolled", passes, files)
+}, 100000000)

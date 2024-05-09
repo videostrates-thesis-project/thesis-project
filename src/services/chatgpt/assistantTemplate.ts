@@ -3,9 +3,9 @@ import { Image } from "../../types/image"
 import VideoClip from "../../types/videoClip"
 import { CustomElement } from "../../types/videoElement"
 
-const buildHighlightPromptPlayerhead = (playerhead: number | null) => {
-  if (playerhead !== null) {
-    return `The playerhead is at timestamp (in seconds): ${playerhead.toFixed(2)}. The user can implicitly refer to this timestamp in the video. E.g., "Add a clip here"`
+const buildHighlightPromptPlayhead = (playhead: number | null) => {
+  if (playhead !== null) {
+    return `The playhead is at timestamp (in seconds): ${playhead.toFixed(2)}. The user can refer to this timestamp in the video. E.g., "Add a clip here" or simply "Add a clip"`
   } else {
     return ""
   }
@@ -13,7 +13,7 @@ const buildHighlightPromptPlayerhead = (playerhead: number | null) => {
 
 const buildHighlightPromptElement = (elementId: string | null) => {
   if (elementId !== null) {
-    return `The highlighted element on the timeline is: id="${elementId}". The user can refer to this element explicitly. E.g., "Add a smiley face over the clip"`
+    return `The highlighted element on the timeline is: id="${elementId}". The user can refer to this element. E.g., "Add a smiley face over the clip" or "Move right by 5 seconds"`
   } else {
     return ""
   }
@@ -21,7 +21,7 @@ const buildHighlightPromptElement = (elementId: string | null) => {
 
 const buildHighlightPromptImportableClip = (clipName: string | null) => {
   if (clipName !== null) {
-    return `The clip "${clipName}" is highlighted in the importable clips list. The user can refer to this importable clip explicitly. E.g., "Add this to the timeline from second 10 to 30."`
+    return `The clip "${clipName}" is highlighted in the importable clips list. The user can refer to this importable clip. E.g., "Add this to the timeline from second 10 to 30."`
   } else {
     return ""
   }
@@ -29,7 +29,7 @@ const buildHighlightPromptImportableClip = (clipName: string | null) => {
 
 const buildHighlightPromptImportableImage = (image: Image | null) => {
   if (image !== null) {
-    return `The image with name "${image.title}" is highlighted in the importable images list. Url of the image: ${image.url}. The user can refer to this importable image explicitly. E.g., "Add a banner to the video and set this image as the background."`
+    return `The image with name "${image.title}" is highlighted in the importable images list. Url of the image: ${image.url}. The user can refer to this importable image. E.g., "Add a banner to the video and set this image as the background."`
   } else {
     return ""
   }
@@ -40,7 +40,7 @@ const buildHighlightPromptImportableCustomElement = (
 ) => {
   if (customElement !== null) {
     const newline = "\n"
-    return `The custom element with name "${customElement.name}" is highlighted in the importable custom elements list. The user can refer to this importable custom element explicitly. E.g., "Add this custom element to the timeline.". Html code of the custom element: ${customElement.content.replace(newline, " ").trim()}`
+    return `The custom element with name "${customElement.name}" is highlighted in the importable custom elements list. The user can refer to this importable custom element. E.g., "Add this custom element to the timeline." or "Add to the timeline with some modifications". Html code of the custom element: ${customElement.content.replace(newline, " ").trim()}`
   } else {
     return ""
   }
@@ -79,7 +79,7 @@ const buildHighlightPrompt = (
   )
 
   return (
-    buildHighlightPromptPlayerhead(seek) +
+    buildHighlightPromptPlayhead(seek) +
     "\n" +
     buildHighlightPromptElement(selectedClipId) +
     "\n" +

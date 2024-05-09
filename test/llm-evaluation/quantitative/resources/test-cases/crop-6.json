@@ -1,0 +1,19 @@
+{
+  "videostrate": "gaps",
+  "library": "elephant-news",
+  "selection": {
+    "selectedClip": "l1fcbb76-a75b-4173-a837-86a5792ffe52"
+  },
+  "prompt": "Split the selected clip into two parts in the middle",
+  "expectedChanges": [
+    "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)",
+    "clip_id = add_clip('Baby Elephant Cosmo', 23.27)",
+    "crop(clip_id, 2.75, 5.5)"
+  ],
+  "tags": [
+    "timeline",
+    "crop",
+    "selection-reference-direct",
+    "arithmetics"
+  ]
+}

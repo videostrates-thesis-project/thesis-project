@@ -1,0 +1,16 @@
+{
+  "videostrate": "gaps",
+  "library": "elephant-news",
+  "selection": {},
+  "prompt": "Remove the gaps between the clips",
+  "expectedChanges": [
+    "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 16)",
+    "move('a6e1ca91-97c2-464d-b94e-29a3481fd327', 21.5)"
+  ],
+  "tags": [
+    "timeline",
+    "move",
+    "selection-no-reference",
+    "arithmetics"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "videostrate": "gaps",
+  "library": "elephant-news",
+  "selection": {
+    "selectedClip": "d69e9dec-3237-4ed3-8418-ef09d0166b11"
+  },
+  "prompt": "Split the selected clip into two parts in the middle",
+  "expectedChanges": [
+    "crop('d69e9dec-3237-4ed3-8418-ef09d0166b11', 3.6, 9.6)",
+    "clip_id = add_clip('Baby Elephant Daisy', 44)",
+    "crop(clip_id, 9.6, 15.6)"
+  ],
+  "tags": [
+    "timeline",
+    "crop",
+    "selection-reference-direct",
+    "arithmetics"
+  ]
+}

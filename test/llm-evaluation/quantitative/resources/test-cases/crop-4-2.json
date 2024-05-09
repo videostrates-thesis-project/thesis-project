@@ -1,0 +1,17 @@
+{
+  "videostrate": "gaps",
+  "library": "elephant-news",
+  "selection": {
+    "selectedClip": "l1fcbb76-a75b-4173-a837-86a5792ffe52"
+  },
+  "prompt": "Crop the length by 2 seconds",
+  "expectedChanges": [
+    "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3.5)"
+  ],
+  "tags": [
+    "timeline",
+    "crop",
+    "selection-reference-indirect",
+    "arithmetics"
+  ]
+}

@@ -405,12 +405,14 @@ export class ParsedVideostrate {
     const document = parser.parseFromString(element.content ?? "", "text/html")
     const htmlElement = document.body.firstChild as HTMLElement
     if (htmlElement) {
+      if (htmlElement.classList.contains(className)) return
       htmlElement.classList.add(className)
       element.content = htmlElement.outerHTML
     }
   }
 
   private assignClassToClip(clip: VideoClipElement, className: string) {
+    if (clip.className?.split(" ").includes(className)) return
     clip.className = clip.className
       ? `${clip.className} ${className}`
       : className

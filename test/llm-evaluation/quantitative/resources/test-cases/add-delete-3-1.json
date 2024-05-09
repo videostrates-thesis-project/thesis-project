@@ -1,0 +1,19 @@
+{
+  "videostrate": "gaps",
+  "library": "elephant-news",
+  "selection": {
+    "selectedClip": "a6e1ca91-97c2-464d-b94e-29a3481fd327"
+  },
+  "prompt": "Replace this clip with the news report. Crop the news report to the same length as the replaced clip.",
+  "expectedChanges": [
+    "delete_element('a6e1ca91-97c2-464d-b94e-29a3481fd327')",
+    "id = add_clip('News Report', 28)",
+    "crop(id, 0, 8)"
+  ],
+  "tags": [
+    "timeline",
+    "add/delete",
+    "selection-reference-direct",
+    "arithmetics"
+  ]
+}

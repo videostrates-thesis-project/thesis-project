@@ -1,0 +1,26 @@
+{
+  "videostrate": "empty",
+  "library": "elephant-news",
+  "selection": {
+    "selectedImportableClipName": "Baby Elephant Cosmo",
+    "playhead": 42.5
+  },
+  "prompt": "Add the 4 elephant clips here after each other without gap in alphabetical order by the elephants' names. Each clip should be 10s long",
+  "expectedChanges": [
+    "clip_id_1 = add_clip('Baby Elephant Cosmo', 42.5)",
+    "crop(clip_id_1, 0, 10)",
+    "clip_id_2 = add_clip('Baby Elephant Daisy', 52.5)",
+    "crop(clip_id_2, 0, 10)",
+    "clip_id_3 = add_clip('Baby Elephant Louis', 62.5)",
+    "crop(clip_id_3, 0, 10)",
+    "clip_id_4 = add_clip('Baby Elephant Sandra', 72.5)",
+    "crop(clip_id_4, 0, 10)"
+  ],
+  "tags": [
+    "timeline",
+    "add/delete",
+    "playhead",
+    "selection-no-reference",
+    "arithmetics"
+  ]
+}

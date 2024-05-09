@@ -1,0 +1,16 @@
+{
+  "videostrate": "gaps",
+  "library": "elephant-news",
+  "selection": {
+    "selectedClip": "a6e1ca91-97c2-464d-b94e-29a3481fd327"
+  },
+  "prompt": "Rename this clip to \"Baby Elephant Bobby\"",
+  "expectedChanges": [
+    "rename_element('a6e1ca91-97c2-464d-b94e-29a3481fd327', 'Baby Elephant Bobby')"
+  ],
+  "tags": [
+    "timeline",
+    "rename",
+    "selection-reference-direct"
+  ]
+}

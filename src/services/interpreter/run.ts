@@ -31,7 +31,8 @@ export const runBase = async (
         parsedVideostrate: videoStrateBefore,
       },
     })
-    return
+    // return
+    throw error
   }
 
   const executedScript: ExecutedScript = {

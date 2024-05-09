@@ -1,0 +1,16 @@
+{
+  "videostrate": "gaps",
+  "library": "elephant-news",
+  "selection": {
+    "selectedClip": "l1fcbb76-a75b-4173-a837-86a5792ffe52"
+  },
+  "prompt": "Move this clip 5 seconds later",
+  "expectedChanges": [
+    "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+  ],
+  "tags": [
+    "timeline",
+    "move",
+    "selection-reference-direct"
+  ]
+}

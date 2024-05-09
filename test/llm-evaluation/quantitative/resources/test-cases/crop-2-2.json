@@ -1,0 +1,17 @@
+{
+  "videostrate": "gaps",
+  "library": "elephant-news",
+  "selection": {
+    "selectedClip": "l1fcbb76-a75b-4173-a837-86a5792ffe52"
+  },
+  "prompt": "Cut out the second half, only keep the other half",
+  "expectedChanges": [
+    "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)"
+  ],
+  "tags": [
+    "timeline",
+    "crop",
+    "selection-reference-indirect",
+    "arithmetics"
+  ]
+}

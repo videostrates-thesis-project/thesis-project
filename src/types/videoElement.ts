@@ -64,7 +64,7 @@ export class VideoElement {
 
   public equals(other: VideoElement) {
     return (
-      this.id === other.id &&
+      // this.id === other.id &&
       this.name === other.name &&
       this.start === other.start &&
       this.end === other.end &&
@@ -167,8 +167,8 @@ export class VideoClipElement extends VideoElement {
       super.equals(other) &&
       this.source === other.source &&
       this.className === other.className &&
-      this.parentId === other.parentId &&
-      this.containerElementId === other.containerElementId
+      this.parentId === other.parentId
+      // this.containerElementId === other.containerElementId
     )
   }
 
