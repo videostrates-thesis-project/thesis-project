@@ -67,8 +67,10 @@ type TestResultType = "passed" | "failed" | "error"
 type TestResult = {
   testCase: string
   resultType: TestResultType
-  extraInfo?: unknown
+  reason?: unknown
   tags: string[]
+  generation: string
+  expectedChanges: string[]
 }
 
 type TestReportForTag = {
@@ -220,11 +222,14 @@ async function runTestCase(
 
   // run the controlled or uncontrolled generation -> get the new parsed videostrate
   console.log("Prompting llm")
+  let generation = ""
   try {
     if (generationType === "controlled") {
-      await openAIService.sendScriptExecutionMessage(testCase.prompt)
+      generation = await openAIService.sendScriptExecutionMessage(
+        testCase.prompt
+      )
     } else {
-      await openAIServiceUncontrolled.sendScriptExecutionMessage(
+      generation = await openAIServiceUncontrolled.sendScriptExecutionMessage(
         testCase.prompt
       )
     }
@@ -234,7 +239,9 @@ async function runTestCase(
       testCase: file,
       resultType: "error",
       tags: testCase.tags,
-      extraInfo: `${e}`,
+      reason: `${e}`,
+      expectedChanges: testCase.expectedChanges,
+      generation: generation,
     }
   }
 
@@ -255,19 +262,34 @@ async function runTestCase(
   console.log("Comparing videostrates")
   console.log("Expected: ", expectedParsedVideostrate)
   console.log("Actual: ", llmChangedParsedVideostrate)
-  if (llmChangedParsedVideostrate.equals(expectedParsedVideostrate)) {
+  const equalityResult = llmChangedParsedVideostrate.equals(
+    expectedParsedVideostrate
+  )
+  let reason = ""
+  if (equalityResult.equal) {
     console.log("[PASSED] Test case: ", file)
     testResultType = "passed"
   } else {
     console.log("[FAILED] Test case: ", file)
     testResultType = "failed"
+    if (equalityResult.reason) {
+      reason = equalityResult.reason
+    }
   }
 
-  return {
+  const testResult: TestResult = {
     testCase: file,
     resultType: testResultType,
     tags: testCase.tags,
+    expectedChanges: testCase.expectedChanges,
+    generation: generation,
   }
+
+  if (reason) {
+    testResult.reason = reason
+  }
+
+  return testResult
 }
 
 async function run_test(
@@ -288,7 +310,24 @@ async function run_test(
     for (let i = 0; i < passes; i++) {
       const testResult = await runTestCase(file, generationType)
       testResults.push(testResult)
+
+      const passed = testResults.filter((r) => r.resultType === "passed").length
+      const failed = testResults.filter((r) => r.resultType === "failed").length
+      const error = testResults.filter((r) => r.resultType === "error").length
+
+      console.log(
+        `Passed: ${passed}, Failed: ${failed}, Error: ${error}, Total: ${
+          passed + failed + error
+        }`
+      )
     }
+
+    const date = new Date()
+    const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDay()}`
+    fs.writeFileSync(
+      `${rootFolder}/results/${generationType}-${dateString}.tmp.json`,
+      JSON.stringify(testResults, null, 2)
+    )
   }
 
   // generate report
@@ -327,7 +366,6 @@ async function run_tests(
   const testReport = await run_test(generationType, passes, files)
   console.log(testReport)
 
-  // export the test report to rootFolder + "/results${generationType}-year-month-day-hour-minute-second.json"
   const date = new Date()
   const dateString = `${date.getFullYear()}-${date.getMonth()}-${date.getDay()}-${date.getHours()}-${date.getMinutes()}-${date.getSeconds()}`
   fs.writeFileSync(
@@ -349,22 +387,22 @@ async function run_tests(
 //   // "move-3-2.json",
 //   // "move-4-1.json",
 //   // "move-4-2.json",
-//   // "move-5.json",
+//   "move-5.json",
 //   // "rename-2-1.json",
 //   // "rename-2-2.json",
 //   // "speed-3-1.json",
-//   "crop-6.json",
+//   // "crop-6.json",
 //   // "crop-7.json",
 // ]
 const files = undefined
-const passes = 1
+const passes = 5
 
-// test("Controlled test", async () => {
-//   console.log("Running controlled tests")
-//   await run_tests("controlled", passes, files)
-// }, 100000000)
-
-test("Uncontrolled test", async () => {
-  console.log("Running uncontrolled tests")
-  await run_tests("uncontrolled", passes, files)
+test("Controlled test", async () => {
+  console.log("Running controlled tests")
+  await run_tests("controlled", passes, files)
 }, 100000000)
+
+// test("Uncontrolled test", async () => {
+//   console.log("Running uncontrolled tests")
+//   await run_tests("uncontrolled", passes, files)
+// }, 100000000)

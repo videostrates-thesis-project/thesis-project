@@ -3,6 +3,11 @@ import { TIME_DECIMALS_PRECISION } from "../envVariables"
 
 const precision = 10 ** TIME_DECIMALS_PRECISION
 
+export interface EqualityCheckResult {
+  equal: boolean
+  reason?: string
+}
+
 export interface VideoElementProps {
   id: string
   name: string
@@ -62,19 +67,48 @@ export class VideoElement {
     this._offset = Math.round(value * precision) / precision
   }
 
-  public equals(other: VideoElement) {
-    return (
-      // this.id === other.id &&
-      this.name === other.name &&
-      this.start === other.start &&
-      this.end === other.end &&
-      this.nodeType === other.nodeType &&
-      this.offset === other.offset &&
-      this.type === other.type &&
-      // this.outerHtml === other.outerHtml &&
-      this.layer === other.layer &&
-      this.speed === other.speed
-    )
+  public equals(other: VideoElement): EqualityCheckResult {
+    // return (
+    //   // this.id === other.id &&
+    //   this.name === other.name &&
+    //   this.start === other.start &&
+    //   this.end === other.end &&
+    //   this.nodeType === other.nodeType &&
+    //   this.offset === other.offset &&
+    //   this.type === other.type &&
+    //   // this.outerHtml === other.outerHtml &&
+    //   // this.layer === other.layer &&
+    //   this.speed === other.speed
+    // )
+    if (this.name !== other.name) {
+      return { equal: false, reason: `name, ${this.name} <> ${other.name}` }
+    }
+    if (this.start !== other.start) {
+      return { equal: false, reason: `start, ${this.start} <> ${other.start}` }
+    }
+    if (this.end !== other.end) {
+      return { equal: false, reason: `end, ${this.end} <> ${other.end}` }
+    }
+    if (this.nodeType !== other.nodeType) {
+      return {
+        equal: false,
+        reason: `nodeType, ${this.nodeType} <> ${other.nodeType}`,
+      }
+    }
+    if (this.offset !== other.offset) {
+      return {
+        equal: false,
+        reason: `offset, ${this.offset} <> ${other.offset}`,
+      }
+    }
+    if (this.type !== other.type) {
+      return { equal: false, reason: `type, ${this.type} <> ${other.type}` }
+    }
+    if (this.speed !== other.speed) {
+      return { equal: false, reason: `speed, ${this.speed} <> ${other.speed}` }
+    }
+
+    return { equal: true }
   }
 
   clone() {
@@ -120,8 +154,20 @@ export class CustomElement extends VideoElement {
     })
   }
 
-  public equals(other: CustomElement) {
-    return super.equals(other) && this.content === other.content
+  public equals(other: CustomElement): EqualityCheckResult {
+    const result = super.equals(other)
+    if (!result.equal) {
+      return result
+    }
+    if (this.content?.trim() != other.content?.trim()) {
+      // replace new lines
+      return {
+        equal: false,
+        reason: `content, ${this.content?.trim()?.replace(/\n/g, " ")} <> ${other.content?.trim()?.replace(/\n/g, " ")}`,
+      }
+    }
+
+    return { equal: true }
   }
 
   clone() {
@@ -143,14 +189,14 @@ export class CustomElement extends VideoElement {
 
 interface VideoClipElementProps extends VideoElementProps {
   source: string
-  className?: string
+  className: string
   parentId?: string
   containerElementId?: string
 }
 
 export class VideoClipElement extends VideoElement {
   source: string
-  className?: string
+  className: string
   parentId?: string
   containerElementId?: string
 
@@ -162,14 +208,39 @@ export class VideoClipElement extends VideoElement {
     this.containerElementId = props.containerElementId
   }
 
-  public equals(other: VideoClipElement) {
-    return (
-      super.equals(other) &&
-      this.source === other.source &&
-      this.className === other.className &&
-      this.parentId === other.parentId
-      // this.containerElementId === other.containerElementId
-    )
+  public equals(other: VideoClipElement): EqualityCheckResult {
+    // return (
+    //   super.equals(other) &&
+    //   this.source === other.source &&
+    //   this.className?.trim() === other.className?.trim() &&
+    //   this.parentId === other.parentId
+    //   // this.containerElementId === other.containerElementId
+    // )
+
+    const result = super.equals(other)
+    if (!result.equal) {
+      return result
+    }
+    if (this.source != other.source) {
+      return {
+        equal: false,
+        reason: `source, ${this.source} <> ${other.source}`,
+      }
+    }
+    if (this.className?.trim() != other.className?.trim()) {
+      return {
+        equal: false,
+        reason: `className, ${this.className?.trim()} <> ${other.className?.trim()}`,
+      }
+    }
+    if (this.parentId != other.parentId) {
+      return {
+        equal: false,
+        reason: `parentId, ${this.parentId} <> ${other.parentId}`,
+      }
+    }
+
+    return { equal: true }
   }
 
   clone() {

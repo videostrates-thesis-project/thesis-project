@@ -3,6 +3,7 @@ import { Image } from "./image"
 import VideoClip from "./videoClip"
 import {
   CustomElement,
+  EqualityCheckResult,
   VideoClipElement,
   VideoElement,
   VideoElementType,
@@ -60,18 +61,47 @@ export class ParsedVideostrate {
     )
   }
 
-  public equals(other: ParsedVideostrate) {
+  public equals(other: ParsedVideostrate): EqualityCheckResult {
     if (this.all.length !== other.all.length) {
-      return false
-    }
-
-    for (let i = 0; i < this.all.length; i++) {
-      if (!this.all[i].equals(other.all[i])) {
-        return false
+      return {
+        equal: false,
+        reason: `Different number of elements: ${this.all.length} <> ${other.all.length}`,
       }
     }
 
-    return true
+    const all_ordered = [...this.all]
+    const other_ordered = [...other.all]
+
+    const compareMethod = (a: VideoElement, b: VideoElement) => {
+      if (a.name < b.name) return -1
+      if (a.name > b.name) return 1
+      if (a.start < b.start) return -1
+      if (a.start > b.start) return 1
+      if (a.end < b.end) return -1
+      if (a.end > b.end) return 1
+      if (a.offset < b.offset) return -1
+      if (a.offset > b.offset) return 1
+      if (a.speed < b.speed) return -1
+      if (a.speed > b.speed) return 1
+      return 0
+    }
+
+    all_ordered.sort(compareMethod)
+    other_ordered.sort(compareMethod)
+
+    for (let i = 0; i < all_ordered.length; i++) {
+      const result = all_ordered[i].equals(other_ordered[i])
+      if (!result.equal) {
+        return {
+          equal: false,
+          reason: `Elements (${all_ordered[i].id}, ${other_ordered[i].id}) are different: ${result.reason}`,
+        }
+      }
+    }
+
+    return {
+      equal: true,
+    }
   }
 
   public static generateElementId() {
@@ -160,6 +190,7 @@ export class ParsedVideostrate {
         offset: 0,
         speed: 1,
         layer,
+        className: "",
       })
     )
     this.all = [...this.all]
@@ -219,6 +250,7 @@ export class ParsedVideostrate {
         layer: 0,
         parentId: elementId,
         containerElementId: containerElementId,
+        className: "",
       })
     )
     this.all = [...this.all]

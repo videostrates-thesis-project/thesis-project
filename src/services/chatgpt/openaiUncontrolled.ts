@@ -14,7 +14,7 @@ import { v4 as uuid } from "uuid"
 // })
 
 class OpenAIServiceUncontrolled {
-  async sendScriptExecutionMessage(text: string) {
+  async sendScriptExecutionMessage(text: string): Promise<string> {
     console.log("[OpenAIUncontrolled] Sending script execution message: ", text)
     const store = useStore.getState()
     const serialized = serializeVideostrate(
@@ -84,6 +84,8 @@ class OpenAIServiceUncontrolled {
         content: "Certainly! I tried my best.",
         id: uuid(),
       })
+
+      return newVideostrate
     } finally {
       useStore.getState().setIsUiFrozen(false)
     }

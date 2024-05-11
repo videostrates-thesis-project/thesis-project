@@ -34,7 +34,7 @@ class OpenAIService {
     this.thread = await openai.beta.threads.create()
   }
 
-  async sendScriptExecutionMessage(text: string) {
+  async sendScriptExecutionMessage(text: string): Promise<string> {
     const store = useStore.getState()
     const serialized = serializeVideostrate(store.parsedVideostrate, "chatGPT")
 
@@ -53,18 +53,18 @@ class OpenAIService {
       text
     )
 
-    await this.sendChatMessage(prompt)
+    return await this.sendChatMessage(prompt)
   }
 
-  async sendChatMessage(text: string) {
+  async sendChatMessage(text: string): Promise<string> {
     const provider = useStore.getState().aiProvider
 
     switch (provider) {
       case "openai":
-        await this.sendChatMessageToOpenAi(text)
+        return await this.sendChatMessageToOpenAi(text)
         break
       case "azure":
-        await this.sendDefaultChatMessageToAzure(text)
+        return await this.sendDefaultChatMessageToAzure(text)
         break
       default:
         throw new Error(`Unknown AI provider: ${provider}`)
@@ -172,6 +172,8 @@ class OpenAIService {
         (await runScript(message.script))?.asPendingChanges()
         useStore.getState().setCurrentAsyncAction(null)
       }
+
+      return message.script
     } finally {
       useStore.getState().setIsUiFrozen(false)
     }
@@ -195,7 +197,7 @@ class OpenAIService {
     return message
   }
 
-  async sendChatMessageToOpenAi(text: string) {
+  async sendChatMessageToOpenAi(text: string): Promise<string> {
     try {
       useStore.getState().setIsUiFrozen(true)
       const userMessage: ChatCompletionMessageParam = {
@@ -264,6 +266,8 @@ class OpenAIService {
         (await runScript(message.script))?.asPendingChanges()
         useStore.getState().setCurrentAsyncAction(null)
       }
+
+      return message.script
     } finally {
       useStore.getState().setIsUiFrozen(false)
     }

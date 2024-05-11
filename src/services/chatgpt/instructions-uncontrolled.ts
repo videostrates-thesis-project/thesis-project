@@ -54,6 +54,8 @@ Specification of a custom element:
 Specification of a custom element with embedded clips:
 - Attributes applicable to custom elements with embedded clips:
     - embedded-clip-container: unique identifier value of an html element that contains embedded clips
+- Each embedded clip needs to have a div with the clip-name attribute, a unique id and a video tag inside it
+- The video tag of an embedded clip needs to have the composited class, data-start, data-end, data-offset, data-speed attributes
 
 \`\`\`html
 <div class="composited" id="v28c71a9-b46f-46cc-9633-7b50b8041530" custom-element-name="Name of the element"
