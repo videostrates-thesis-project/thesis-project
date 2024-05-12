@@ -66,6 +66,7 @@ type TestResultType = "passed" | "failed" | "error"
 
 type TestResult = {
   testCase: string
+  prompt: string
   resultType: TestResultType
   reason?: unknown
   tags: string[]
@@ -237,6 +238,7 @@ async function runTestCase(
     console.log("[ERROR] Test case: ", file)
     return {
       testCase: file,
+      prompt: testCase.prompt,
       resultType: "error",
       tags: testCase.tags,
       reason: `${e}`,
@@ -279,6 +281,7 @@ async function runTestCase(
 
   const testResult: TestResult = {
     testCase: file,
+    prompt: testCase.prompt,
     resultType: testResultType,
     tags: testCase.tags,
     expectedChanges: testCase.expectedChanges,
@@ -295,9 +298,17 @@ async function runTestCase(
 async function run_test(
   generationType: GenerationType,
   passes: number,
-  files?: string[]
+  files?: string[],
+  continue_from?: string
 ) {
-  const testResults: TestResult[] = []
+  // const testResults: TestResult[] = []
+  let testResults: TestResult[] = []
+  if (continue_from) {
+    testResults = JSON.parse(
+      fs.readFileSync(`${rootFolder}/results/${continue_from}`, "utf-8")
+    ) as TestResult[]
+    console.log("Continuing from saved progress: ", continue_from)
+  }
 
   // loop through the test cases
   if (!files) {
@@ -307,6 +318,11 @@ async function run_test(
   console.log("Running test cases: ", files)
 
   for (const file of files) {
+    if (testResults.find((r) => r.testCase === file)) {
+      console.log("Skipping test case: ", file)
+      continue
+    }
+
     for (let i = 0; i < passes; i++) {
       const testResult = await runTestCase(file, generationType)
       testResults.push(testResult)
@@ -360,10 +376,16 @@ async function run_test(
 async function run_tests(
   generationType: GenerationType,
   passes: number,
-  files?: string[]
+  files?: string[],
+  continue_from?: string
 ) {
   console.log("Running test")
-  const testReport = await run_test(generationType, passes, files)
+  const testReport = await run_test(
+    generationType,
+    passes,
+    files,
+    continue_from
+  )
   console.log(testReport)
 
   const date = new Date()
@@ -396,13 +418,15 @@ async function run_tests(
 // ]
 const files = undefined
 const passes = 5
+// const continue_from = "controlled-2024-4-6-partial.json"
+const continue_from = undefined
 
-test("Controlled test", async () => {
-  console.log("Running controlled tests")
-  await run_tests("controlled", passes, files)
-}, 100000000)
-
-// test("Uncontrolled test", async () => {
-//   console.log("Running uncontrolled tests")
-//   await run_tests("uncontrolled", passes, files)
+// test("Controlled test", async () => {
+//   console.log("Running controlled tests")
+//   await run_tests("controlled", passes, files, continue_from)
 // }, 100000000)
+
+test("Uncontrolled test", async () => {
+  console.log("Running uncontrolled tests")
+  await run_tests("uncontrolled", passes, files, continue_from)
+}, 100000000)
