@@ -306,7 +306,7 @@ async function run_test(
   if (continue_from) {
     testResults = JSON.parse(
       fs.readFileSync(`${rootFolder}/results/${continue_from}`, "utf-8")
-    ) as TestResult[]
+    )["testResults"] as TestResult[]
     console.log("Continuing from saved progress: ", continue_from)
   }
 
@@ -409,24 +409,26 @@ async function run_tests(
 //   // "move-3-2.json",
 //   // "move-4-1.json",
 //   // "move-4-2.json",
-//   "move-5.json",
+//   // "move-5.json",
 //   // "rename-2-1.json",
 //   // "rename-2-2.json",
 //   // "speed-3-1.json",
 //   // "crop-6.json",
 //   // "crop-7.json",
+//   "speed-1-2.json",
+//   "speed-2-2.json",
 // ]
 const files = undefined
 const passes = 5
-// const continue_from = "controlled-2024-4-6-partial.json"
+// const continue_from = "uncontrolled.json"
 const continue_from = undefined
 
-// test("Controlled test", async () => {
-//   console.log("Running controlled tests")
-//   await run_tests("controlled", passes, files, continue_from)
-// }, 100000000)
-
-test("Uncontrolled test", async () => {
-  console.log("Running uncontrolled tests")
-  await run_tests("uncontrolled", passes, files, continue_from)
+test("Controlled test", async () => {
+  console.log("Running controlled tests")
+  await run_tests("controlled", passes, files, continue_from)
 }, 100000000)
+
+// test("Uncontrolled test", async () => {
+//   console.log("Running uncontrolled tests")
+//   await run_tests("uncontrolled", passes, files, continue_from)
+// }, 100000000)

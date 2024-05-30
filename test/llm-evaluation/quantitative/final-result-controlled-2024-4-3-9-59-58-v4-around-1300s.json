@@ -1,0 +1,3020 @@
+{
+  "generationType": "controlled",
+  "testResults": [
+    {
+      "testCase": "add-delete-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete"
+      ],
+      "expectedChanges": [
+        "add_clip('Baby Elephant Cosmo', 50)"
+      ],
+      "generation": "clip_id = add_clip(\"Baby Elephant Cosmo\", 50);\n"
+    },
+    {
+      "testCase": "add-delete-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete"
+      ],
+      "expectedChanges": [
+        "add_clip('Baby Elephant Cosmo', 50)"
+      ],
+      "generation": "clip_id = add_clip(\"Baby Elephant Cosmo\", 50);\n"
+    },
+    {
+      "testCase": "add-delete-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete"
+      ],
+      "expectedChanges": [
+        "add_clip('Baby Elephant Cosmo', 50)"
+      ],
+      "generation": "clip_id = add_clip(\"Baby Elephant Cosmo\", 50);\nreposition(clip_id, 50, 71.85);"
+    },
+    {
+      "testCase": "add-delete-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete"
+      ],
+      "expectedChanges": [
+        "add_clip('Baby Elephant Cosmo', 50)"
+      ],
+      "generation": "clip_id = add_clip(\"Baby Elephant Cosmo\", 50);\n"
+    },
+    {
+      "testCase": "add-delete-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete"
+      ],
+      "expectedChanges": [
+        "add_clip('Baby Elephant Cosmo', 50)"
+      ],
+      "generation": "clip_id = add_clip(\"Baby Elephant Cosmo\", 50);"
+    },
+    {
+      "testCase": "add-delete-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete"
+      ],
+      "expectedChanges": [
+        "delete_element('a6e1ca91-97c2-464d-b94e-29a3481fd327')"
+      ],
+      "generation": "delete_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\")"
+    },
+    {
+      "testCase": "add-delete-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete"
+      ],
+      "expectedChanges": [
+        "delete_element('a6e1ca91-97c2-464d-b94e-29a3481fd327')"
+      ],
+      "generation": "delete_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\")"
+    },
+    {
+      "testCase": "add-delete-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete"
+      ],
+      "expectedChanges": [
+        "delete_element('a6e1ca91-97c2-464d-b94e-29a3481fd327')"
+      ],
+      "generation": "delete_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\")"
+    },
+    {
+      "testCase": "add-delete-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete"
+      ],
+      "expectedChanges": [
+        "delete_element('a6e1ca91-97c2-464d-b94e-29a3481fd327')"
+      ],
+      "generation": "delete_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\")"
+    },
+    {
+      "testCase": "add-delete-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete"
+      ],
+      "expectedChanges": [
+        "delete_element('a6e1ca91-97c2-464d-b94e-29a3481fd327')"
+      ],
+      "generation": "delete_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\")"
+    },
+    {
+      "testCase": "add-delete-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "delete_element('a6e1ca91-97c2-464d-b94e-29a3481fd327')",
+        "id = add_clip('News Report', 28)",
+        "crop(id, 0, 8)"
+      ],
+      "generation": "delete_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\");\nnews_report_id = add_clip(\"News Report\", 28);\ncrop(news_report_id, 0, 8);"
+    },
+    {
+      "testCase": "add-delete-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "delete_element('a6e1ca91-97c2-464d-b94e-29a3481fd327')",
+        "id = add_clip('News Report', 28)",
+        "crop(id, 0, 8)"
+      ],
+      "generation": "delete_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\");\nnews_report_id = add_clip(\"News Report\", 28);\ncrop(news_report_id, 0, 8);"
+    },
+    {
+      "testCase": "add-delete-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "delete_element('a6e1ca91-97c2-464d-b94e-29a3481fd327')",
+        "id = add_clip('News Report', 28)",
+        "crop(id, 0, 8)"
+      ],
+      "generation": "delete_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\");\nnews_report_id = add_clip(\"News Report\", 28);\ncrop(news_report_id, 0, 8);"
+    },
+    {
+      "testCase": "add-delete-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "delete_element('a6e1ca91-97c2-464d-b94e-29a3481fd327')",
+        "id = add_clip('News Report', 28)",
+        "crop(id, 0, 8)"
+      ],
+      "generation": "delete_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\")\nnews_report_id = add_clip(\"News Report\", 28)\ncrop(news_report_id, 0, 8)"
+    },
+    {
+      "testCase": "add-delete-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "delete_element('a6e1ca91-97c2-464d-b94e-29a3481fd327')",
+        "id = add_clip('News Report', 28)",
+        "crop(id, 0, 8)"
+      ],
+      "generation": "delete_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\");\nnews_report_id = add_clip(\"News Report\", 28);\ncrop(news_report_id, 0, 8);"
+    },
+    {
+      "testCase": "add-delete-4.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "playhead"
+      ],
+      "expectedChanges": [
+        "add_clip('Baby Elephant Cosmo', 42.5)"
+      ],
+      "generation": "add_clip(\"Baby Elephant Cosmo\", 42.5);"
+    },
+    {
+      "testCase": "add-delete-4.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "playhead"
+      ],
+      "expectedChanges": [
+        "add_clip('Baby Elephant Cosmo', 42.5)"
+      ],
+      "generation": "add_clip(\"Baby Elephant Cosmo\", 42.5);"
+    },
+    {
+      "testCase": "add-delete-4.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "playhead"
+      ],
+      "expectedChanges": [
+        "add_clip('Baby Elephant Cosmo', 42.5)"
+      ],
+      "generation": "add_clip(\"Baby Elephant Cosmo\", 42.5);"
+    },
+    {
+      "testCase": "add-delete-4.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "playhead"
+      ],
+      "expectedChanges": [
+        "add_clip('Baby Elephant Cosmo', 42.5)"
+      ],
+      "generation": "clip_id = add_clip(\"Baby Elephant Cosmo\", 42.5);"
+    },
+    {
+      "testCase": "add-delete-4.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "playhead"
+      ],
+      "expectedChanges": [
+        "add_clip('Baby Elephant Cosmo', 42.5)"
+      ],
+      "generation": "clip_id = add_clip(\"Baby Elephant Cosmo\", 42.5);\n"
+    },
+    {
+      "testCase": "add-delete-5.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "playhead",
+        "selection-no-reference",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "clip_id_1 = add_clip('Baby Elephant Cosmo', 42.5)",
+        "crop(clip_id_1, 0, 10)",
+        "clip_id_2 = add_clip('Baby Elephant Daisy', 52.5)",
+        "crop(clip_id_2, 0, 10)",
+        "clip_id_3 = add_clip('Baby Elephant Louis', 62.5)",
+        "crop(clip_id_3, 0, 10)",
+        "clip_id_4 = add_clip('Baby Elephant Sandra', 72.5)",
+        "crop(clip_id_4, 0, 10)"
+      ],
+      "generation": "cosmo_id = add_clip(\"Baby Elephant Cosmo\", 42.5);\ncrop(cosmo_id, 0, 10);\ndaisy_id = add_clip(\"Baby Elephant Daisy\", 52.5);\ncrop(daisy_id, 0, 10);\nlouis_id = add_clip(\"Baby Elephant Louis\", 62.5);\ncrop(louis_id, 0, 10);\nsandra_id = add_clip(\"Baby Elephant Sandra\", 72.5);\ncrop(sandra_id, 0, 10);"
+    },
+    {
+      "testCase": "add-delete-5.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "playhead",
+        "selection-no-reference",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "clip_id_1 = add_clip('Baby Elephant Cosmo', 42.5)",
+        "crop(clip_id_1, 0, 10)",
+        "clip_id_2 = add_clip('Baby Elephant Daisy', 52.5)",
+        "crop(clip_id_2, 0, 10)",
+        "clip_id_3 = add_clip('Baby Elephant Louis', 62.5)",
+        "crop(clip_id_3, 0, 10)",
+        "clip_id_4 = add_clip('Baby Elephant Sandra', 72.5)",
+        "crop(clip_id_4, 0, 10)"
+      ],
+      "generation": "cosmo_id = add_clip(\"Baby Elephant Cosmo\", 42.50);\ncrop(cosmo_id, 0, 10);\ndaisy_id = add_clip(\"Baby Elephant Daisy\", 52.50);\ncrop(daisy_id, 0, 10);\nlouis_id = add_clip(\"Baby Elephant Louis\", 62.50);\ncrop(louis_id, 0, 10);\nsandra_id = add_clip(\"Baby Elephant Sandra\", 72.50);\ncrop(sandra_id, 0, 10);"
+    },
+    {
+      "testCase": "add-delete-5.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "playhead",
+        "selection-no-reference",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "clip_id_1 = add_clip('Baby Elephant Cosmo', 42.5)",
+        "crop(clip_id_1, 0, 10)",
+        "clip_id_2 = add_clip('Baby Elephant Daisy', 52.5)",
+        "crop(clip_id_2, 0, 10)",
+        "clip_id_3 = add_clip('Baby Elephant Louis', 62.5)",
+        "crop(clip_id_3, 0, 10)",
+        "clip_id_4 = add_clip('Baby Elephant Sandra', 72.5)",
+        "crop(clip_id_4, 0, 10)"
+      ],
+      "generation": "clip_cosmo_id = add_clip(\"Baby Elephant Cosmo\", 42.5);\ncrop(clip_cosmo_id, 0, 10);\nclip_daisy_id = add_clip(\"Baby Elephant Daisy\", 52.5);\ncrop(clip_daisy_id, 0, 10);\nclip_louis_id = add_clip(\"Baby Elephant Louis\", 62.5);\ncrop(clip_louis_id, 0, 10);\nclip_sandra_id = add_clip(\"Baby Elephant Sandra\", 72.5);\ncrop(clip_sandra_id, 0, 10);"
+    },
+    {
+      "testCase": "add-delete-5.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "playhead",
+        "selection-no-reference",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "clip_id_1 = add_clip('Baby Elephant Cosmo', 42.5)",
+        "crop(clip_id_1, 0, 10)",
+        "clip_id_2 = add_clip('Baby Elephant Daisy', 52.5)",
+        "crop(clip_id_2, 0, 10)",
+        "clip_id_3 = add_clip('Baby Elephant Louis', 62.5)",
+        "crop(clip_id_3, 0, 10)",
+        "clip_id_4 = add_clip('Baby Elephant Sandra', 72.5)",
+        "crop(clip_id_4, 0, 10)"
+      ],
+      "generation": "clip_cosmo_id = add_clip(\"Baby Elephant Cosmo\", 42.5);\ncrop(clip_cosmo_id, 0, 10);\nclip_daisy_id = add_clip(\"Baby Elephant Daisy\", 52.5);\ncrop(clip_daisy_id, 0, 10);\nclip_louis_id = add_clip(\"Baby Elephant Louis\", 62.5);\ncrop(clip_louis_id, 0, 10);\nclip_sandra_id = add_clip(\"Baby Elephant Sandra\", 72.5);\ncrop(clip_sandra_id, 0, 10);"
+    },
+    {
+      "testCase": "add-delete-5.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "add/delete",
+        "playhead",
+        "selection-no-reference",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "clip_id_1 = add_clip('Baby Elephant Cosmo', 42.5)",
+        "crop(clip_id_1, 0, 10)",
+        "clip_id_2 = add_clip('Baby Elephant Daisy', 52.5)",
+        "crop(clip_id_2, 0, 10)",
+        "clip_id_3 = add_clip('Baby Elephant Louis', 62.5)",
+        "crop(clip_id_3, 0, 10)",
+        "clip_id_4 = add_clip('Baby Elephant Sandra', 72.5)",
+        "crop(clip_id_4, 0, 10)"
+      ],
+      "generation": "clip_cosmo_id = add_clip(\"Baby Elephant Cosmo\", 42.5);\ncrop(clip_cosmo_id, 0, 10);\nclip_daisy_id = add_clip(\"Baby Elephant Daisy\", 52.5);\ncrop(clip_daisy_id, 0, 10);\nclip_louis_id = add_clip(\"Baby Elephant Louis\", 62.5);\ncrop(clip_louis_id, 0, 10);\nclip_sandra_id = add_clip(\"Baby Elephant Sandra\", 72.5);\ncrop(clip_sandra_id, 0, 10);"
+    },
+    {
+      "testCase": "apply-style-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-no-reference"
+      ],
+      "expectedChanges": [
+        "assign_class(['l1fcbb76-a75b-4173-a837-86a5792ffe52', 'a6e1ca91-97c2-464d-b94e-29a3481fd327', 'd69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"daf9c11f-d5ae-4c6e-9750-5f8db60a2051\", \"l1fcbb76-a75b-4173-a837-86a5792ffe52\", \"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-no-reference"
+      ],
+      "expectedChanges": [
+        "assign_class(['l1fcbb76-a75b-4173-a837-86a5792ffe52', 'a6e1ca91-97c2-464d-b94e-29a3481fd327', 'd69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"daf9c11f-d5ae-4c6e-9750-5f8db60a2051\", \"l1fcbb76-a75b-4173-a837-86a5792ffe52\", \"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-no-reference"
+      ],
+      "expectedChanges": [
+        "assign_class(['l1fcbb76-a75b-4173-a837-86a5792ffe52', 'a6e1ca91-97c2-464d-b94e-29a3481fd327', 'd69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"daf9c11f-d5ae-4c6e-9750-5f8db60a2051\", \"l1fcbb76-a75b-4173-a837-86a5792ffe52\", \"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-no-reference"
+      ],
+      "expectedChanges": [
+        "assign_class(['l1fcbb76-a75b-4173-a837-86a5792ffe52', 'a6e1ca91-97c2-464d-b94e-29a3481fd327', 'd69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"daf9c11f-d5ae-4c6e-9750-5f8db60a2051\", \"l1fcbb76-a75b-4173-a837-86a5792ffe52\", \"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-no-reference"
+      ],
+      "expectedChanges": [
+        "assign_class(['l1fcbb76-a75b-4173-a837-86a5792ffe52', 'a6e1ca91-97c2-464d-b94e-29a3481fd327', 'd69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"daf9c11f-d5ae-4c6e-9750-5f8db60a2051\", \"l1fcbb76-a75b-4173-a837-86a5792ffe52\", \"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "assign_class(['d69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "assign_class(['d69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "assign_class(['d69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "assign_class(['d69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "assign_class(['d69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "assign_class(['d69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "move_layer(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", 0);\nassign_class([\"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "assign_class(['d69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "assign_class(['d69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "assign_class(['d69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "apply-style-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "apply-style",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "assign_class(['d69e9dec-3237-4ed3-8418-ef09d0166b11'], 'bottom-right')"
+      ],
+      "generation": "assign_class([\"d69e9dec-3237-4ed3-8418-ef09d0166b11\"], \"bottom-right\");"
+    },
+    {
+      "testCase": "crop-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2, 4)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2, 4);"
+    },
+    {
+      "testCase": "crop-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2, 4)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2, 4);"
+    },
+    {
+      "testCase": "crop-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2, 4)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2, 4);"
+    },
+    {
+      "testCase": "crop-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2, 4)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2, 4);"
+    },
+    {
+      "testCase": "crop-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2, 4)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2, 4);"
+    },
+    {
+      "testCase": "crop-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2, 4)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2, 4);"
+    },
+    {
+      "testCase": "crop-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2, 4)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2, 4);"
+    },
+    {
+      "testCase": "crop-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2, 4)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2, 4);"
+    },
+    {
+      "testCase": "crop-1-2.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2, 4)"
+      ],
+      "generation": "",
+      "reason": "Elements (l1fcbb76-a75b-4173-a837-86a5792ffe52, l1fcbb76-a75b-4173-a837-86a5792ffe52) are different: end, 26.02 <> 22.52"
+    },
+    {
+      "testCase": "crop-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2, 4)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2, 4);"
+    },
+    {
+      "testCase": "crop-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 2.75);"
+    },
+    {
+      "testCase": "crop-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 2.75);"
+    },
+    {
+      "testCase": "crop-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 2.75);"
+    },
+    {
+      "testCase": "crop-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 2.75);"
+    },
+    {
+      "testCase": "crop-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 2.75);"
+    },
+    {
+      "testCase": "crop-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 2.75);"
+    },
+    {
+      "testCase": "crop-2-2.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)"
+      ],
+      "generation": "",
+      "reason": "Elements (l1fcbb76-a75b-4173-a837-86a5792ffe52, l1fcbb76-a75b-4173-a837-86a5792ffe52) are different: end, 26.02 <> 23.27"
+    },
+    {
+      "testCase": "crop-2-2.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)"
+      ],
+      "generation": "",
+      "reason": "Elements (l1fcbb76-a75b-4173-a837-86a5792ffe52, l1fcbb76-a75b-4173-a837-86a5792ffe52) are different: end, 26.02 <> 23.27"
+    },
+    {
+      "testCase": "crop-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 2.75);"
+    },
+    {
+      "testCase": "crop-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 2.75);"
+    },
+    {
+      "testCase": "crop-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-3-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-3-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-3-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-3-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-3-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-4-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3.5);"
+    },
+    {
+      "testCase": "crop-4-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3.5);"
+    },
+    {
+      "testCase": "crop-4-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3.5);"
+    },
+    {
+      "testCase": "crop-4-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3.5);"
+    },
+    {
+      "testCase": "crop-4-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3.5);"
+    },
+    {
+      "testCase": "crop-4-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3.5);"
+    },
+    {
+      "testCase": "crop-4-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3.5);"
+    },
+    {
+      "testCase": "crop-4-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3.5);"
+    },
+    {
+      "testCase": "crop-4-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3.5);"
+    },
+    {
+      "testCase": "crop-4-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3.5);"
+    },
+    {
+      "testCase": "crop-5-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3);"
+    },
+    {
+      "testCase": "crop-5-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3);"
+    },
+    {
+      "testCase": "crop-5-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3);"
+    },
+    {
+      "testCase": "crop-5-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3);"
+    },
+    {
+      "testCase": "crop-5-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3);"
+    },
+    {
+      "testCase": "crop-5-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3);"
+    },
+    {
+      "testCase": "crop-5-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3);"
+    },
+    {
+      "testCase": "crop-5-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3);"
+    },
+    {
+      "testCase": "crop-5-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3);"
+    },
+    {
+      "testCase": "crop-5-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 3)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 3);"
+    },
+    {
+      "testCase": "crop-6.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)",
+        "clip_id = add_clip('Baby Elephant Cosmo', 23.27)",
+        "crop(clip_id, 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 2.75);\nclip_id = add_clip(\"Baby Elephant Cosmo\", 23.27);\ncrop(clip_id, 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-6.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "crop",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)",
+        "clip_id = add_clip('Baby Elephant Cosmo', 23.27)",
+        "crop(clip_id, 2.75, 5.5)"
+      ],
+      "generation": "",
+      "reason": "Different number of elements: 4 <> 5"
+    },
+    {
+      "testCase": "crop-6.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)",
+        "clip_id = add_clip('Baby Elephant Cosmo', 23.27)",
+        "crop(clip_id, 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 2.75);\nclip_id = add_clip(\"Baby Elephant Cosmo\", 23.27);\ncrop(clip_id, 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-6.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)",
+        "clip_id = add_clip('Baby Elephant Cosmo', 23.27)",
+        "crop(clip_id, 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 2.75);\nclip_id = add_clip(\"Baby Elephant Cosmo\", 23.27);\ncrop(clip_id, 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-6.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('l1fcbb76-a75b-4173-a837-86a5792ffe52', 0, 2.75)",
+        "clip_id = add_clip('Baby Elephant Cosmo', 23.27)",
+        "crop(clip_id, 2.75, 5.5)"
+      ],
+      "generation": "crop(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 0, 2.75);\nclip_id = add_clip(\"Baby Elephant Cosmo\", 23.27);\ncrop(clip_id, 2.75, 5.5);"
+    },
+    {
+      "testCase": "crop-7.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('d69e9dec-3237-4ed3-8418-ef09d0166b11', 3.6, 9.6)",
+        "clip_id = add_clip('Baby Elephant Daisy', 44)",
+        "crop(clip_id, 9.6, 15.6)"
+      ],
+      "generation": "crop(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", 3.6, 9.6);\nclip_id = add_clip(\"Baby Elephant Daisy\", 44);\ncrop(clip_id, 9.6, 15.6);"
+    },
+    {
+      "testCase": "crop-7.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "crop",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('d69e9dec-3237-4ed3-8418-ef09d0166b11', 3.6, 9.6)",
+        "clip_id = add_clip('Baby Elephant Daisy', 44)",
+        "crop(clip_id, 9.6, 15.6)"
+      ],
+      "generation": "crop(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", 3.6, 9.6);\nclip_id = add_clip(\"Baby Elephant Daisy\", 44);\ncrop(clip_id, 9.6, 15.6);"
+    },
+    {
+      "testCase": "crop-7.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "crop",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('d69e9dec-3237-4ed3-8418-ef09d0166b11', 3.6, 9.6)",
+        "clip_id = add_clip('Baby Elephant Daisy', 44)",
+        "crop(clip_id, 9.6, 15.6)"
+      ],
+      "generation": "crop(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", 3.6, 11.1);\nclip_id = add_clip(\"Baby Elephant Daisy\", 44);\ncrop(clip_id, 11.1, 15.6);",
+      "reason": "Elements (d69e9dec-3237-4ed3-8418-ef09d0166b11, d69e9dec-3237-4ed3-8418-ef09d0166b11) are different: end, 45.5 <> 44"
+    },
+    {
+      "testCase": "crop-7.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "crop",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('d69e9dec-3237-4ed3-8418-ef09d0166b11', 3.6, 9.6)",
+        "clip_id = add_clip('Baby Elephant Daisy', 44)",
+        "crop(clip_id, 9.6, 15.6)"
+      ],
+      "generation": "crop(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", 3.6, 9.6);\nclip_id = add_clip(\"Baby Elephant Daisy\", 50);\ncrop(clip_id, 9.6, 15.6);",
+      "reason": "Elements (l4604092-8461-49bc-88d1-d4ced5a8fcf7, ve30e7a0-5659-4dbb-8e67-3f4b2387365b) are different: start, 50 <> 44"
+    },
+    {
+      "testCase": "crop-7.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "crop",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "crop('d69e9dec-3237-4ed3-8418-ef09d0166b11', 3.6, 9.6)",
+        "clip_id = add_clip('Baby Elephant Daisy', 44)",
+        "crop(clip_id, 9.6, 15.6)"
+      ],
+      "generation": "crop(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", 3.6, 9.6);\nclip_id = add_clip(\"Baby Elephant Daisy\", 50);\ncrop(clip_id, 9.6, 15.6);",
+      "reason": "Elements (eb16959c-1e0b-4f36-9aa2-026360ea4eec, k7131535-b79b-42c4-991f-95c043fa5c02) are different: start, 50 <> 44"
+    },
+    {
+      "testCase": "move-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5)"
+    },
+    {
+      "testCase": "move-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5)"
+    },
+    {
+      "testCase": "move-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5)"
+    },
+    {
+      "testCase": "move-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5);"
+    },
+    {
+      "testCase": "move-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5)"
+    },
+    {
+      "testCase": "move-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5)"
+    },
+    {
+      "testCase": "move-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5);"
+    },
+    {
+      "testCase": "move-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5)"
+    },
+    {
+      "testCase": "move-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5);"
+    },
+    {
+      "testCase": "move-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5)"
+    },
+    {
+      "testCase": "move-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5)"
+    },
+    {
+      "testCase": "move-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5);"
+    },
+    {
+      "testCase": "move-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5);"
+    },
+    {
+      "testCase": "move-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5);"
+    },
+    {
+      "testCase": "move-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5)"
+    },
+    {
+      "testCase": "move-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5);"
+    },
+    {
+      "testCase": "move-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5);"
+    },
+    {
+      "testCase": "move-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5);"
+    },
+    {
+      "testCase": "move-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5)"
+    },
+    {
+      "testCase": "move-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', 5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 5);"
+    },
+    {
+      "testCase": "move-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 15)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5.52)"
+    },
+    {
+      "testCase": "move-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 15)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5.52)"
+    },
+    {
+      "testCase": "move-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 15)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5.52)"
+    },
+    {
+      "testCase": "move-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 15)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5.52)"
+    },
+    {
+      "testCase": "move-3-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 15)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5.52)"
+    },
+    {
+      "testCase": "move-3-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 15)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5.52);"
+    },
+    {
+      "testCase": "move-3-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 15)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5.52);"
+    },
+    {
+      "testCase": "move-3-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 15)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5.52);"
+    },
+    {
+      "testCase": "move-3-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 15)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5.52);"
+    },
+    {
+      "testCase": "move-3-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 15)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5.52);"
+    },
+    {
+      "testCase": "move-4-1.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', 14.86)",
+        "move('j5321de0-e192-4e2b-bb71-cc592d7005f6', 0)"
+      ],
+      "generation": "move_delta(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", 14.86);\nmove_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", -14.86);",
+      "reason": "Elements (j5321de0-e192-4e2b-bb71-cc592d7005f6, j5321de0-e192-4e2b-bb71-cc592d7005f6) are different: start, -1.07 <> 0"
+    },
+    {
+      "testCase": "move-4-1.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', 14.86)",
+        "move('j5321de0-e192-4e2b-bb71-cc592d7005f6', 0)"
+      ],
+      "generation": "move_delta(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", 13.79);\nmove_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", -13.79);",
+      "reason": "Elements (wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062, wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062) are different: start, 13.79 <> 14.86"
+    },
+    {
+      "testCase": "move-4-1.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', 14.86)",
+        "move('j5321de0-e192-4e2b-bb71-cc592d7005f6', 0)"
+      ],
+      "generation": "move_delta(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", 13.79);\nmove_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", -13.79);",
+      "reason": "Elements (wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062, wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062) are different: start, 13.79 <> 14.86"
+    },
+    {
+      "testCase": "move-4-1.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', 14.86)",
+        "move('j5321de0-e192-4e2b-bb71-cc592d7005f6', 0)"
+      ],
+      "generation": "move_delta(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", 13.79);\nmove_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", -13.79);",
+      "reason": "Elements (wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062, wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062) are different: start, 13.79 <> 14.86"
+    },
+    {
+      "testCase": "move-4-1.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', 14.86)",
+        "move('j5321de0-e192-4e2b-bb71-cc592d7005f6', 0)"
+      ],
+      "generation": "move_delta(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", 14.86);\nmove_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", -14.86);",
+      "reason": "Elements (j5321de0-e192-4e2b-bb71-cc592d7005f6, j5321de0-e192-4e2b-bb71-cc592d7005f6) are different: start, -1.07 <> 0"
+    },
+    {
+      "testCase": "move-4-2.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', 14.86)",
+        "move('j5321de0-e192-4e2b-bb71-cc592d7005f6', 0)"
+      ],
+      "generation": "move_delta(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", 13.79);\nmove_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", -13.79);",
+      "reason": "Elements (wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062, wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062) are different: start, 13.79 <> 14.86"
+    },
+    {
+      "testCase": "move-4-2.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', 14.86)",
+        "move('j5321de0-e192-4e2b-bb71-cc592d7005f6', 0)"
+      ],
+      "generation": "move_delta(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", 13.79);\nmove_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", -13.79);",
+      "reason": "Elements (wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062, wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062) are different: start, 13.79 <> 14.86"
+    },
+    {
+      "testCase": "move-4-2.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', 14.86)",
+        "move('j5321de0-e192-4e2b-bb71-cc592d7005f6', 0)"
+      ],
+      "generation": "move_delta(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", 14.86);\nmove_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", -14.86);",
+      "reason": "Elements (j5321de0-e192-4e2b-bb71-cc592d7005f6, j5321de0-e192-4e2b-bb71-cc592d7005f6) are different: start, -1.07 <> 0"
+    },
+    {
+      "testCase": "move-4-2.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', 14.86)",
+        "move('j5321de0-e192-4e2b-bb71-cc592d7005f6', 0)"
+      ],
+      "generation": "move_delta(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", 13.79);\nmove_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", -13.79);",
+      "reason": "Elements (wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062, wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062) are different: start, 13.79 <> 14.86"
+    },
+    {
+      "testCase": "move-4-2.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', 14.86)",
+        "move('j5321de0-e192-4e2b-bb71-cc592d7005f6', 0)"
+      ],
+      "generation": "move_delta(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", 13.79);\nmove_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", -13.79);",
+      "reason": "Elements (wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062, wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062) are different: start, 13.79 <> 14.86"
+    },
+    {
+      "testCase": "move-5.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-no-reference",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 16)",
+        "move('a6e1ca91-97c2-464d-b94e-29a3481fd327', 21.5)",
+        "move('d69e9dec-3237-4ed3-8418-ef09d0166b11', 29.5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -4.52);\nmove_delta(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", -12);\nmove_delta(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", -14);",
+      "reason": "Elements (d69e9dec-3237-4ed3-8418-ef09d0166b11, d69e9dec-3237-4ed3-8418-ef09d0166b11) are different: start, 24 <> 29.5"
+    },
+    {
+      "testCase": "move-5.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-no-reference",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 16)",
+        "move('a6e1ca91-97c2-464d-b94e-29a3481fd327', 21.5)",
+        "move('d69e9dec-3237-4ed3-8418-ef09d0166b11', 29.5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -4.52);\nmove_delta(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", -10);\nmove_delta(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", -12);",
+      "reason": "Elements (d69e9dec-3237-4ed3-8418-ef09d0166b11, d69e9dec-3237-4ed3-8418-ef09d0166b11) are different: start, 26 <> 29.5"
+    },
+    {
+      "testCase": "move-5.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-no-reference",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 16)",
+        "move('a6e1ca91-97c2-464d-b94e-29a3481fd327', 21.5)",
+        "move('d69e9dec-3237-4ed3-8418-ef09d0166b11', 29.5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -4.52);\nmove_delta(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", -12);\nmove_delta(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", -18);",
+      "reason": "Elements (d69e9dec-3237-4ed3-8418-ef09d0166b11, d69e9dec-3237-4ed3-8418-ef09d0166b11) are different: start, 20 <> 29.5"
+    },
+    {
+      "testCase": "move-5.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-no-reference",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 16)",
+        "move('a6e1ca91-97c2-464d-b94e-29a3481fd327', 21.5)",
+        "move('d69e9dec-3237-4ed3-8418-ef09d0166b11', 29.5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -4.52);\nmove_delta(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", -12);\nmove_delta(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", -14);",
+      "reason": "Elements (d69e9dec-3237-4ed3-8418-ef09d0166b11, d69e9dec-3237-4ed3-8418-ef09d0166b11) are different: start, 24 <> 29.5"
+    },
+    {
+      "testCase": "move-5.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-no-reference",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "move('l1fcbb76-a75b-4173-a837-86a5792ffe52', 16)",
+        "move('a6e1ca91-97c2-464d-b94e-29a3481fd327', 21.5)",
+        "move('d69e9dec-3237-4ed3-8418-ef09d0166b11', 29.5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -4.52);\nmove_delta(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", -12.52);\nmove_delta(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", -14);",
+      "reason": "Elements (d69e9dec-3237-4ed3-8418-ef09d0166b11, d69e9dec-3237-4ed3-8418-ef09d0166b11) are different: start, 24 <> 29.5"
+    },
+    {
+      "testCase": "move-6-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', -5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5)"
+    },
+    {
+      "testCase": "move-6-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', -5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5)"
+    },
+    {
+      "testCase": "move-6-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', -5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5);"
+    },
+    {
+      "testCase": "move-6-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', -5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5);"
+    },
+    {
+      "testCase": "move-6-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', -5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5)"
+    },
+    {
+      "testCase": "move-6-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', -5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5);"
+    },
+    {
+      "testCase": "move-6-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', -5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5);"
+    },
+    {
+      "testCase": "move-6-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', -5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5);"
+    },
+    {
+      "testCase": "move-6-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', -5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5);"
+    },
+    {
+      "testCase": "move-6-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "move_delta('l1fcbb76-a75b-4173-a837-86a5792ffe52', -5)"
+      ],
+      "generation": "move_delta(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", -5);"
+    },
+    {
+      "testCase": "move-7.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move"
+      ],
+      "expectedChanges": [
+        "move_delta('j5321de0-e192-4e2b-bb71-cc592d7005f6', 3)",
+        "move_delta('n1b4f703-d06c-48f8-9d7c-6a13f1118016', 3)",
+        "move_delta('d69e9dec-3237-4ed3-8418-ef09d0166b11', 3)",
+        "move_delta('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 3)"
+      ],
+      "generation": "move_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", 3);\nmove_delta(\"n1b4f703-d06c-48f8-9d7c-6a13f1118016\", 3);\nmove_delta(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", 3);\nmove_delta(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", 3);"
+    },
+    {
+      "testCase": "move-7.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move"
+      ],
+      "expectedChanges": [
+        "move_delta('j5321de0-e192-4e2b-bb71-cc592d7005f6', 3)",
+        "move_delta('n1b4f703-d06c-48f8-9d7c-6a13f1118016', 3)",
+        "move_delta('d69e9dec-3237-4ed3-8418-ef09d0166b11', 3)",
+        "move_delta('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 3)"
+      ],
+      "generation": "move_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", 3);\nmove_delta(\"n1b4f703-d06c-48f8-9d7c-6a13f1118016\", 3);\nmove_delta(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", 3);\nmove_delta(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", 3);"
+    },
+    {
+      "testCase": "move-7.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move"
+      ],
+      "expectedChanges": [
+        "move_delta('j5321de0-e192-4e2b-bb71-cc592d7005f6', 3)",
+        "move_delta('n1b4f703-d06c-48f8-9d7c-6a13f1118016', 3)",
+        "move_delta('d69e9dec-3237-4ed3-8418-ef09d0166b11', 3)",
+        "move_delta('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 3)"
+      ],
+      "generation": "move_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", 3);\nmove_delta(\"n1b4f703-d06c-48f8-9d7c-6a13f1118016\", 3);\nmove_delta(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", 3);\nmove_delta(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", 3);"
+    },
+    {
+      "testCase": "move-7.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move"
+      ],
+      "expectedChanges": [
+        "move_delta('j5321de0-e192-4e2b-bb71-cc592d7005f6', 3)",
+        "move_delta('n1b4f703-d06c-48f8-9d7c-6a13f1118016', 3)",
+        "move_delta('d69e9dec-3237-4ed3-8418-ef09d0166b11', 3)",
+        "move_delta('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 3)"
+      ],
+      "generation": "move_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", 3);\nmove_delta(\"n1b4f703-d06c-48f8-9d7c-6a13f1118016\", 3);\nmove_delta(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", 3);\nmove_delta(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", 3);"
+    },
+    {
+      "testCase": "move-7.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "move"
+      ],
+      "expectedChanges": [
+        "move_delta('j5321de0-e192-4e2b-bb71-cc592d7005f6', 3)",
+        "move_delta('n1b4f703-d06c-48f8-9d7c-6a13f1118016', 3)",
+        "move_delta('d69e9dec-3237-4ed3-8418-ef09d0166b11', 3)",
+        "move_delta('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 3)"
+      ],
+      "generation": "move_delta(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", 3);\nmove_delta(\"n1b4f703-d06c-48f8-9d7c-6a13f1118016\", 3);\nmove_delta(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", 3);\nmove_delta(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", 3);"
+    },
+    {
+      "testCase": "rename-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "rename_element('a6e1ca91-97c2-464d-b94e-29a3481fd327', 'Baby Elephant Bobby')"
+      ],
+      "generation": "rename_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"Baby Elephant Bobby\");"
+    },
+    {
+      "testCase": "rename-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "rename_element('a6e1ca91-97c2-464d-b94e-29a3481fd327', 'Baby Elephant Bobby')"
+      ],
+      "generation": "rename_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"Baby Elephant Bobby\");"
+    },
+    {
+      "testCase": "rename-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "rename_element('a6e1ca91-97c2-464d-b94e-29a3481fd327', 'Baby Elephant Bobby')"
+      ],
+      "generation": "rename_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"Baby Elephant Bobby\");"
+    },
+    {
+      "testCase": "rename-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "rename_element('a6e1ca91-97c2-464d-b94e-29a3481fd327', 'Baby Elephant Bobby')"
+      ],
+      "generation": "rename_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"Baby Elephant Bobby\");"
+    },
+    {
+      "testCase": "rename-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "rename_element('a6e1ca91-97c2-464d-b94e-29a3481fd327', 'Baby Elephant Bobby')"
+      ],
+      "generation": "rename_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"Baby Elephant Bobby\");"
+    },
+    {
+      "testCase": "rename-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "rename_element('a6e1ca91-97c2-464d-b94e-29a3481fd327', 'Baby Elephant Bobby')"
+      ],
+      "generation": "rename_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"Baby Elephant Bobby\");"
+    },
+    {
+      "testCase": "rename-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "rename_element('a6e1ca91-97c2-464d-b94e-29a3481fd327', 'Baby Elephant Bobby')"
+      ],
+      "generation": "rename_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"Baby Elephant Bobby\");"
+    },
+    {
+      "testCase": "rename-1-2.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "rename_element('a6e1ca91-97c2-464d-b94e-29a3481fd327', 'Baby Elephant Bobby')"
+      ],
+      "generation": "",
+      "reason": "Elements (l1fcbb76-a75b-4173-a837-86a5792ffe52, a6e1ca91-97c2-464d-b94e-29a3481fd327) are different: name, Baby Elephant Cosmo <> Baby Elephant Bobby"
+    },
+    {
+      "testCase": "rename-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "rename_element('a6e1ca91-97c2-464d-b94e-29a3481fd327', 'Baby Elephant Bobby')"
+      ],
+      "generation": "rename_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"Baby Elephant Bobby\");"
+    },
+    {
+      "testCase": "rename-1-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "rename_element('a6e1ca91-97c2-464d-b94e-29a3481fd327', 'Baby Elephant Bobby')"
+      ],
+      "generation": "rename_element(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", \"Baby Elephant Bobby\");"
+    },
+    {
+      "testCase": "rename-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 'Title 2022')"
+      ],
+      "generation": "rename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"Title 2022\")"
+    },
+    {
+      "testCase": "rename-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 'Title 2022')"
+      ],
+      "generation": "rename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"Title 2022\")"
+    },
+    {
+      "testCase": "rename-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 'Title 2022')"
+      ],
+      "generation": "rename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"Title 2022\")"
+    },
+    {
+      "testCase": "rename-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 'Title 2022')"
+      ],
+      "generation": "rename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"Title 2022\")"
+    },
+    {
+      "testCase": "rename-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 'Title 2022')"
+      ],
+      "generation": "rename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"Title 2022\")"
+    },
+    {
+      "testCase": "rename-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 'Title 2022')"
+      ],
+      "generation": "rename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"Title 2022\")"
+    },
+    {
+      "testCase": "rename-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 'Title 2022')"
+      ],
+      "generation": "rename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"Title 2022\")"
+    },
+    {
+      "testCase": "rename-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 'Title 2022')"
+      ],
+      "generation": "rename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"Title 2022\")"
+    },
+    {
+      "testCase": "rename-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 'Title 2022')"
+      ],
+      "generation": "rename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"Title 2022\")"
+    },
+    {
+      "testCase": "rename-2-2.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', 'Title 2022')"
+      ],
+      "generation": "rename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"Title 2022\")"
+    },
+    {
+      "testCase": "rename-3.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename"
+      ],
+      "expectedChanges": [
+        "rename_element('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', '1')",
+        "rename_element('j5321de0-e192-4e2b-bb71-cc592d7005f6', '2')",
+        "rename_element('n1b4f703-d06c-48f8-9d7c-6a13f1118016', '3')",
+        "rename_element('d69e9dec-3237-4ed3-8418-ef09d0166b11', '4')",
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', '5')"
+      ],
+      "generation": "rename_element(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", \"1\");\nrename_element(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", \"2\");\nrename_element(\"n1b4f703-d06c-48f8-9d7c-6a13f1118016\", \"3\");\nrename_element(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", \"4\");\nrename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"5\");"
+    },
+    {
+      "testCase": "rename-3.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename"
+      ],
+      "expectedChanges": [
+        "rename_element('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', '1')",
+        "rename_element('j5321de0-e192-4e2b-bb71-cc592d7005f6', '2')",
+        "rename_element('n1b4f703-d06c-48f8-9d7c-6a13f1118016', '3')",
+        "rename_element('d69e9dec-3237-4ed3-8418-ef09d0166b11', '4')",
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', '5')"
+      ],
+      "generation": "rename_element(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", \"1\");\nrename_element(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", \"2\");\nrename_element(\"n1b4f703-d06c-48f8-9d7c-6a13f1118016\", \"3\");\nrename_element(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", \"4\");\nrename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"5\");"
+    },
+    {
+      "testCase": "rename-3.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename"
+      ],
+      "expectedChanges": [
+        "rename_element('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', '1')",
+        "rename_element('j5321de0-e192-4e2b-bb71-cc592d7005f6', '2')",
+        "rename_element('n1b4f703-d06c-48f8-9d7c-6a13f1118016', '3')",
+        "rename_element('d69e9dec-3237-4ed3-8418-ef09d0166b11', '4')",
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', '5')"
+      ],
+      "generation": "rename_element(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", \"1\");\nrename_element(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", \"2\");\nrename_element(\"n1b4f703-d06c-48f8-9d7c-6a13f1118016\", \"3\");\nrename_element(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", \"4\");\nrename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"5\");"
+    },
+    {
+      "testCase": "rename-3.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename"
+      ],
+      "expectedChanges": [
+        "rename_element('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', '1')",
+        "rename_element('j5321de0-e192-4e2b-bb71-cc592d7005f6', '2')",
+        "rename_element('n1b4f703-d06c-48f8-9d7c-6a13f1118016', '3')",
+        "rename_element('d69e9dec-3237-4ed3-8418-ef09d0166b11', '4')",
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', '5')"
+      ],
+      "generation": "rename_element(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", \"1\");\nrename_element(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", \"2\");\nrename_element(\"n1b4f703-d06c-48f8-9d7c-6a13f1118016\", \"3\");\nrename_element(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", \"4\");\nrename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"5\");"
+    },
+    {
+      "testCase": "rename-3.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "rename"
+      ],
+      "expectedChanges": [
+        "rename_element('wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062', '1')",
+        "rename_element('j5321de0-e192-4e2b-bb71-cc592d7005f6', '2')",
+        "rename_element('n1b4f703-d06c-48f8-9d7c-6a13f1118016', '3')",
+        "rename_element('d69e9dec-3237-4ed3-8418-ef09d0166b11', '4')",
+        "rename_element('q4b6ff2b-53c5-4731-b404-da1d12a75cf9', '5')"
+      ],
+      "generation": "rename_element(\"wd2dcc72-24d1-4c57-a6bc-3a23fb4c9062\", \"1\");\nrename_element(\"j5321de0-e192-4e2b-bb71-cc592d7005f6\", \"2\");\nrename_element(\"n1b4f703-d06c-48f8-9d7c-6a13f1118016\", \"3\");\nrename_element(\"d69e9dec-3237-4ed3-8418-ef09d0166b11\", \"4\");\nrename_element(\"q4b6ff2b-53c5-4731-b404-da1d12a75cf9\", \"5\");"
+    },
+    {
+      "testCase": "speed-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2);"
+    },
+    {
+      "testCase": "speed-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2);"
+    },
+    {
+      "testCase": "speed-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2);"
+    },
+    {
+      "testCase": "speed-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2);"
+    },
+    {
+      "testCase": "speed-1-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-direct"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2);"
+    },
+    {
+      "testCase": "speed-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 1.5)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 1.5);"
+    },
+    {
+      "testCase": "speed-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 1.5)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 1.5);"
+    },
+    {
+      "testCase": "speed-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 1.5)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 1.5);"
+    },
+    {
+      "testCase": "speed-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 1.5)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 1.5);"
+    },
+    {
+      "testCase": "speed-2-1.json",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-direct",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 1.5)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 1.5);"
+    },
+    {
+      "testCase": "speed-3-1.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "speed",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('a6e1ca91-97c2-464d-b94e-29a3481fd327', 0.8)"
+      ],
+      "generation": "speed_change = set_speed(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", 0.5);",
+      "reason": "Elements (a6e1ca91-97c2-464d-b94e-29a3481fd327, a6e1ca91-97c2-464d-b94e-29a3481fd327) are different: end, 44 <> 38"
+    },
+    {
+      "testCase": "speed-3-1.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "speed",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('a6e1ca91-97c2-464d-b94e-29a3481fd327', 0.8)"
+      ],
+      "generation": "set_speed(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", 0.5);",
+      "reason": "Elements (a6e1ca91-97c2-464d-b94e-29a3481fd327, a6e1ca91-97c2-464d-b94e-29a3481fd327) are different: end, 44 <> 38"
+    },
+    {
+      "testCase": "speed-3-1.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "speed",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('a6e1ca91-97c2-464d-b94e-29a3481fd327', 0.8)"
+      ],
+      "generation": "set_speed(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", 0.5);",
+      "reason": "Elements (a6e1ca91-97c2-464d-b94e-29a3481fd327, a6e1ca91-97c2-464d-b94e-29a3481fd327) are different: end, 44 <> 38"
+    },
+    {
+      "testCase": "speed-3-1.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "speed",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('a6e1ca91-97c2-464d-b94e-29a3481fd327', 0.8)"
+      ],
+      "generation": "set_speed(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", 0.5);",
+      "reason": "Elements (a6e1ca91-97c2-464d-b94e-29a3481fd327, a6e1ca91-97c2-464d-b94e-29a3481fd327) are different: end, 44 <> 38"
+    },
+    {
+      "testCase": "speed-3-1.json",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "speed",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('a6e1ca91-97c2-464d-b94e-29a3481fd327', 0.8)"
+      ],
+      "generation": "set_speed(\"a6e1ca91-97c2-464d-b94e-29a3481fd327\", 0.5);",
+      "reason": "Elements (a6e1ca91-97c2-464d-b94e-29a3481fd327, a6e1ca91-97c2-464d-b94e-29a3481fd327) are different: end, 44 <> 38"
+    },
+    {
+      "testCase": "speed-1-2.json",
+      "prompt": "Double the speed",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2);"
+    },
+    {
+      "testCase": "speed-1-2.json",
+      "prompt": "Double the speed",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2);"
+    },
+    {
+      "testCase": "speed-1-2.json",
+      "prompt": "Double the speed",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2);"
+    },
+    {
+      "testCase": "speed-1-2.json",
+      "prompt": "Double the speed",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2);"
+    },
+    {
+      "testCase": "speed-1-2.json",
+      "prompt": "Double the speed",
+      "resultType": "passed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-indirect"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 2)"
+      ],
+      "generation": "set_speed(\"l1fcbb76-a75b-4173-a837-86a5792ffe52\", 2);"
+    },
+    {
+      "testCase": "speed-2-2.json",
+      "prompt": "Increase the speed by 50%",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 1.5)"
+      ],
+      "generation": "",
+      "reason": "Elements (l1fcbb76-a75b-4173-a837-86a5792ffe52, l1fcbb76-a75b-4173-a837-86a5792ffe52) are different: end, 26.02 <> 24.19"
+    },
+    {
+      "testCase": "speed-2-2.json",
+      "prompt": "Increase the speed by 50%",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 1.5)"
+      ],
+      "generation": "",
+      "reason": "Elements (l1fcbb76-a75b-4173-a837-86a5792ffe52, l1fcbb76-a75b-4173-a837-86a5792ffe52) are different: end, 26.02 <> 24.19"
+    },
+    {
+      "testCase": "speed-2-2.json",
+      "prompt": "Increase the speed by 50%",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 1.5)"
+      ],
+      "generation": "",
+      "reason": "Elements (l1fcbb76-a75b-4173-a837-86a5792ffe52, l1fcbb76-a75b-4173-a837-86a5792ffe52) are different: end, 26.02 <> 24.19"
+    },
+    {
+      "testCase": "speed-2-2.json",
+      "prompt": "Increase the speed by 50%",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 1.5)"
+      ],
+      "generation": "",
+      "reason": "Elements (l1fcbb76-a75b-4173-a837-86a5792ffe52, l1fcbb76-a75b-4173-a837-86a5792ffe52) are different: end, 26.02 <> 24.19"
+    },
+    {
+      "testCase": "speed-2-2.json",
+      "prompt": "Increase the speed by 50%",
+      "resultType": "failed",
+      "tags": [
+        "timeline",
+        "speed",
+        "selection-reference-indirect",
+        "arithmetics"
+      ],
+      "expectedChanges": [
+        "set_speed('l1fcbb76-a75b-4173-a837-86a5792ffe52', 1.5)"
+      ],
+      "generation": "",
+      "reason": "Elements (l1fcbb76-a75b-4173-a837-86a5792ffe52, l1fcbb76-a75b-4173-a837-86a5792ffe52) are different: end, 26.02 <> 24.19"
+    }
+  ],
+  "passed": 177,
+  "failed": 33,
+  "error": 0,
+  "testReportsForTags": [
+    {
+      "tag": "timeline",
+      "passed": 177,
+      "failed": 33,
+      "error": 0
+    },
+    {
+      "tag": "add/delete",
+      "passed": 25,
+      "failed": 0,
+      "error": 0
+    },
+    {
+      "tag": "arithmetics",
+      "passed": 49,
+      "failed": 31,
+      "error": 0
+    },
+    {
+      "tag": "playhead",
+      "passed": 10,
+      "failed": 0,
+      "error": 0
+    },
+    {
+      "tag": "selection-no-reference",
+      "passed": 10,
+      "failed": 5,
+      "error": 0
+    },
+    {
+      "tag": "apply-style",
+      "passed": 15,
+      "failed": 0,
+      "error": 0
+    },
+    {
+      "tag": "selection-reference-direct",
+      "passed": 70,
+      "failed": 5,
+      "error": 0
+    },
+    {
+      "tag": "selection-reference-indirect",
+      "passed": 61,
+      "failed": 14,
+      "error": 0
+    },
+    {
+      "tag": "crop",
+      "passed": 53,
+      "failed": 7,
+      "error": 0
+    },
+    {
+      "tag": "move",
+      "passed": 45,
+      "failed": 15,
+      "error": 0
+    },
+    {
+      "tag": "rename",
+      "passed": 24,
+      "failed": 1,
+      "error": 0
+    },
+    {
+      "tag": "speed",
+      "passed": 15,
+      "failed": 10,
+      "error": 0
+    }
+  ]
+}

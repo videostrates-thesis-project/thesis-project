@@ -4,13 +4,12 @@
   "selection": {
     "selectedClip": "a6e1ca91-97c2-464d-b94e-29a3481fd327"
   },
-  "prompt": "Delete clip",
+  "prompt": "Delete this clip",
   "expectedChanges": [
     "delete_element('a6e1ca91-97c2-464d-b94e-29a3481fd327')"
   ],
   "tags": [
     "timeline",
-    "add/delete",
-    "selection-reference-direct"
+    "add/delete"
   ]
 }

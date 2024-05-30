@@ -60,31 +60,30 @@ Specification of a custom element with embedded clips:
 \`\`\`html
 <div class="composited" id="v28c71a9-b46f-46cc-9633-7b50b8041530" custom-element-name="Name of the element"
         style="z-index: 1;" data-start="97.36" data-end="109.36" data-offset="0" data-speed="1">
-        <div embedded-clip-container="elephant-grid-container" class="elephant-grid">
-            <div clip-name="Name of the clip" id="td2bbf33-ee52-43b5-81c0-a23b1146a200" style="z-index: 2;"
-                class="my-style">
-                <video class="composited" data-start="97.36" data-end="109.36" data-offset="0" data-speed="1">
-                    <source src="https://link.to.clip">
-                </video>
-            </div>
-            <div clip-name="Name of the clip" id="f1dc65f5-da54-483e-bc5a-497da4a47ec0" style="z-index: 3;"
-                class="my-style">
-                <video class="composited" data-start="97.36" data-end="109.36" data-offset="0" data-speed="1">
-                    <source src="https://link.to.clip">
-                </video>
-            </div>
-            <div clip-name="Name of the clip" id="rc45eb82-6120-4f69-9ca9-1780ebbff741" style="z-index: 4;"
-                class="my-style">
-                <video class="composited" data-start="97.36" data-end="109.36" data-offset="0" data-speed="1">
-                    <source src="https://link.to.clip">
-                </video>
-            </div>
-            <div clip-name="Name of the clip" id="n3d59788-18a2-428c-8914-65cb052bff24" style="z-index: 5;"
-                class="my-style">
-                <video class="composited" data-start="97.36" data-end="109.36" data-offset="0" data-speed="1">
-                    <source src="https://link.to.clip">
-                </video>
-            </div>
+    <div embedded-clip-container="elephant-grid-container" class="elephant-grid">
+        <div clip-name="Name of the clip" id="td2bbf33-ee52-43b5-81c0-a23b1146a200" style="z-index: 2;"
+            class="my-style">
+            <video class="composited" data-start="97.36" data-end="109.36" data-offset="0" data-speed="1">
+                <source src="https://link.to.clip">
+            </video>
+        </div>
+        <div clip-name="Name of the clip" id="f1dc65f5-da54-483e-bc5a-497da4a47ec0" style="z-index: 3;"
+            class="my-style">
+            <video class="composited" data-start="97.36" data-end="109.36" data-offset="0" data-speed="1">
+                <source src="https://link.to.clip">
+            </video>
+        </div>
+        <div clip-name="Name of the clip" id="rc45eb82-6120-4f69-9ca9-1780ebbff741" style="z-index: 4;"
+            class="my-style">
+            <video class="composited" data-start="97.36" data-end="109.36" data-offset="0" data-speed="1">
+                <source src="https://link.to.clip">
+            </video>
+        </div>
+        <div clip-name="Name of the clip" id="n3d59788-18a2-428c-8914-65cb052bff24" style="z-index: 5;"
+            class="my-style">
+            <video class="composited" data-start="97.36" data-end="109.36" data-offset="0" data-speed="1">
+                <source src="https://link.to.clip">
+            </video>
         </div>
     </div>
 </div>
